@@ -1,0 +1,75 @@
+---
+title: "Plot"
+author: "Abby Lewis"
+date: "2024-02-29"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(ggpubr)
+```
+
+# Discrete
+
+```{r}
+ice_format <- read.csv("../Processed_data/FCR_ice.csv")
+
+months_format <- data.frame(Month = c("Spring", "Summer", "Fall", "Winter"),
+                            yday = c(yday("2021-03-01"),
+                                     yday("2021-06-01"),
+                                     yday("2021-09-01"),
+                                     yday("2021-12-01")))
+
+discrete <- ice_format %>%
+  ggplot()+
+  scale_linetype_manual(values = c(1, 2), breaks = c("Ice on", "Ice off")) +
+  geom_vline(aes(xintercept = yday, lty = Event), color = "lightblue") +
+  geom_vline(aes(xintercept = yday, color = "Month"), data = months_format) +
+  xlim(0, 365)+
+  scale_color_manual(values = c("black")) +
+  theme_bw()+
+  theme(legend.title = element_blank()) + 
+  ggtitle("Discrete seasonal clasifications") +
+  theme(legend.position = "bottom")
+```
+
+# Continuous
+Add schmidt stability
+
+```{r}
+catwalk_format <- read.csv("../Processed_data/FCR_catwalk.csv")
+met_format <- read.csv("../Processed_data/FCR_met.csv")
+
+continuous <- catwalk_format  %>%
+  filter(!is.na(Value)) %>%
+  full_join(met_format) %>%
+  filter(!Variable == "Rain_Total_mm") %>%
+  mutate(Variable = factor(Variable, 
+                           levels = c("EXOTemp_C_1", 
+                                      "AirTemp_C_Average", 
+                                      "EXOChla_ugL_1", 
+                                      "ShortwaveRadiationDown_Average_W_m2"),
+                           labels = c("Surface temperature (ºC)", 
+                                      "Air temperature (ºC)",
+                                      "Surface chlorophyll-a (µg/L)",
+                                      "Shortwave (W/m2)"))) %>%
+  ggplot(aes(x = yday, y = Value, color = Variable)) +
+  scale_color_manual(values = c("purple","pink", "#26c9a3", "goldenrod")) +
+  geom_line() +
+  theme_bw() + 
+  ggtitle("Seasonally-varying parameters") +
+  theme(legend.position = "bottom",
+        legend.title = element_blank()) +
+  guides(color=guide_legend(ncol=1))
+
+continuous
+```
+
+# Combine
+
+```{r}
+ggarrange(discrete + ylab("FCR"), continuous, align = "h")
+```
+

@@ -1,0 +1,65 @@
+---
+title: "FCR"
+author: "Abby Lewis"
+date: "2024-02-29"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+```{r}
+options(timeout=6000)
+catwalk <- read.csv("https://pasta.lternet.edu/package/data/eml/edi/271/8/fbb8c7a0230f4587f1c6e11417fe9dce")
+
+catwalk_format <- catwalk %>%
+  mutate(Date = as.Date(DateTime),
+         Year = year(Date)) %>%
+  filter(Year == 2021) %>%
+  group_by(Date) %>%
+  summarize(EXOTemp_C_1 = mean(EXOTemp_C_1, na.rm = T),
+            EXOChla_ugL_1 = mean(EXOChla_ugL_1, na.rm = T)) %>%
+  mutate(yday = yday(Date)) %>%
+  pivot_longer(cols = c(EXOTemp_C_1, EXOChla_ugL_1), 
+               names_to = "Variable", values_to = "Value")
+
+write.csv(catwalk_format, "../Processed_data/FCR_catwalk.csv", row.names = F)
+```
+
+```{r}
+met <- read.csv("https://pasta.lternet.edu/package/data/eml/edi/389/8/d4c74bbb3b86ea293e5c52136347fbb0")
+
+met_format <- met %>%
+  mutate(Date = as.Date(DateTime),
+         Year = year(Date)) %>%
+  filter(Year == 2021) %>%
+  group_by(Date) %>%
+  summarize(AirTemp_C_Average = mean(AirTemp_C_Average, na.rm = T),
+            Rain_Total_mm = sum(Rain_Total_mm),
+            ShortwaveRadiationDown_Average_W_m2 = 
+              mean(ShortwaveRadiationDown_Average_W_m2, na.rm = T)) %>%
+  mutate(yday = yday(Date)) %>%
+  pivot_longer(cols = c(AirTemp_C_Average,
+                        Rain_Total_mm,
+                        ShortwaveRadiationDown_Average_W_m2), 
+               names_to = "Variable", values_to = "Value")
+
+write.csv(met_format, "../Processed_data/FCR_met.csv", row.names = F)
+```
+
+```{r}
+ice <- read.csv("https://pasta.lternet.edu/package/data/eml/edi/456/5/ebfaad16975326a7b874a21beb50c151")
+
+#Note: it is always true that either IceOn == 1 or IceOff == 1
+
+ice_format <- ice %>%
+  filter(Year == 2021) %>%
+  mutate(Year = year(Date), 
+         yday = yday(Date),
+         Event = ifelse(IceOn == 1, "Ice on", "Ice off")) %>%
+  select(Year, yday, Event)
+
+write.csv(ice_format, "../Processed_data/FCR_ice.csv", row.names = F)
+```
