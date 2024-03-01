@@ -17,27 +17,31 @@ if(!file.exists("../Figures")){dir.create("../Figures")}
 # Discrete
 
 ```{r}
-ice_format <- read.csv("../Processed_data/FCR_ice.csv")
+ice_format <- read.csv("../Processed_data/FCR_ice.csv") %>%
+  mutate(Season = ifelse(Event == "Ice on", "Winter", "Spring"))
 
-months_format <- data.frame(Month = c("Spring", "Summer", "Fall", "Winter"),
+months_format <- data.frame(Season = c("Spring", "Summer", "Autumn", "Winter"),
                             yday = c(yday("2021-03-01"),
                                      yday("2021-06-01"),
                                      yday("2021-09-01"),
                                      yday("2021-12-01")))
 
-solstice_format <- data.frame(Month = c("Equinox", "Solstice", "Equinox", "Solstice"),
+solstice_format <- data.frame(Season = c("Spring", "Summer", "Autumn", "Winter"),
                               yday = c(yday("2021-03-20"),
                                        yday("2021-06-20"),
                                        yday("2021-09-22"),
                                        yday("2021-12-21")))
 discrete <- ice_format %>%
   ggplot()+
-  scale_linetype_manual(values = c(1, 2), breaks = c("Ice on", "Ice off")) +
-  geom_vline(aes(xintercept = yday, lty = Event), color = "lightblue") +
-  geom_vline(aes(xintercept = yday, color = "Month"), data = months_format) +
-  geom_vline(aes(xintercept = yday, color = "Solstice/equinox"), data = solstice_format) +
+  geom_vline(aes(xintercept = yday, lty = Season, color = "Ice")) +
+  geom_vline(aes(xintercept = yday, color = "Month", lty = Season), 
+             data = months_format) +
+  geom_vline(aes(xintercept = yday, color = "Solstice/equinox", lty = Season), 
+             data = solstice_format) +
   xlim(0, 365)+
-  scale_color_manual(values = c("black", "goldenrod")) +
+  scale_color_manual(values = c("lightblue", "black", "goldenrod")) +
+  scale_linetype_manual(values = c(1, 2, 3, 4), 
+                        breaks = c("Spring", "Summer", "Autumn", "Winter")) +
   theme_bw()+
   theme(legend.title = element_blank()) + 
   ggtitle("Discrete seasonal clasifications") +
@@ -48,6 +52,54 @@ discrete <- ice_format %>%
          lty = guide_legend(ncol=1))
 
 discrete
+```
+
+```{r}
+ice_format2 <- ice_format %>%
+  mutate(group = rep(1:(nrow(ice_format)/2), each = 2),
+         point = rep(c("start", "end"), times  = nrow(ice_format)/2)) %>%
+  select(-Event, -Season) %>%
+  pivot_wider(names_from = point, values_from = yday) %>%
+  mutate(Season = "Winter")
+
+months_format2 <- data.frame(Season = c("Spring", "Summer", "Autumn", "Winter", "Winter"),
+                            start = c(yday("2021-03-01"),
+                                     yday("2021-06-01"),
+                                     yday("2021-09-01"),
+                                     yday("2021-12-01"),
+                                     yday("2021-01-01")),
+                            end = c(yday("2021-06-01"),
+                                    yday("2021-09-01"),
+                                    yday("2021-12-01"),
+                                    yday("2021-12-31"),
+                                    yday("2021-03-01")))
+
+solstice_format2 <- data.frame(Season = c("Spring", "Summer", "Autumn", "Winter", "Winter"),
+                              start = c(yday("2021-03-20"),
+                                       yday("2021-06-20"),
+                                       yday("2021-09-22"),
+                                       yday("2021-12-21"),
+                                       yday("2021-01-01")),
+                              end = c(yday("2021-06-20"),
+                                      yday("2021-09-22"),
+                                      yday("2021-12-21"),
+                                      yday("2021-12-31"),
+                                      yday("2021-03-20")))
+
+discrete2 <- months_format2 %>%
+  mutate(Method = "Months") %>%
+  full_join(solstice_format2 %>% mutate(Method = "Solstice/equinox")) %>%
+  full_join(ice_format2 %>% mutate(Method = "Ice")) %>%
+  ggplot(aes(y = Method, yend = Method, x = start, xend = end, color = Season)) +
+  geom_segment(lwd = 5) +
+  theme_bw() +
+  ggtitle("Discrete seasonal clasifications") +
+  scale_color_manual(values = c("lightblue", "pink", "goldenrod2", "#cc5500"),
+                     breaks = c("Winter", "Spring", "Summer", "Autumn")) +
+  theme(legend.position = "bottom",
+        axis.title.x = element_blank()) +
+  guides(color = guide_legend(ncol=1))
+
 ```
 
 # Continuous
@@ -72,8 +124,8 @@ continuous <- catwalk_format  %>%
                                       "Shortwave (W/m2)"))) %>%
   ggplot(aes(x = yday, y = Value, color = Variable)) +
   scale_color_manual(values = c("purple","pink", "#26c9a3", "goldenrod")) +
-  geom_line(alpha = 0.5) +
-  geom_smooth(se = F, linewidth = 1.5) +
+  geom_line(alpha = 0.3) +
+  geom_smooth(se = F, method = "gam") +
   theme_bw() + 
   ggtitle("Seasonally-varying parameters") +
   theme(legend.position = "bottom",
@@ -87,8 +139,12 @@ continuous
 # Combine
 
 ```{r}
-jpeg("../Figures/Seasons_data.jpg", width = 6, height = 4, units = "in", res = 300)
+jpeg("../Figures/Seasons_data.jpg", width = 6, height = 3.5, units = "in", res = 300)
 ggarrange(discrete + ylab("FCR"), continuous, align = "h")
+dev.off()
+
+jpeg("../Figures/Seasons_data2.jpg", width = 8, height = 3.5, units = "in", res = 300)
+ggarrange(discrete2 + ylab("FCR"), continuous, align = "h")
 dev.off()
 ```
 

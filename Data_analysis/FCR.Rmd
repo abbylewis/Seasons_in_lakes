@@ -57,10 +57,14 @@ ice <- read.csv("https://pasta.lternet.edu/package/data/eml/edi/456/5/ebfaad1697
 #Note: it is always true that either IceOn == 1 or IceOff == 1
 
 ice_format <- ice %>%
+  filter(Reservoir == "FCR") %>%
   filter(Year == 2021) %>%
   mutate(Year = year(Date), 
          yday = yday(Date),
          Event = ifelse(IceOn == 1, "Ice on", "Ice off")) %>%
+  group_by(yday, Date) %>%
+  filter(!n() > 1) %>%
+  ungroup() %>%
   select(Year, yday, Event)
 
 write.csv(ice_format, "../Processed_data/FCR_ice.csv", row.names = F)
