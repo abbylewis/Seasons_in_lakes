@@ -8,6 +8,7 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
+library(rLakeAnalyzer)
 ```
 
 ```{r}
@@ -26,6 +27,66 @@ catwalk_format <- catwalk %>%
                names_to = "Variable", values_to = "Value")
 
 write.csv(catwalk_format, "../Processed_data/FCR_catwalk.csv", row.names = F)
+
+#### stratification metric calcs
+## get bathymetry data
+edi_bathy <- read_csv("https://pasta.lternet.edu/package/data/eml/edi/1254/1/f7fa2a06e1229ee75ea39eb586577184" )
+
+bathy_schmidt <- edi_bathy %>% 
+  filter(Reservoir == 'FCR') %>% 
+  dplyr::select(Depth_m, SA_m2) %>% 
+  dplyr::rename(depths = 1,
+         areas = 2)
+
+## set up daily thermistor data 
+catwalk_strat <- catwalk |> 
+  mutate(Date = as.Date(DateTime),
+         Year = year(Date)) |> 
+  filter(Year == 2021) |> 
+  select(Date, 4:13) |> #get just date and thermistors
+  group_by(Date) |> 
+  summarise_if(is.numeric, mean, na.rm = TRUE) |>  # get daily temp data
+  rename(datetime = Date,
+       wtr_00.1 = ThermistorTemp_C_surface,
+       wtr_01.0 = ThermistorTemp_C_1,
+       wtr_02.0 = ThermistorTemp_C_2,
+       wtr_03.0 = ThermistorTemp_C_3,
+       wtr_04.0 = ThermistorTemp_C_4,
+       wtr_05.0 = ThermistorTemp_C_5,
+       wtr_06.0 = ThermistorTemp_C_6,
+       wtr_07.0 = ThermistorTemp_C_7,
+       wtr_08.0 = ThermistorTemp_C_8,
+       wtr_09.0 = ThermistorTemp_C_9) #rename to match schmidt and bouyancy functions 
+  
+#calc schmidt
+fcr_schmidt <- rLakeAnalyzer::ts.schmidt.stability(catwalk_strat, bathy_schmidt, na.rm = T)
+
+#calc buoyancy freq
+fcr_buoy <- rLakeAnalyzer::ts.buoyancy.freq(catwalk_strat, na.rm = F) |> 
+  rename(buoy_freq = n2) #lots of NAs? not sure why 
+
+#calc density or temp difference from surface to 9m
+fcr_dens <- catwalk_strat |> 
+  mutate(Diff_C_surf_9 = wtr_00.1 - wtr_09.0,
+         Diff_Dens_surf_9 = water.density(wtr_09.0) - water.density(wtr_00.1),
+         Strat_1C_surf_9 = ifelse(Diff_C_surf_9 < 1, "Not_Strat", "Strat"),
+         Strat_Dens0.1_surf_9 = ifelse(Diff_Dens_surf_9 > 0.1, "Strat", "Not_Strat"))
+  
+  
+#bind together, leaving all variables for now in case we want to keep or add 
+strat_metrics <- left_join(fcr_dens, fcr_schmidt, by = "datetime")
+strat_metrics <- left_join(strat_metrics, fcr_buoy, by = "datetime")
+
+#trim to just metrics for plotting 
+strat_metrics_long <- strat_metrics |> 
+  select(-c(2:11)) |> #drop thermistor data 
+  select(-Strat_1C_surf_9, -Strat_Dens0.1_surf_9) |> 
+  pivot_longer(-1, names_to = "Variable", values_to = "Value")
+
+#write csv with strat metrics
+write.csv(catwalk_format, "../Processed_data/FCR_stratification_metrics.csv", row.names = F)
+
+
 ```
 
 ```{r}
