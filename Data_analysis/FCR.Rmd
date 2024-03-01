@@ -26,6 +26,8 @@ catwalk_format <- catwalk %>%
                names_to = "Variable", values_to = "Value")
 
 write.csv(catwalk_format, "../Processed_data/FCR_catwalk.csv", row.names = F)
+
+## Add code to calculate stratification here
 ```
 
 ```{r}

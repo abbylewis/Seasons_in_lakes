@@ -9,6 +9,9 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(ggpubr)
+
+#Because the Figures folder is not pushed to GitHub
+if(!file.exists("../Figures")){dir.create("../Figures")}
 ```
 
 # Discrete
@@ -22,17 +25,29 @@ months_format <- data.frame(Month = c("Spring", "Summer", "Fall", "Winter"),
                                      yday("2021-09-01"),
                                      yday("2021-12-01")))
 
+solstice_format <- data.frame(Month = c("Equinox", "Solstice", "Equinox", "Solstice"),
+                              yday = c(yday("2021-03-20"),
+                                       yday("2021-06-20"),
+                                       yday("2021-09-22"),
+                                       yday("2021-12-21")))
 discrete <- ice_format %>%
   ggplot()+
   scale_linetype_manual(values = c(1, 2), breaks = c("Ice on", "Ice off")) +
   geom_vline(aes(xintercept = yday, lty = Event), color = "lightblue") +
   geom_vline(aes(xintercept = yday, color = "Month"), data = months_format) +
+  geom_vline(aes(xintercept = yday, color = "Solstice/equinox"), data = solstice_format) +
   xlim(0, 365)+
-  scale_color_manual(values = c("black")) +
+  scale_color_manual(values = c("black", "goldenrod")) +
   theme_bw()+
   theme(legend.title = element_blank()) + 
   ggtitle("Discrete seasonal clasifications") +
-  theme(legend.position = "bottom")
+  theme(legend.position = "bottom",
+        axis.title.x = element_blank(),
+        panel.grid = element_blank()) +
+  guides(color = guide_legend(ncol=1),
+         lty = guide_legend(ncol=1))
+
+discrete
 ```
 
 # Continuous
@@ -57,11 +72,13 @@ continuous <- catwalk_format  %>%
                                       "Shortwave (W/m2)"))) %>%
   ggplot(aes(x = yday, y = Value, color = Variable)) +
   scale_color_manual(values = c("purple","pink", "#26c9a3", "goldenrod")) +
-  geom_line() +
+  geom_line(alpha = 0.5) +
+  geom_smooth(se = F, linewidth = 1.5) +
   theme_bw() + 
   ggtitle("Seasonally-varying parameters") +
   theme(legend.position = "bottom",
-        legend.title = element_blank()) +
+        legend.title = element_blank(),
+        axis.title.x = element_blank()) +
   guides(color=guide_legend(ncol=1))
 
 continuous
@@ -70,6 +87,8 @@ continuous
 # Combine
 
 ```{r}
+jpeg("../Figures/Seasons_data.jpg", width = 6, height = 4, units = "in", res = 300)
 ggarrange(discrete + ylab("FCR"), continuous, align = "h")
+dev.off()
 ```
 
