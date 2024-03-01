@@ -81,11 +81,12 @@ strat_metrics <- left_join(strat_metrics, fcr_buoy, by = "datetime")
 strat_metrics_long <- strat_metrics |> 
   select(-c(2:11)) |> #drop thermistor data 
   select(-Strat_1C_surf_9, -Strat_Dens0.1_surf_9) |> 
-  pivot_longer(-1, names_to = "Variable", values_to = "Value")
+  pivot_longer(-1, names_to = "Variable", values_to = "Value") %>%
+  rename(Date = datetime) %>%
+  mutate(yday = yday(Date))
 
 #write csv with strat metrics
-write.csv(catwalk_format, "../Processed_data/FCR_stratification_metrics.csv", row.names = F)
-
+write.csv(strat_metrics_long, "../Processed_data/FCR_stratification_metrics.csv", row.names = F)
 ```
 
 ```{r}

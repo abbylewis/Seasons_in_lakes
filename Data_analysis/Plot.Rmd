@@ -55,12 +55,26 @@ discrete
 ```
 
 ```{r}
+ice_format <- read.csv("../Processed_data/FCR_ice.csv") %>%
+  mutate(Season = ifelse(Event == "Ice on", "Winter", "Spring"))
+
 ice_format2 <- ice_format %>%
   mutate(group = rep(1:(nrow(ice_format)/2), each = 2),
          point = rep(c("start", "end"), times  = nrow(ice_format)/2)) %>%
   select(-Event, -Season) %>%
   pivot_wider(names_from = point, values_from = yday) %>%
   mutate(Season = "Winter")
+
+strat <- read.csv("../Processed_data/FCR_stratification_metrics.csv") %>%
+  filter(Variable == "Diff_Dens_surf_9") %>%
+  mutate(Strat = ifelse(Value > 0.1, "Summer", "Mixed")) %>%
+  filter(!is.na(Value)) %>%
+  filter(!Strat == lag(Strat)) %>%
+  full_join(data.frame(Variable = "Diff_Dens_surf_9", yday = 0, Strat = "Mixed")) %>%
+  arrange(yday) %>%
+  mutate(end = lead(yday, default = 365)) %>%
+  rename(start = yday, Season = Strat) %>%
+  filter(Season == "Summer")
 
 months_format2 <- data.frame(Season = c("Spring", "Summer", "Autumn", "Winter", "Winter"),
                             start = c(yday("2021-03-01"),
@@ -89,7 +103,8 @@ solstice_format2 <- data.frame(Season = c("Spring", "Summer", "Autumn", "Winter"
 discrete2 <- months_format2 %>%
   mutate(Method = "Months") %>%
   full_join(solstice_format2 %>% mutate(Method = "Solstice/equinox")) %>%
-  full_join(ice_format2 %>% mutate(Method = "Ice")) %>%
+  full_join(ice_format2 %>% mutate(Method = "Ice/stratification")) %>%
+  full_join(strat %>% mutate(Method = "Ice/stratification")) %>%
   ggplot(aes(y = Method, yend = Method, x = start, xend = end, color = Season)) +
   geom_segment(lwd = 5) +
   theme_bw() +
@@ -100,30 +115,36 @@ discrete2 <- months_format2 %>%
         axis.title.x = element_blank()) +
   guides(color = guide_legend(ncol=1))
 
+discrete2
 ```
 
 # Continuous
-Add schmidt stability
 
 ```{r}
 catwalk_format <- read.csv("../Processed_data/FCR_catwalk.csv")
 met_format <- read.csv("../Processed_data/FCR_met.csv")
+strat <- read.csv("../Processed_data/FCR_stratification_metrics.csv")
 
-continuous <- catwalk_format  %>%
-  filter(!is.na(Value)) %>%
+continuous <- catwalk_format %>%
   full_join(met_format) %>%
-  filter(!Variable == "Rain_Total_mm") %>%
+  full_join(strat) %>%
+  filter(!is.na(Value)) %>%
   mutate(Variable = factor(Variable, 
                            levels = c("EXOTemp_C_1", 
                                       "AirTemp_C_Average", 
                                       "EXOChla_ugL_1", 
-                                      "ShortwaveRadiationDown_Average_W_m2"),
-                           labels = c("Surface temperature (ºC)", 
-                                      "Air temperature (ºC)",
-                                      "Surface chlorophyll-a (µg/L)",
-                                      "Shortwave (W/m2)"))) %>%
-  ggplot(aes(x = yday, y = Value, color = Variable)) +
-  scale_color_manual(values = c("purple","pink", "#26c9a3", "goldenrod")) +
+                                      "ShortwaveRadiationDown_Average_W_m2",
+                                      "Diff_Dens_surf_9"),
+                           labels = c("Surface temperature", 
+                                      "Air temperature",
+                                      "Surface chlorophyll-a",
+                                      "Shortwave",
+                                      "Epi-hypo dens. difference"))) %>%
+  filter(!is.na(Variable)) %>%
+  group_by(Variable) %>%
+  mutate(Value = (Value)/(max(Value))) %>%
+  ggplot(aes(x = yday, y = Value * 100, color = Variable)) +
+  scale_color_manual(values = c("purple","pink", "#26c9a3", "goldenrod", "grey50")) +
   geom_line(alpha = 0.3) +
   geom_smooth(se = F, method = "gam") +
   theme_bw() + 
@@ -131,7 +152,8 @@ continuous <- catwalk_format  %>%
   theme(legend.position = "bottom",
         legend.title = element_blank(),
         axis.title.x = element_blank()) +
-  guides(color=guide_legend(ncol=1))
+  guides(color=guide_legend(ncol=1)) +
+  ylab("% of max")
 
 continuous
 ```
