@@ -28,7 +28,8 @@ catwalk_format <- catwalk %>%
             EXOChla_ugL_1 = mean(EXOChla_ugL_1, na.rm = T)) %>%
   mutate(yday = yday(Date)) %>%
   pivot_longer(cols = c(EXOTemp_C_1, EXOChla_ugL_1), 
-               names_to = "Variable", values_to = "Value")
+               names_to = "Variable", values_to = "Value") %>%
+  select(yday, Variable, Value)
 
 write.csv(catwalk_format, "../01b_Processed_data/FCR_catwalk.csv", row.names = F)
 
@@ -87,7 +88,8 @@ strat_metrics_long <- strat_metrics |>
   select(-Strat_1C_surf_9, -Strat_Dens0.1_surf_9) |> 
   pivot_longer(-1, names_to = "Variable", values_to = "Value") %>%
   rename(Date = datetime) %>%
-  mutate(yday = yday(Date))
+  mutate(yday = yday(Date)) %>%
+  select(yday, Variable, Value)
 
 #write csv in correct format
 strat_export <- strat_metrics_long %>%

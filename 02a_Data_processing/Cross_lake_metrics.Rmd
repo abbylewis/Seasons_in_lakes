@@ -41,7 +41,7 @@ solstice_format <- data.frame(Season = c("Spring", "Summer", "Autumn", "Winter",
                                       yday("2021-03-20"))) %>% 
   mutate(Method = "Solstice/equinox")
 
-write.csv(months_format, "../01b_Processed_data/Months.csv")
-write.csv(solstice_format, "../01b_Processed_data/Solstice.csv")
+write.csv(months_format, "../01b_Processed_data/Months.csv", row.names = FALSE)
+write.csv(solstice_format, "../01b_Processed_data/Solstice.csv", row.names = FALSE)
 ```
 

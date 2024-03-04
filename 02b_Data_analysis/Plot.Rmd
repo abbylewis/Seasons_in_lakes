@@ -37,7 +37,11 @@ in_lake <- ice_format %>%
 #Plot
 #First the temperate metrics
 discrete_temperate <- temperate %>%
-  ggplot(aes(y = Method, yend = Method, x = start, xend = end, color = Season)) +
+  ggplot(aes(y = Method, 
+             yend = Method, 
+             x = as.Date("2021-01-01") + start, 
+             xend = as.Date("2021-01-01") + end, 
+             color = Season)) +
   geom_segment(lwd = 5) +
   theme_bw() +
   ggtitle("Discrete seasonal clasifications") +
@@ -45,13 +49,18 @@ discrete_temperate <- temperate %>%
                      values = c("lightblue", "pink", "goldenrod2", "#cc5500", 
                                 "grey", "grey"), #placeholders
                      breaks = c("Winter", "Spring", "Summer", "Autumn")) +
+  scale_x_date(date_labels = "%b") +
   guides(color = guide_legend(ncol = 1)) 
 
 #Add in-lake data (with separate color legend)
 discrete <- discrete_temperate +
   ggnewscale::new_scale_color() +
   geom_segment(data = in_lake, 
-               aes(y = Method, yend = Method, x = start, xend = end, color = Season), 
+               aes(y = Method, 
+                   yend = Method, 
+                   x = as.Date("2021-01-01") + start, 
+                   xend = as.Date("2021-01-01") + end, 
+                   color = Season), 
                lwd = 5) +
   scale_color_manual("In-lake\nseasons", values = c("lightblue", "goldenrod2"),
                      breaks = c("Ice", "Stratified")) +
@@ -94,7 +103,7 @@ continuous_data <- catwalk_format %>%
 
 #Plot
 continuous <- continuous_data %>%
-  ggplot(aes(x = yday, y = Value * 100, color = Variable)) +
+  ggplot(aes(x = as.Date("2021-01-01") + yday, y = Value * 100, color = Variable)) +
   scale_color_manual(values = c("purple","pink", "#26c9a3", "goldenrod", "grey50")) +
   geom_line(alpha = 0.3) +
   geom_smooth(se = F, method = "gam") +
@@ -104,6 +113,7 @@ continuous <- continuous_data %>%
         legend.title = element_blank(),
         axis.title.x = element_blank()) +
   guides(color=guide_legend(ncol=1)) +
+  scale_x_date(date_labels = "%b") +
   ylab("% of max")
 
 #View
@@ -113,7 +123,7 @@ continuous
 # Combine and save
 
 ```{r}
-jpeg("../03a_Figures/Seasons_data.jpg", width = 8, height = 3.5, units = "in", res = 300)
+jpeg("../03a_Figures/Seasons_data.jpg", width = 9, height = 4, units = "in", res = 300)
 ggarrange(discrete + ylab("FCR"), continuous, align = "h")
 dev.off()
 ```
