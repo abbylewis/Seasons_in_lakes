@@ -26,7 +26,7 @@ catwalk_format <- catwalk %>%
   pivot_longer(cols = c(EXOTemp_C_1, EXOChla_ugL_1), 
                names_to = "Variable", values_to = "Value")
 
-write.csv(catwalk_format, "../Processed_data/FCR_catwalk.csv", row.names = F)
+write.csv(catwalk_format, "../01b_Processed_data/FCR_catwalk.csv", row.names = F)
 
 #### stratification metric calcs
 ## get bathymetry data
@@ -86,7 +86,7 @@ strat_metrics_long <- strat_metrics |>
   mutate(yday = yday(Date))
 
 #write csv with strat metrics
-write.csv(strat_metrics_long, "../Processed_data/FCR_stratification_metrics.csv", row.names = F)
+write.csv(strat_metrics_long, "../01b_Processed_data/FCR_stratification_metrics.csv", row.names = F)
 ```
 
 ```{r}
@@ -107,7 +107,7 @@ met_format <- met %>%
                         ShortwaveRadiationDown_Average_W_m2), 
                names_to = "Variable", values_to = "Value")
 
-write.csv(met_format, "../Processed_data/FCR_met.csv", row.names = F)
+write.csv(met_format, "../01b_Processed_data/FCR_met.csv", row.names = F)
 ```
 
 ```{r}
@@ -126,5 +126,5 @@ ice_format <- ice %>%
   ungroup() %>%
   select(Year, yday, Event)
 
-write.csv(ice_format, "../Processed_data/FCR_ice.csv", row.names = F)
+write.csv(ice_format, "../01b_Processed_data/FCR_ice.csv", row.names = F)
 ```

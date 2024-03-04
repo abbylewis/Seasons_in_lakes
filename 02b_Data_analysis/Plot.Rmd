@@ -11,13 +11,13 @@ library(tidyverse)
 library(ggpubr)
 
 #Because the Figures folder is not pushed to GitHub
-if(!file.exists("../Figures")){dir.create("../Figures")}
+if(!file.exists("../03a_Figures")){dir.create("../03a_Figures")}
 ```
 
 # Discrete
 
 ```{r}
-ice_format <- read.csv("../Processed_data/FCR_ice.csv") %>%
+ice_format <- read.csv("../01b_Processed_data/FCR_ice.csv") %>%
   mutate(Season = ifelse(Event == "Ice on", "Winter", "Spring"))
 
 months_format <- data.frame(Season = c("Spring", "Summer", "Autumn", "Winter"),
@@ -55,7 +55,7 @@ discrete
 ```
 
 ```{r}
-ice_format <- read.csv("../Processed_data/FCR_ice.csv") %>%
+ice_format <- read.csv("../01b_Processed_data/FCR_ice.csv") %>%
   mutate(Season = ifelse(Event == "Ice on", "Winter", "Spring"))
 
 ice_format2 <- ice_format %>%
@@ -65,7 +65,7 @@ ice_format2 <- ice_format %>%
   pivot_wider(names_from = point, values_from = yday) %>%
   mutate(Season = "Winter")
 
-strat <- read.csv("../Processed_data/FCR_stratification_metrics.csv") %>%
+strat <- read.csv("../01b_Processed_data/FCR_stratification_metrics.csv") %>%
   filter(Variable == "Diff_Dens_surf_9") %>%
   mutate(Strat = ifelse(Value > 0.1, "Summer", "Mixed")) %>%
   filter(!is.na(Value)) %>%
@@ -121,9 +121,9 @@ discrete2
 # Continuous
 
 ```{r}
-catwalk_format <- read.csv("../Processed_data/FCR_catwalk.csv")
-met_format <- read.csv("../Processed_data/FCR_met.csv")
-strat <- read.csv("../Processed_data/FCR_stratification_metrics.csv")
+catwalk_format <- read.csv("../01b_Processed_data/FCR_catwalk.csv")
+met_format <- read.csv("../01b_Processed_data/FCR_met.csv")
+strat <- read.csv("../01b_Processed_data/FCR_stratification_metrics.csv")
 
 continuous <- catwalk_format %>%
   full_join(met_format) %>%
@@ -161,11 +161,11 @@ continuous
 # Combine
 
 ```{r}
-jpeg("../Figures/Seasons_data.jpg", width = 6, height = 3.5, units = "in", res = 300)
+jpeg("../03a_Figures/Seasons_data.jpg", width = 6, height = 3.5, units = "in", res = 300)
 ggarrange(discrete + ylab("FCR"), continuous, align = "h")
 dev.off()
 
-jpeg("../Figures/Seasons_data2.jpg", width = 8, height = 3.5, units = "in", res = 300)
+jpeg("../03a_Figures/Seasons_data2.jpg", width = 8, height = 3.5, units = "in", res = 300)
 ggarrange(discrete2 + ylab("FCR"), continuous, align = "h")
 dev.off()
 ```
