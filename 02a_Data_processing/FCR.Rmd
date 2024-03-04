@@ -11,10 +11,14 @@ library(tidyverse)
 library(rLakeAnalyzer)
 ```
 
+Catwalk data (temperature, chlorophyll-a, stratification)
+
 ```{r}
+#Load data from EDI
 options(timeout=6000)
 catwalk <- read.csv("https://pasta.lternet.edu/package/data/eml/edi/271/8/fbb8c7a0230f4587f1c6e11417fe9dce")
 
+# Format continuous data
 catwalk_format <- catwalk %>%
   mutate(Date = as.Date(DateTime),
          Year = year(Date)) %>%
@@ -85,13 +89,30 @@ strat_metrics_long <- strat_metrics |>
   rename(Date = datetime) %>%
   mutate(yday = yday(Date))
 
-#write csv with strat metrics
-write.csv(strat_metrics_long, "../01b_Processed_data/FCR_stratification_metrics.csv", row.names = F)
+#write csv in correct format
+strat_export <- strat_metrics_long %>%
+  filter(Variable == "Diff_Dens_surf_9") %>%
+  mutate(Strat = ifelse(Value > 0.1, "Stratified", "Mixed")) %>%
+  filter(!is.na(Value)) %>%
+  filter(!Strat == lag(Strat)) %>%
+  full_join(data.frame(Variable = "Diff_Dens_surf_9", yday = 0, Strat = "Mixed")) %>%
+  arrange(yday) %>%
+  mutate(end = lead(yday, default = 365)) %>%
+  rename(start = yday, Season = Strat) %>%
+  filter(Season == "Stratified") %>%
+  select(start, end, Season)
+
+write.csv(strat_export, "../01b_Processed_data/FCR_stratification_discrete.csv", row.names = F)
+write.csv(strat_metrics_long, "../01b_Processed_data/FCR_stratification_continuous.csv", row.names = F)
 ```
 
+Meteorological data
+
 ```{r}
+#Load data from EDI
 met <- read.csv("https://pasta.lternet.edu/package/data/eml/edi/389/8/d4c74bbb3b86ea293e5c52136347fbb0")
 
+#Format continuous data
 met_format <- met %>%
   mutate(Date = as.Date(DateTime),
          Year = year(Date)) %>%
@@ -110,7 +131,10 @@ met_format <- met %>%
 write.csv(met_format, "../01b_Processed_data/FCR_met.csv", row.names = F)
 ```
 
+Ice data
+
 ```{r}
+#Load data from EDI
 ice <- read.csv("https://pasta.lternet.edu/package/data/eml/edi/456/5/ebfaad16975326a7b874a21beb50c151")
 
 #Note: it is always true that either IceOn == 1 or IceOff == 1
@@ -122,9 +146,18 @@ ice_format <- ice %>%
          yday = yday(Date),
          Event = ifelse(IceOn == 1, "Ice on", "Ice off")) %>%
   group_by(yday, Date) %>%
-  filter(!n() > 1) %>%
+  filter(!n() > 1) %>% #remove dates where ice went on and off in the same day
   ungroup() %>%
   select(Year, yday, Event)
 
-write.csv(ice_format, "../01b_Processed_data/FCR_ice.csv", row.names = F)
+# arrange for plot
+ice_format2 <- ice_format %>%
+  mutate(group = rep(1:(nrow(ice_format)/2), each = 2),
+         point = rep(c("start", "end"), times  = nrow(ice_format)/2)) %>%
+  select(-Event) %>%
+  pivot_wider(names_from = point, values_from = yday) %>%
+  mutate(Season = "Ice") %>%
+  select(-group, -Year)
+
+write.csv(ice_format2, "../01b_Processed_data/FCR_ice.csv", row.names = F)
 ```

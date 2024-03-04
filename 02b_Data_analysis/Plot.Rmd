@@ -5,127 +5,75 @@ date: "2024-02-29"
 output: html_document
 ---
 
+# Set-up
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(ggpubr)
+library(ggnewscale) # For multiple color scales on the discrete panel
 
-#Because the Figures folder is not pushed to GitHub
+#The ../03a_Figures folder is not pushed to GitHub
 if(!file.exists("../03a_Figures")){dir.create("../03a_Figures")}
 ```
 
 # Discrete
 
 ```{r}
-ice_format <- read.csv("../01b_Processed_data/FCR_ice.csv") %>%
-  mutate(Season = ifelse(Event == "Ice on", "Winter", "Spring"))
+#Load discrete data
+ice_format <- read.csv("../01b_Processed_data/FCR_ice.csv") 
+months_format <- read.csv("../01b_Processed_data/Months.csv")
+solstice_format <- read.csv("../01b_Processed_data/Solstice.csv")
+strat <- read.csv("../01b_Processed_data/FCR_stratification_discrete.csv") 
 
-months_format <- data.frame(Season = c("Spring", "Summer", "Autumn", "Winter"),
-                            yday = c(yday("2021-03-01"),
-                                     yday("2021-06-01"),
-                                     yday("2021-09-01"),
-                                     yday("2021-12-01")))
+#Format
+temperate <- months_format %>%
+  full_join(solstice_format) 
 
-solstice_format <- data.frame(Season = c("Spring", "Summer", "Autumn", "Winter"),
-                              yday = c(yday("2021-03-20"),
-                                       yday("2021-06-20"),
-                                       yday("2021-09-22"),
-                                       yday("2021-12-21")))
-discrete <- ice_format %>%
-  ggplot()+
-  geom_vline(aes(xintercept = yday, lty = Season, color = "Ice")) +
-  geom_vline(aes(xintercept = yday, color = "Month", lty = Season), 
-             data = months_format) +
-  geom_vline(aes(xintercept = yday, color = "Solstice/equinox", lty = Season), 
-             data = solstice_format) +
-  xlim(0, 365)+
-  scale_color_manual(values = c("lightblue", "black", "goldenrod")) +
-  scale_linetype_manual(values = c(1, 2, 3, 4), 
-                        breaks = c("Spring", "Summer", "Autumn", "Winter")) +
-  theme_bw()+
-  theme(legend.title = element_blank()) + 
-  ggtitle("Discrete seasonal clasifications") +
-  theme(legend.position = "bottom",
-        axis.title.x = element_blank(),
-        panel.grid = element_blank()) +
-  guides(color = guide_legend(ncol=1),
-         lty = guide_legend(ncol=1))
+in_lake <- ice_format %>%
+  full_join(strat) %>% 
+  mutate(Method = "Ice/Stratification")
 
-discrete
-```
-
-```{r}
-ice_format <- read.csv("../01b_Processed_data/FCR_ice.csv") %>%
-  mutate(Season = ifelse(Event == "Ice on", "Winter", "Spring"))
-
-ice_format2 <- ice_format %>%
-  mutate(group = rep(1:(nrow(ice_format)/2), each = 2),
-         point = rep(c("start", "end"), times  = nrow(ice_format)/2)) %>%
-  select(-Event, -Season) %>%
-  pivot_wider(names_from = point, values_from = yday) %>%
-  mutate(Season = "Winter")
-
-strat <- read.csv("../01b_Processed_data/FCR_stratification_metrics.csv") %>%
-  filter(Variable == "Diff_Dens_surf_9") %>%
-  mutate(Strat = ifelse(Value > 0.1, "Summer", "Mixed")) %>%
-  filter(!is.na(Value)) %>%
-  filter(!Strat == lag(Strat)) %>%
-  full_join(data.frame(Variable = "Diff_Dens_surf_9", yday = 0, Strat = "Mixed")) %>%
-  arrange(yday) %>%
-  mutate(end = lead(yday, default = 365)) %>%
-  rename(start = yday, Season = Strat) %>%
-  filter(Season == "Summer")
-
-months_format2 <- data.frame(Season = c("Spring", "Summer", "Autumn", "Winter", "Winter"),
-                            start = c(yday("2021-03-01"),
-                                     yday("2021-06-01"),
-                                     yday("2021-09-01"),
-                                     yday("2021-12-01"),
-                                     yday("2021-01-01")),
-                            end = c(yday("2021-06-01"),
-                                    yday("2021-09-01"),
-                                    yday("2021-12-01"),
-                                    yday("2021-12-31"),
-                                    yday("2021-03-01")))
-
-solstice_format2 <- data.frame(Season = c("Spring", "Summer", "Autumn", "Winter", "Winter"),
-                              start = c(yday("2021-03-20"),
-                                       yday("2021-06-20"),
-                                       yday("2021-09-22"),
-                                       yday("2021-12-21"),
-                                       yday("2021-01-01")),
-                              end = c(yday("2021-06-20"),
-                                      yday("2021-09-22"),
-                                      yday("2021-12-21"),
-                                      yday("2021-12-31"),
-                                      yday("2021-03-20")))
-
-discrete2 <- months_format2 %>%
-  mutate(Method = "Months") %>%
-  full_join(solstice_format2 %>% mutate(Method = "Solstice/equinox")) %>%
-  full_join(ice_format2 %>% mutate(Method = "Ice/stratification")) %>%
-  full_join(strat %>% mutate(Method = "Ice/stratification")) %>%
+#Plot
+#First the temperate metrics
+discrete_temperate <- temperate %>%
   ggplot(aes(y = Method, yend = Method, x = start, xend = end, color = Season)) +
   geom_segment(lwd = 5) +
   theme_bw() +
   ggtitle("Discrete seasonal clasifications") +
-  scale_color_manual(values = c("lightblue", "pink", "goldenrod2", "#cc5500"),
+  scale_color_manual("Temperate\nseasons",
+                     values = c("lightblue", "pink", "goldenrod2", "#cc5500", 
+                                "grey", "grey"), #placeholders
                      breaks = c("Winter", "Spring", "Summer", "Autumn")) +
+  guides(color = guide_legend(ncol = 1)) 
+
+#Add in-lake data (with separate color legend)
+discrete <- discrete_temperate +
+  ggnewscale::new_scale_color() +
+  geom_segment(data = in_lake, 
+               aes(y = Method, yend = Method, x = start, xend = end, color = Season), 
+               lwd = 5) +
+  scale_color_manual("In-lake\nseasons", values = c("lightblue", "goldenrod2"),
+                     breaks = c("Ice", "Stratified")) +
   theme(legend.position = "bottom",
-        axis.title.x = element_blank()) +
+        axis.title.x = element_blank(),
+        legend.title = element_text(vjust = 1)) +
   guides(color = guide_legend(ncol=1))
 
-discrete2
+#View
+discrete
 ```
 
 # Continuous
 
 ```{r}
+#Load data
 catwalk_format <- read.csv("../01b_Processed_data/FCR_catwalk.csv")
 met_format <- read.csv("../01b_Processed_data/FCR_met.csv")
-strat <- read.csv("../01b_Processed_data/FCR_stratification_metrics.csv")
+strat <- read.csv("../01b_Processed_data/FCR_stratification_continuous.csv")
 
-continuous <- catwalk_format %>%
+#Format
+continuous_data <- catwalk_format %>%
   full_join(met_format) %>%
   full_join(strat) %>%
   filter(!is.na(Value)) %>%
@@ -142,7 +90,10 @@ continuous <- catwalk_format %>%
                                       "Epi-hypo dens. difference"))) %>%
   filter(!is.na(Variable)) %>%
   group_by(Variable) %>%
-  mutate(Value = (Value)/(max(Value))) %>%
+  mutate(Value = (Value)/(max(Value))) 
+
+#Plot
+continuous <- continuous_data %>%
   ggplot(aes(x = yday, y = Value * 100, color = Variable)) +
   scale_color_manual(values = c("purple","pink", "#26c9a3", "goldenrod", "grey50")) +
   geom_line(alpha = 0.3) +
@@ -155,18 +106,14 @@ continuous <- catwalk_format %>%
   guides(color=guide_legend(ncol=1)) +
   ylab("% of max")
 
+#View
 continuous
 ```
 
-# Combine
+# Combine and save
 
 ```{r}
-jpeg("../03a_Figures/Seasons_data.jpg", width = 6, height = 3.5, units = "in", res = 300)
+jpeg("../03a_Figures/Seasons_data.jpg", width = 8, height = 3.5, units = "in", res = 300)
 ggarrange(discrete + ylab("FCR"), continuous, align = "h")
 dev.off()
-
-jpeg("../03a_Figures/Seasons_data2.jpg", width = 8, height = 3.5, units = "in", res = 300)
-ggarrange(discrete2 + ylab("FCR"), continuous, align = "h")
-dev.off()
 ```
-

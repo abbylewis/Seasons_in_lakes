@@ -1,0 +1,47 @@
+---
+title: "Cross_lake_metrics"
+author: "Abby Lewis"
+date: "2024-03-04"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+Northern-hemisphere months and solstice/equinox
+
+```{r}
+#Months
+months_format <- data.frame(Season = c("Spring", "Summer", "Autumn", "Winter", "Winter"),
+                            start = c(yday("2021-03-01"),
+                                      yday("2021-06-01"),
+                                      yday("2021-09-01"),
+                                      yday("2021-12-01"),
+                                      yday("2021-01-01")),
+                            end = c(yday("2021-06-01"),
+                                    yday("2021-09-01"),
+                                    yday("2021-12-01"),
+                                    yday("2021-12-31"),
+                                    yday("2021-03-01"))) %>%
+  mutate(Method = "Months")
+
+#Solstice/equinox
+solstice_format <- data.frame(Season = c("Spring", "Summer", "Autumn", "Winter", "Winter"),
+                              start = c(yday("2021-03-20"),
+                                        yday("2021-06-20"),
+                                        yday("2021-09-22"),
+                                        yday("2021-12-21"),
+                                        yday("2021-01-01")),
+                              end = c(yday("2021-06-20"),
+                                      yday("2021-09-22"),
+                                      yday("2021-12-21"),
+                                      yday("2021-12-31"),
+                                      yday("2021-03-20"))) %>% 
+  mutate(Method = "Solstice/equinox")
+
+write.csv(months_format, "../01b_Processed_data/Months.csv")
+write.csv(solstice_format, "../01b_Processed_data/Solstice.csv")
+```
+
