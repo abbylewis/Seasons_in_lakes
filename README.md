@@ -22,7 +22,7 @@ We would love to have figures generated for as many lakes as possible! If you ar
 
 1.  Clone this repo.
 2.  Add raw data files to `01a_Raw_data`
-3.  Add a script to `02a_Data processing` to format your raw data for the figure. Processed data files should then be output to `01b_Processed_data.`
+3.  Add a script to `02a_Data processing` to format your raw data (one year) for the figure. Processed data files should then be output to `01b_Processed_data.`
     -   For discrete data, the output format has four columns (see `../01b_Processed_data/Solstice.csv` for an example)
 
         -   `start`: start date of this "season" as numeric day of year
@@ -33,9 +33,9 @@ We would love to have figures generated for as many lakes as possible! If you ar
 
         -   `Method`: method name (i.e., y-axis label in figure 3)
 
-        -   Note that it is okay to have multiple seasons of the same name in one file, for example if there are multiple separate stratified periods
+        -   Note that it is okay to have multiple seasons of the same name in one file, for example if there are multiple separate stratified periods. We are currently only using one year of data for this figure
 
-    -   For continuous data, the output format has three columns:
+    -   For continuous data, the output format has three columns (with one year of data):
 
         -   `yday`: day of year (numeric)
 
