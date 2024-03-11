@@ -100,12 +100,4 @@ write.csv(met_formatted, "../01b_Processed_data/Rerewhakaaitu_met.csv", row.name
 ```
 
 Ice data
-
-```{r}
-#Load data
-ice <- read.csv("../01a_Raw_data/YOUR LAKE ice.csv")
-
-ice_formatted <- ice #apply necessary transformations
-
-write.csv(ice_formatted, "../01b_Processed_data/YOUR LAKE_ice.csv", row.names = F)
-```
+(no ice)
