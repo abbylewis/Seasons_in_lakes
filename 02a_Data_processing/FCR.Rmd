@@ -24,12 +24,13 @@ catwalk_format <- catwalk %>%
          Year = year(Date)) %>%
   filter(Year == 2021) %>%
   group_by(Date) %>%
-  summarize(EXOTemp_C_1 = mean(EXOTemp_C_1, na.rm = T),
-            EXOChla_ugL_1 = mean(EXOChla_ugL_1, na.rm = T)) %>%
+  summarize(Surface_temperature = mean(EXOTemp_C_1, na.rm = T),
+            Surface_chla = mean(EXOChla_ugL_1, na.rm = T)) %>%
   mutate(yday = yday(Date)) %>%
-  pivot_longer(cols = c(EXOTemp_C_1, EXOChla_ugL_1), 
+  pivot_longer(cols = c(Surface_temperature, Surface_chla), 
                names_to = "Variable", values_to = "Value") %>%
-  select(yday, Variable, Value)
+  select(yday, Variable, Value) %>%
+  mutate(Lake = "FCR")
 
 write.csv(catwalk_format, "../01b_Processed_data/FCR_catwalk.csv", row.names = F)
 
@@ -73,9 +74,9 @@ fcr_buoy <- rLakeAnalyzer::ts.buoyancy.freq(catwalk_strat, na.rm = F) |>
 #calc density or temp difference from surface to 9m
 fcr_dens <- catwalk_strat |> 
   mutate(Diff_C_surf_9 = wtr_00.1 - wtr_09.0,
-         Diff_Dens_surf_9 = water.density(wtr_09.0) - water.density(wtr_00.1),
+         Diff_Dens_surf_bot = water.density(wtr_09.0) - water.density(wtr_00.1),
          Strat_1C_surf_9 = ifelse(Diff_C_surf_9 < 1, "Not_Strat", "Strat"),
-         Strat_Dens0.1_surf_9 = ifelse(Diff_Dens_surf_9 > 0.1, "Strat", "Not_Strat"))
+         Strat_Dens0.1_surf_9 = ifelse(Diff_Dens_surf_bot > 0.1, "Strat", "Not_Strat"))
   
   
 #bind together, leaving all variables for now in case we want to keep or add 
@@ -89,20 +90,22 @@ strat_metrics_long <- strat_metrics |>
   pivot_longer(-1, names_to = "Variable", values_to = "Value") %>%
   rename(Date = datetime) %>%
   mutate(yday = yday(Date)) %>%
-  select(yday, Variable, Value)
+  select(yday, Variable, Value) %>%
+  mutate(Lake = "FCR")
 
 #write csv in correct format
 strat_export <- strat_metrics_long %>%
-  filter(Variable == "Diff_Dens_surf_9") %>%
+  filter(Variable == "Diff_Dens_surf_bot") %>%
   mutate(Strat = ifelse(Value > 0.1, "Stratified", "Mixed")) %>%
   filter(!is.na(Value)) %>%
   filter(!Strat == lag(Strat)) %>%
-  full_join(data.frame(Variable = "Diff_Dens_surf_9", yday = 0, Strat = "Mixed")) %>%
+  full_join(data.frame(Variable = "Diff_Dens_surf_bot", yday = 0, Strat = "Mixed")) %>%
   arrange(yday) %>%
   mutate(end = lead(yday, default = 365)) %>%
   rename(start = yday, Season = Strat) %>%
   filter(Season == "Stratified") %>%
-  select(start, end, Season)
+  select(start, end, Season) %>%
+  mutate(Lake = "FCR")
 
 write.csv(strat_export, "../01b_Processed_data/FCR_stratification_discrete.csv", row.names = F)
 write.csv(strat_metrics_long, "../01b_Processed_data/FCR_stratification_continuous.csv", row.names = F)
@@ -122,13 +125,14 @@ met_format <- met %>%
   group_by(Date) %>%
   summarize(AirTemp_C_Average = mean(AirTemp_C_Average, na.rm = T),
             Rain_Total_mm = sum(Rain_Total_mm),
-            ShortwaveRadiationDown_Average_W_m2 = 
-              mean(ShortwaveRadiationDown_Average_W_m2, na.rm = T)) %>%
+            Shortwave = mean(ShortwaveRadiationDown_Average_W_m2, na.rm = T)) %>%
   mutate(yday = yday(Date)) %>%
   pivot_longer(cols = c(AirTemp_C_Average,
                         Rain_Total_mm,
-                        ShortwaveRadiationDown_Average_W_m2), 
-               names_to = "Variable", values_to = "Value")
+                        Shortwave), 
+               names_to = "Variable", values_to = "Value")  %>%
+  mutate(Lake = "FCR") %>%
+  select(-Date)
 
 write.csv(met_format, "../01b_Processed_data/FCR_met.csv", row.names = F)
 ```
@@ -159,7 +163,8 @@ ice_format2 <- ice_format %>%
   select(-Event) %>%
   pivot_wider(names_from = point, values_from = yday) %>%
   mutate(Season = "Ice") %>%
-  select(-group, -Year)
+  select(-group, -Year)  %>%
+  mutate(Lake = "FCR")
 
 write.csv(ice_format2, "../01b_Processed_data/FCR_ice.csv", row.names = F)
 ```

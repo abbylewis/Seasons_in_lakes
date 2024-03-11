@@ -5,6 +5,21 @@ date: "2024-03-11"
 output: html_document
 ---
 
+# Template for data formatting
+
+For continuous data, the output format has three columns (with one year of data):
+
+-   `yday`: day of year (numeric)
+-   `Variable`: Variable name
+-   `Value`: Variable value
+
+For discrete data, the output format has four columns
+
+-   `start`: start date of this "season" as numeric day of year
+-   `end`: end date of this season as numeric day of year
+-   `Season`: season name (e.g., "summer", "stratified")
+-   `Method`: method name (i.e., y-axis label in figure 3)
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)

@@ -21,18 +21,33 @@ if(!file.exists("../03a_Figures")){dir.create("../03a_Figures")}
 
 ```{r}
 #Load discrete data
+#FCR
 ice_format <- read.csv("../01b_Processed_data/FCR_ice.csv") 
-months_format <- read.csv("../01b_Processed_data/Months.csv")
-solstice_format <- read.csv("../01b_Processed_data/Solstice.csv")
 strat <- read.csv("../01b_Processed_data/FCR_stratification_discrete.csv") 
+#General
+nh <- read.csv("../01b_Processed_data/Temperate_seasons_nh.csv")
+sh <- read.csv("../01b_Processed_data/Temperate_seasons_sh.csv")
+#Rerewhakaaitu
+rere_strat <- read.csv("../01b_Processed_data/Rerewhakaaitu_stratification_discrete.csv") 
 
 #Format
-temperate <- months_format %>%
-  full_join(solstice_format) 
-
 in_lake <- ice_format %>%
   full_join(strat) %>% 
+  full_join(rere_strat) %>%
   mutate(Method = "Ice/Stratification")
+
+#Format
+temperate <- nh %>% filter(is.na(start)) #make empty df
+sh_lakes <- c("Rerewhakaaitu")
+for(lake in unique(in_lake$Lake)) {
+  if(lake %in% sh_lakes) {
+    temperate <- temperate %>%
+      full_join(sh %>% mutate(Lake = lake))
+  } else {
+    temperate <- temperate %>%
+      full_join(nh %>% mutate(Lake = lake))
+  }
+}
 
 #Plot
 #First the temperate metrics
@@ -50,7 +65,8 @@ discrete_temperate <- temperate %>%
                                 "grey", "grey"), #placeholders
                      breaks = c("Winter", "Spring", "Summer", "Autumn")) +
   scale_x_date(date_labels = "%b") +
-  guides(color = guide_legend(ncol = 1)) 
+  guides(color = guide_legend(ncol = 1)) +
+  facet_wrap(~Lake, ncol = 1)
 
 #Add in-lake data (with separate color legend)
 discrete <- discrete_temperate +
@@ -67,7 +83,8 @@ discrete <- discrete_temperate +
   theme(legend.position = "bottom",
         axis.title.x = element_blank(),
         legend.title = element_text(vjust = 1)) +
-  guides(color = guide_legend(ncol=1))
+  guides(color = guide_legend(ncol = 1)) +
+  facet_wrap(~Lake, ncol = 1)
 
 #View
 discrete
@@ -77,28 +94,37 @@ discrete
 
 ```{r}
 #Load data
-catwalk_format <- read.csv("../01b_Processed_data/FCR_catwalk.csv")
-met_format <- read.csv("../01b_Processed_data/FCR_met.csv")
-strat <- read.csv("../01b_Processed_data/FCR_stratification_continuous.csv")
+#FCR
+fcr_catwalk_format <- read.csv("../01b_Processed_data/FCR_catwalk.csv")
+fcr_met_format <- read.csv("../01b_Processed_data/FCR_met.csv")
+fcr_strat <- read.csv("../01b_Processed_data/FCR_stratification_continuous.csv")
+#Rerewhakaaitu
+rere_in_lake <- read.csv("../01b_Processed_data/Rerewhakaaitu_continuous.csv")
+rere_strat <- read.csv("../01b_Processed_data/Rerewhakaaitu_stratification_continuous.csv")
+rere_met <- read.csv("../01b_Processed_data/Rerewhakaaitu_met.csv")
 
 #Format
-continuous_data <- catwalk_format %>%
-  full_join(met_format) %>%
-  full_join(strat) %>%
+continuous_data <- fcr_catwalk_format %>%
+  full_join(fcr_met_format) %>%
+  full_join(fcr_strat) %>%
+  full_join(rere_in_lake) %>%
+  full_join(rere_strat) %>%
+  full_join(rere_met) %>%
   filter(!is.na(Value)) %>%
   mutate(Variable = factor(Variable, 
-                           levels = c("EXOTemp_C_1", 
+                           levels = c("Surface_temperature", 
                                       "AirTemp_C_Average", 
-                                      "EXOChla_ugL_1", 
-                                      "ShortwaveRadiationDown_Average_W_m2",
-                                      "Diff_Dens_surf_9"),
+                                      "Surface_chla", 
+                                      "Shortwave",
+                                      "Diff_Dens_surf_bot"),
                            labels = c("Surface temperature", 
                                       "Air temperature",
                                       "Surface chlorophyll-a",
                                       "Shortwave",
-                                      "Epi-hypo dens. difference"))) %>%
+                                      "Epi-hypo dens. difference")),
+         Lake = ifelse(is.na(Lake), "FCR", Lake)) %>%
   filter(!is.na(Variable)) %>%
-  group_by(Variable) %>%
+  group_by(Variable, Lake) %>%
   mutate(Value = (Value)/(max(Value))) 
 
 #Plot
@@ -108,13 +134,15 @@ continuous <- continuous_data %>%
   geom_line(alpha = 0.3) +
   geom_smooth(se = F, method = "gam") +
   theme_bw() + 
-  ggtitle("Seasonally-varying parameters") +
+  scale_x_date(date_labels = "%b") +
+  ylab("% of max") +
+  ggtitle("Seasonally-varying parameters")  +
+  guides(color = guide_legend(ncol = 1, byrow = T)) +
+  facet_wrap(~Lake, ncol = 1) +
   theme(legend.position = "bottom",
         legend.title = element_blank(),
-        axis.title.x = element_blank()) +
-  guides(color=guide_legend(ncol=1)) +
-  scale_x_date(date_labels = "%b") +
-  ylab("% of max")
+        axis.title.x = element_blank(),
+        legend.spacing.y = unit(-1.0, "cm"))
 
 #View
 continuous
@@ -123,7 +151,7 @@ continuous
 # Combine and save
 
 ```{r}
-jpeg("../03a_Figures/Seasons_data.jpg", width = 9, height = 4, units = "in", res = 300)
-ggarrange(discrete + ylab("FCR"), continuous, align = "h")
+jpeg("../03a_Figures/Seasons_data.jpg", width = 9, height = 5, units = "in", res = 300)
+ggarrange(discrete, continuous, align = "h")
 dev.off()
 ```
