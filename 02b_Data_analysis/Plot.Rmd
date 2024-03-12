@@ -15,9 +15,15 @@ library(ggnewscale) # For multiple color scales on the discrete panel
 
 #The ../03a_Figures folder is not pushed to GitHub
 if(!file.exists("../03a_Figures")){dir.create("../03a_Figures")}
+
+#Offset
+offset = 184
+sh_lakes <- c("Rerewhakaaitu")
 ```
 
 # Discrete
+
+NOTE: add color for mixed period
 
 ```{r}
 #Load discrete data
@@ -34,11 +40,12 @@ rere_strat <- read.csv("../01b_Processed_data/Rerewhakaaitu_stratification_discr
 in_lake <- ice_format %>%
   full_join(strat) %>% 
   full_join(rere_strat) %>%
-  mutate(Method = "Ice/Stratification")
+  mutate(Method = "Ice/Stratification",
+         x = ifelse(Lake %in% sh_lakes, start - offset, start),
+         xend = ifelse(Lake %in% sh_lakes, end - offset, end))
 
 #Format
 temperate <- nh %>% filter(is.na(start)) #make empty df
-sh_lakes <- c("Rerewhakaaitu")
 for(lake in unique(in_lake$Lake)) {
   if(lake %in% sh_lakes) {
     temperate <- temperate %>%
@@ -52,10 +59,12 @@ for(lake in unique(in_lake$Lake)) {
 #Plot
 #First the temperate metrics
 discrete_temperate <- temperate %>%
+  mutate(x = ifelse(Hemisphere == "Southern", start - offset, start),
+         xend = ifelse(Hemisphere == "Southern", end - offset, end)) %>%
   ggplot(aes(y = Method, 
              yend = Method, 
-             x = as.Date("2021-01-01") + start, 
-             xend = as.Date("2021-01-01") + end, 
+             x = as.Date("2021-01-01") + x, 
+             xend = as.Date("2021-01-01") + xend, 
              color = Season)) +
   geom_segment(lwd = 5) +
   theme_bw() +
@@ -74,8 +83,8 @@ discrete <- discrete_temperate +
   geom_segment(data = in_lake, 
                aes(y = Method, 
                    yend = Method, 
-                   x = as.Date("2021-01-01") + start, 
-                   xend = as.Date("2021-01-01") + end, 
+                   x = as.Date("2021-01-01") + x, 
+                   xend = as.Date("2021-01-01") + xend, 
                    color = Season), 
                lwd = 5) +
   scale_color_manual("In-lake\nseasons", values = c("lightblue", "goldenrod2"),
@@ -84,7 +93,7 @@ discrete <- discrete_temperate +
         axis.title.x = element_blank(),
         legend.title = element_text(vjust = 1)) +
   guides(color = guide_legend(ncol = 1)) +
-  facet_wrap(~Lake, ncol = 1)
+  facet_wrap(~Lake, ncol = 1, scales = "free_x")
 
 #View
 discrete
@@ -125,11 +134,12 @@ continuous_data <- fcr_catwalk_format %>%
          Lake = ifelse(is.na(Lake), "FCR", Lake)) %>%
   filter(!is.na(Variable)) %>%
   group_by(Variable, Lake) %>%
-  mutate(Value = (Value)/(max(Value))) 
+  mutate(Value = (Value)/(max(Value))) %>%
+  mutate(x = ifelse(Lake %in% sh_lakes, yday - offset, yday))
 
 #Plot
 continuous <- continuous_data %>%
-  ggplot(aes(x = as.Date("2021-01-01") + yday, y = Value * 100, color = Variable)) +
+  ggplot(aes(x = as.Date("2021-01-01") + x, y = Value * 100, color = Variable)) +
   scale_color_manual(values = c("purple","pink", "#26c9a3", "goldenrod", "grey50")) +
   geom_line(alpha = 0.3) +
   geom_smooth(se = F, method = "gam") +
@@ -138,7 +148,7 @@ continuous <- continuous_data %>%
   ylab("% of max") +
   ggtitle("Seasonally-varying parameters")  +
   guides(color = guide_legend(ncol = 1, byrow = T)) +
-  facet_wrap(~Lake, ncol = 1) +
+  facet_wrap(~Lake, ncol = 1, scales = "free_x") +
   theme(legend.position = "bottom",
         legend.title = element_blank(),
         axis.title.x = element_blank(),

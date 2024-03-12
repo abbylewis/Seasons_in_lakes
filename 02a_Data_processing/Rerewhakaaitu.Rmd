@@ -24,18 +24,23 @@ For discrete data, the output format has four columns
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(rLakeAnalyzer)
+
+offset = months(6)
 ```
 
 In-lake data (temperature, chlorophyll-a, stratification)
 
 ```{r}
 # Load data
-in_lake_raw <- read.csv("../01a_Raw_data/Rerewhakaaitu_buoy_wq.csv")
-in_lake_data <- in_lake_data %>%
+in_lake_raw <- read.csv("../01a_Raw_data/Rerewhakaaitu_buoy_wq.csv") %>%
+  mutate(day = as.Date(day) + offset,
+         doy = yday(day))
+in_lake_data <- in_lake_raw %>%
   rename(Value = avg_value,
          Variable = variable,
          yday = doy) %>%
-  filter(year == 2023) 
+  filter(year(day) == 2023,
+         !is.na(yday)) 
 
 # Format continuous data
 in_lake_formatted <- in_lake_data %>%
@@ -59,8 +64,9 @@ strat_export_cont <- in_lake_data %>%
 strat_export_discrete <- strat_export_cont %>%
   mutate(Strat = ifelse(Value > 0.1, "Stratified", "Mixed")) %>%
   filter(!is.na(Value)) %>%
-  filter(!Strat == lag(Strat)) %>%
-  full_join(data.frame(Variable = "Diff_Dens_surf_9", yday = 0, Strat = "Stratified")) %>%
+  ungroup() %>%
+  filter(Strat != lag(Strat)) %>%
+  full_join(data.frame(Variable = "Diff_Dens_surf_9", yday = 0, Strat = "Mixed")) %>%
   arrange(yday) %>%
   mutate(end = lead(yday, default = 365)) %>%
   rename(start = yday, Season = Strat) %>%
@@ -84,10 +90,11 @@ met <- read.csv("../01a_Raw_data/Rerewhakaaitu_meteorology.csv")
 
 # Format continuous data
 met_formatted <- met %>%
-  filter(year(DateTime) == 2023) %>%
+  mutate(Date = as.Date(DateTime) + offset,
+         doy = yday(Date))%>%
+  filter(year(Date) == 2023) %>%
   mutate(variable = ifelse(variable == "TmpAir", "AirTemp_C_Average", variable),
-         variable = ifelse(variable == "RadClr", "Shortwave", variable),
-         Date = as.Date(DateTime)) %>%
+         variable = ifelse(variable == "RadClr", "Shortwave", variable)) %>%
   filter(variable %in% c("AirTemp_C_Average", "Shortwave")) %>%
   rename(Variable = variable) %>%
   group_by(Date, Variable) %>%

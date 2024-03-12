@@ -8,6 +8,10 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
+
+offset = days(184)
+START = as.Date("2021-01-01")
+END = as.Date("2021-12-31")
 ```
 
 Months and solstice/equinox for both hemispheres
@@ -28,17 +32,23 @@ months_format_nh <- data.frame(Season = c("Spring", "Summer", "Autumn", "Winter"
   mutate(Method = "Months",
          Hemisphere = "Northern")
 
-months_format_sh <- data.frame(Season = c("Autumn", "Winter", "Spring", "Summer", "Summer"),
-                            start = c(yday("2021-03-01"),
-                                      yday("2021-06-01"),
-                                      yday("2021-09-01"),
-                                      yday("2021-12-01"),
-                                      yday("2021-01-01")),
-                            end = c(yday("2021-06-01"),
-                                    yday("2021-09-01"),
-                                    yday("2021-12-01"),
-                                    yday("2021-12-31"),
-                                    yday("2021-03-01"))) %>%
+months_format_sh_raw <- data.frame(Season = c("Autumn", "Winter", "Spring", "Summer", "Summer"),
+                            start = c(yday(as.Date("2021-03-01") + offset),
+                                      yday(as.Date("2021-06-01") + offset),
+                                      yday(as.Date("2021-09-01") + offset),
+                                      yday(as.Date("2021-12-01") + offset),
+                                      yday(as.Date("2021-01-01") + offset)),
+                            end = c(yday(as.Date("2021-06-01") + offset),
+                                    yday(as.Date("2021-09-01") + offset),
+                                    yday(as.Date("2021-12-01") + offset),
+                                    yday(as.Date("2022-01-01") + offset),
+                                    yday(as.Date("2021-03-01") + offset))) 
+
+months_format_sh = months_format_sh_raw %>%
+  filter(start > end) %>%
+  mutate(end = yday(END)) %>%
+  full_join(months_format_sh_raw) %>%
+  mutate(start = ifelse(start > end, yday(START), start)) %>%
   mutate(Method = "Months",
          Hemisphere = "Southern")
 
@@ -57,17 +67,23 @@ solstice_format_nh <- data.frame(Season = c("Spring", "Summer", "Autumn", "Winte
   mutate(Method = "Solstice/equinox",
          Hemisphere = "Northern")
 
-solstice_format_sh <- data.frame(Season = c("Autumn", "Winter", "Spring", "Summer", "Summer"),
-                              start = c(yday("2021-03-20"),
-                                        yday("2021-06-20"),
-                                        yday("2021-09-22"),
-                                        yday("2021-12-21"),
-                                        yday("2021-01-01")),
-                              end = c(yday("2021-06-20"),
-                                      yday("2021-09-22"),
-                                      yday("2021-12-21"),
-                                      yday("2021-12-31"),
-                                      yday("2021-03-20"))) %>% 
+solstice_format_sh_raw <- data.frame(Season = c("Autumn", "Winter", "Spring", "Summer", "Summer"),
+                              start = c(yday(as.Date("2021-03-20") + offset),
+                                        yday(as.Date("2021-06-20") + offset),
+                                        yday(as.Date("2021-09-22") + offset),
+                                        yday(as.Date("2021-12-21") + offset),
+                                        yday(as.Date("2021-01-01") + offset)),
+                              end = c(yday(as.Date("2021-06-20") + offset),
+                                      yday(as.Date("2021-09-22") + offset),
+                                      yday(as.Date("2021-12-21") + offset),
+                                      yday(as.Date("2021-01-01") + offset),
+                                      yday(as.Date("2021-03-20") + offset))) 
+
+solstice_format_sh = solstice_format_sh_raw %>%
+  filter(start > end) %>%
+  mutate(end = yday(END)) %>%
+  full_join(solstice_format_sh_raw) %>%
+  mutate(start = ifelse(start > end, yday(START), start)) %>%
   mutate(Method = "Solstice/equinox",
          Hemisphere = "Southern")
 
