@@ -16,7 +16,7 @@ library(ggnewscale) # For multiple color scales on the discrete panel
 #The ../03a_Figures folder is not pushed to GitHub
 if(!file.exists("../03a_Figures")){dir.create("../03a_Figures")}
 
-#Offset
+#Southern hemisphere offset
 offset = 184
 sh_lakes <- c("Rerewhakaaitu")
 ```

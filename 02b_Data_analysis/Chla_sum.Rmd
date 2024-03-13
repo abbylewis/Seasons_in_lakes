@@ -1,0 +1,94 @@
+---
+title: "Plot"
+author: "Abby Lewis"
+date: "2024-02-29"
+output: html_document
+---
+
+# Set-up
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(ggpubr)
+library(ggnewscale) # For multiple color scales on the discrete panel
+
+#The ../03a_Figures folder is not pushed to GitHub
+if(!file.exists("../03a_Figures")){dir.create("../03a_Figures")}
+
+#Southern hemisphere offset
+offset = 184
+sh_lakes <- c("Rerewhakaaitu")
+```
+
+# Discrete
+
+NOTE: add color for mixed period
+
+```{r}
+#Load discrete data
+#FCR
+ice_format <- read.csv("../01b_Processed_data/FCR_ice.csv") 
+strat <- read.csv("../01b_Processed_data/FCR_stratification_discrete.csv") 
+#General
+nh <- read.csv("../01b_Processed_data/Temperate_seasons_nh.csv")
+sh <- read.csv("../01b_Processed_data/Temperate_seasons_sh.csv")
+#Rerewhakaaitu
+rere_strat <- read.csv("../01b_Processed_data/Rerewhakaaitu_stratification_discrete.csv") 
+
+#Format
+in_lake <- ice_format %>%
+  full_join(strat) %>% 
+  full_join(rere_strat) %>%
+  mutate(Method = "Ice/Stratification")
+
+#Format
+temperate <- nh %>% filter(is.na(start)) #make empty df
+for(lake in unique(in_lake$Lake)) {
+  if(lake %in% sh_lakes) {
+    temperate <- temperate %>%
+      full_join(sh %>% mutate(Lake = lake))
+  } else {
+    temperate <- temperate %>%
+      full_join(nh %>% mutate(Lake = lake))
+  }
+}
+
+temperate_chla <- temperate %>%
+  full_join(in_lake) 
+```
+
+# Continuous
+
+```{r}
+#Load data
+#FCR
+fcr_catwalk_format <- read.csv("../01b_Processed_data/FCR_catwalk.csv")
+#Rerewhakaaitu
+rere_in_lake <- read.csv("../01b_Processed_data/Rerewhakaaitu_continuous.csv")
+
+#Format
+continuous_data <- fcr_catwalk_format %>%
+  full_join(rere_in_lake) %>%
+  filter(!is.na(Value)) %>%
+  mutate(Variable = factor(Variable, 
+                           levels = c("Surface_chla"),
+                           labels = c("Surface chlorophyll-a")),
+         Lake = ifelse(is.na(Lake), "FCR", Lake)) %>%
+  filter(!is.na(Variable)) %>%
+  mutate(x = ifelse(Lake %in% sh_lakes, yday - offset, yday),
+         x = ifelse(x < 1, x+365, x))
+
+continuous_data %>%
+  left_join(temperate_chla) %>%
+  filter(x >= start, 
+         x <= end) %>%
+  group_by(Lake, Season, Method) %>%
+  summarize(mean = mean(Value, na.rm = TRUE),
+            sd = sd(Value, na.rm = TRUE),
+            n = n()) %>%
+  ggplot(aes(x = Season)) +
+  geom_point(aes(y = mean, color = Method)) +
+  geom_errorbar(aes(ymin = mean - sd, ymax = mean + sd), width = 0.2) +
+  facet_wrap(~Lake)
+```
