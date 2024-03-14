@@ -57,7 +57,10 @@ strat_export_cont <- in_lake_data %>%
   filter(Variable == "TmpWtr") %>%
   pivot_wider(names_from = depth_rnd, values_from = Value, names_prefix = "Temp_") %>%
   group_by(yday) %>%
-  summarize(Diff_Dens_surf_bot = water.density(Temp_12) - water.density(Temp_1)) %>%
+  summarize(Diff_Dens_surf_bot = water.density(Temp_12) - water.density(Temp_1),
+            Diff_Dens_surf_bot = ifelse(is.na(Diff_Dens_surf_bot),
+                                        water.density(Temp_11) - water.density(Temp_1),
+                                        Diff_Dens_surf_bot)) %>%
   pivot_longer(-1, names_to = "Variable", values_to = "Value") %>%
   mutate(Lake = "Rerewhakaaitu")
 

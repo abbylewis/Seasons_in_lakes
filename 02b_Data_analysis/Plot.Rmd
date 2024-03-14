@@ -144,13 +144,22 @@ rere_strat <- read.csv("../01b_Processed_data/Rerewhakaaitu_stratification_conti
 rere_met <- read.csv("../01b_Processed_data/Rerewhakaaitu_met.csv")
 
 #Format
+#A bit of magic to get explicit NAs
+full <- bvr_catwalk_format %>%
+  full_join(bvr_met_format) %>%
+  full_join(bvr_strat) %>%
+  full_join(rere_in_lake) %>%
+  full_join(rere_strat) %>%
+  full_join(rere_met) %>%
+  expand(Variable, yday, Lake)
+
 continuous_data <- bvr_catwalk_format %>%
   full_join(bvr_met_format) %>%
   full_join(bvr_strat) %>%
   full_join(rere_in_lake) %>%
   full_join(rere_strat) %>%
   full_join(rere_met) %>%
-  filter(!is.na(Value)) %>%
+  right_join(full) %>%
   mutate(Variable = factor(Variable, 
                            levels = c("Surface_temperature", 
                                       "AirTemp_C_Average", 
@@ -164,8 +173,9 @@ continuous_data <- bvr_catwalk_format %>%
                                       "Epi-hypo dens. difference"))) %>%
   filter(!is.na(Variable)) %>%
   group_by(Variable, Lake) %>%
-  mutate(Value = (Value)/(max(Value))) %>%
-  mutate(x = yday)
+  mutate(Value = (Value)/(max(Value, na.rm = T))) %>%
+  mutate(x = yday) %>%
+  mutate(var_class = ifelse(Variable == "Surface chlorophyll-a", "Bio", "Phys"))
 
 #Plot
 continuous <- continuous_data %>%
@@ -205,3 +215,55 @@ jpeg("../03a_Figures/Seasons_data_ice.jpg", width = 8.5, height = 4.5, units = "
 ggarrange(discrete_ice, continuous, align = "h")
 dev.off()
 ```
+```{r}
+discrete_ice2 <- discrete_strat +
+  ggnewscale::new_scale_color() +
+  geom_segment(data = ice_format,
+               aes(y = Method, 
+                   yend = Method, 
+                   x = start, 
+                   xend = end, 
+                   color = Season), 
+               lwd = 5) +
+  scale_color_manual("Ice", values = c("#8AB4E3", "#E5EDF7"),
+                     breaks = c("Open water", "Ice")) +
+  theme(legend.position = "bottom",
+        axis.title.x = element_blank(),
+        legend.title = element_text(vjust = 1),
+        panel.grid.major.x = element_line(color = "grey70"),
+        panel.grid.major.y = element_blank(),
+        legend.key.height = unit(0, "mm"),
+        strip.background = element_rect(fill = "white", color = "white"),
+        legend.key.spacing.y = unit(0, "mm"),
+        panel.grid.minor = element_blank()) +
+  guides(color = guide_legend(ncol = 1, title.position="top")) +
+  facet_grid(rows = vars(Lake))
+
+continuous2 <- continuous_data %>%
+  ggplot(aes(x = x, y = Value * 100, color = Variable)) +
+  scale_color_manual(values = c("#6B7CB3","#1F363D","#8DD65C", "#FFC233", "#F05D5E")) +
+  geom_line(alpha = 0.2) +
+  geom_smooth(se = F, method = "gam") +
+  theme_bw() + 
+  ylab("% of max") +
+  ggtitle("Seasonally-varying parameters")  +
+  guides(color = guide_legend(ncol = 1)) +
+  scale_x_continuous(breaks = c(0, 90, 183, 276, 365),
+                 labels = c("Winter\nsolstice", "Spring\nequinox", 
+                            "Summer\nsolstice", "Autumn\nequinox", "Winter\nsolstice")) +
+  facet_grid(rows = vars(Lake), cols = vars(var_class)) +
+  theme(legend.position = "bottom",
+        legend.title = element_blank(),
+        axis.title.x = element_blank(),
+        panel.grid.minor = element_blank(),
+        strip.background = element_rect(fill = "white", color = "white"),
+        legend.key.height = unit(3, "mm"),
+        panel.grid.major.y = element_blank(),
+        panel.grid.major.x = element_line(color = "grey80"),
+        strip.text.x = element_blank())
+
+jpeg("../03a_Figures/Seasons_data_ice2.jpg", width = 8.5, height = 4.5, units = "in", res = 300)
+ggarrange(discrete_ice2, continuous2, widths = c(1,1.5), align = "h")
+dev.off()
+```
+

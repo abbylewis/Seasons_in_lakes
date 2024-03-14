@@ -109,7 +109,7 @@ ice <- read.csv("https://pasta.lternet.edu/package/data/eml/edi/456/5/ebfaad1697
 
 ice_format <- ice %>%
   mutate(Date = as.Date(Date) + offset) %>%
-  filter(Reservoir == "Beaverdam Reservoir") %>%
+  filter(Reservoir == "BVR") %>%
   filter(Year == 2021) %>%
   mutate(Year = year(Date), 
          yday = yday(Date),
