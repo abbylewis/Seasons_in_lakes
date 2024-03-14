@@ -88,14 +88,20 @@ discrete_strat <- discrete_temperate +
                    xend = end, 
                    color = Season), 
                lwd = 5) +
-  scale_color_manual("Stratification", values = c("blue", "#89C6D6", "#F05D5E"),
+  scale_color_manual("Stratification", values = c("blue", "#FACFCF", "#F05D5E"),
                      breaks = c("Inversely\nstratified", "Mixed", "Stratified")) +
+  guides(color = guide_legend(ncol = 1, title.position="top")) +
   theme(legend.position = "bottom",
         axis.title.x = element_blank(),
         legend.title = element_text(vjust = 1),
-        panel.grid.major.x = element_line(color = "grey70")) +
-  guides(color = guide_legend(ncol = 1, title.position="top")) +
+        panel.grid.major.x = element_line(color = "grey70"),
+        panel.grid.major.y = element_blank(),
+        strip.background = element_rect(fill = "white", color = "white"),
+        legend.key.height = unit(0, "mm"),
+        legend.key.spacing.y = unit(0, "mm"),
+        panel.grid.minor = element_blank()) +
   facet_wrap(~Lake, ncol = 1)
+discrete_strat
 
 discrete_ice <- discrete_strat +
   ggnewscale::new_scale_color() +
@@ -106,12 +112,17 @@ discrete_ice <- discrete_strat +
                    xend = end, 
                    color = Season), 
                lwd = 5) +
-  scale_color_manual("Ice", values = c("blue", "grey95"),
+  scale_color_manual("Ice", values = c("#8AB4E3", "#E5EDF7"),
                      breaks = c("Open water", "Ice")) +
   theme(legend.position = "bottom",
         axis.title.x = element_blank(),
         legend.title = element_text(vjust = 1),
-        panel.grid.major.x = element_line(color = "grey70")) +
+        panel.grid.major.x = element_line(color = "grey70"),
+        panel.grid.major.y = element_blank(),
+        legend.key.height = unit(0, "mm"),
+        strip.background = element_rect(fill = "white", color = "white"),
+        legend.key.spacing.y = unit(0, "mm"),
+        panel.grid.minor = element_blank()) +
   guides(color = guide_legend(ncol = 1, title.position="top")) +
   facet_wrap(~Lake, ncol = 1)
 
@@ -160,12 +171,12 @@ continuous_data <- bvr_catwalk_format %>%
 continuous <- continuous_data %>%
   ggplot(aes(x = x, y = Value * 100, color = Variable)) +
   scale_color_manual(values = c("#6B7CB3","#1F363D","#8DD65C", "#FFC233", "#F05D5E")) +
-  geom_line(alpha = 0.3) +
+  geom_line(alpha = 0.2) +
   geom_smooth(se = F, method = "gam") +
   theme_bw() + 
   ylab("% of max") +
   ggtitle("Seasonally-varying parameters")  +
-  guides(color = guide_legend(ncol = 1, byrow = T)) +
+  guides(color = guide_legend(ncol = 1)) +
   scale_x_continuous(breaks = c(0, 90, 183, 276, 365),
                  labels = c("Winter\nsolstice", "Spring\nequinox", 
                             "Summer\nsolstice", "Autumn\nequinox", "Winter\nsolstice")) +
@@ -173,7 +184,10 @@ continuous <- continuous_data %>%
   theme(legend.position = "bottom",
         legend.title = element_blank(),
         axis.title.x = element_blank(),
-        legend.spacing.y = unit(-1.0, "cm"),
+        panel.grid.minor = element_blank(),
+        strip.background = element_rect(fill = "white", color = "white"),
+        legend.key.height = unit(3, "mm"),
+        panel.grid.major.y = element_blank(),
         panel.grid.major.x = element_line(color = "grey80"))
 
 #View
@@ -187,7 +201,7 @@ jpeg("../03a_Figures/Seasons_data.jpg", width = 9, height = 5, units = "in", res
 ggarrange(discrete_strat, continuous, align = "h")
 dev.off()
 
-jpeg("../03a_Figures/Seasons_data_ice.jpg", width = 9, height = 5, units = "in", res = 300)
+jpeg("../03a_Figures/Seasons_data_ice.jpg", width = 8.5, height = 4.5, units = "in", res = 300)
 ggarrange(discrete_ice, continuous, align = "h")
 dev.off()
 ```
