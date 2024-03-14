@@ -16,8 +16,7 @@ library(ggnewscale) # For multiple color scales on the discrete panel
 #The ../03a_Figures folder is not pushed to GitHub
 if(!file.exists("../03a_Figures")){dir.create("../03a_Figures")}
 
-#Southern hemisphere offset
-offset = as.Date("2023-01-01") - as.Date("2022-06-21")
+#Southern hemisphere lakes
 sh_lakes <- c("Rerewhakaaitu")
 ```
 
@@ -28,75 +27,96 @@ NOTE: add color for mixed period
 ```{r}
 #Load discrete data
 #BVR
-ice_format <- read.csv("../01b_Processed_data/BVR_ice.csv") 
+ice_format <- read.csv("../01b_Processed_data/BVR_ice.csv") %>%
+  mutate(Method = "Ice") %>%
+  full_join(data.frame(Lake = "Rerewhakaaitu",
+                       Season = "Open water",
+                       Method = "Ice",
+                       start = 0,
+                       end = 365))
 strat <- read.csv("../01b_Processed_data/BVR_stratification_discrete.csv") 
 #General
-nh <- read.csv("../01b_Processed_data/Temperate_seasons_nh.csv")
-sh <- read.csv("../01b_Processed_data/Temperate_seasons_sh.csv")
+temperate_raw <- read.csv("../01b_Processed_data/Temperate_seasons.csv")
 #Rerewhakaaitu
 rere_strat <- read.csv("../01b_Processed_data/Rerewhakaaitu_stratification_discrete.csv") 
 
 #Format
-in_lake <- ice_format %>%
-  full_join(strat) %>% 
+in_lake <- strat %>% 
   full_join(rere_strat) %>%
-  mutate(Method = "Ice/Stratification",
-         x = ifelse(Lake %in% sh_lakes, start - offset, start),
-         xend = ifelse(Lake %in% sh_lakes, end - offset, end))
+  mutate(Method = "Stratification",
+         x = start,
+         xend = end)
 
 #Format
-temperate <- nh %>% filter(is.na(start)) #make empty df
+temperate <- temperate_raw %>% filter(is.na(start)) #make empty df
 for(lake in unique(in_lake$Lake)) {
-  if(lake %in% sh_lakes) {
-    temperate <- temperate %>%
-      full_join(sh %>% mutate(Lake = lake))
-  } else {
-    temperate <- temperate %>%
-      full_join(nh %>% mutate(Lake = lake))
-  }
+  hemi <- ifelse(lake %in% sh_lakes, "Southern", "Northern")
+  temperate <- temperate %>%
+    full_join(temperate_raw %>% mutate(Lake = lake) %>%
+                filter(Hemisphere == hemi))
 }
 
 #Plot
 #First the temperate metrics
 discrete_temperate <- temperate %>%
-  mutate(x = ifelse(Hemisphere == "Southern", start - offset, start),
-         xend = ifelse(Hemisphere == "Southern", end - offset, end)) %>%
+  filter(Method == "Months") %>%
   ggplot(aes(y = Method, 
              yend = Method, 
-             x = as.Date("2021-01-01") + x, 
-             xend = as.Date("2021-01-01") + xend, 
+             x = start, 
+             xend = end, 
              color = Season)) +
   geom_segment(lwd = 5) +
   theme_bw() +
   ggtitle("Discrete seasonal clasifications") +
   scale_color_manual("Temperate\nseasons",
-                     values = c("lightblue", "pink", "goldenrod2", "#cc5500", 
-                                "grey", "grey"), #placeholders
+                     values = c("grey80", "grey67", "grey37", "grey10", 
+                                "grey", "grey", "grey", "grey"), #placeholders
                      breaks = c("Winter", "Spring", "Summer", "Autumn")) +
-  scale_x_date(date_labels = "%b") +
-  guides(color = guide_legend(ncol = 1)) +
+  scale_x_continuous(breaks = c(0, 90, 183, 276, 365),
+                 labels = c("Winter\nsolstice", "Spring\nequinox", 
+                            "Summer\nsolstice", "Autumn\nequinox", "Winter\nsolstice")) +
+  guides(color = guide_legend(ncol = 1, title.position="top")) +
   facet_wrap(~Lake, ncol = 1)
 
 #Add in-lake data (with separate color legend)
-discrete <- discrete_temperate +
+discrete_strat <- discrete_temperate +
   ggnewscale::new_scale_color() +
   geom_segment(data = in_lake, 
                aes(y = Method, 
                    yend = Method, 
-                   x = as.Date("2021-01-01") + x, 
-                   xend = as.Date("2021-01-01") + xend, 
+                   x = start, 
+                   xend = end, 
                    color = Season), 
                lwd = 5) +
-  scale_color_manual("In-lake\nseasons", values = c("lightblue", "goldenrod2"),
-                     breaks = c("Ice", "Stratified")) +
+  scale_color_manual("Stratification", values = c("blue", "#89C6D6", "#F05D5E"),
+                     breaks = c("Inversely\nstratified", "Mixed", "Stratified")) +
   theme(legend.position = "bottom",
         axis.title.x = element_blank(),
-        legend.title = element_text(vjust = 1)) +
-  guides(color = guide_legend(ncol = 1)) +
-  facet_wrap(~Lake, ncol = 1, scales = "free_x")
+        legend.title = element_text(vjust = 1),
+        panel.grid.major.x = element_line(color = "grey70")) +
+  guides(color = guide_legend(ncol = 1, title.position="top")) +
+  facet_wrap(~Lake, ncol = 1)
+
+discrete_ice <- discrete_strat +
+  ggnewscale::new_scale_color() +
+  geom_segment(data = ice_format,
+               aes(y = Method, 
+                   yend = Method, 
+                   x = start, 
+                   xend = end, 
+                   color = Season), 
+               lwd = 5) +
+  scale_color_manual("Ice", values = c("blue", "grey95"),
+                     breaks = c("Open water", "Ice")) +
+  theme(legend.position = "bottom",
+        axis.title.x = element_blank(),
+        legend.title = element_text(vjust = 1),
+        panel.grid.major.x = element_line(color = "grey70")) +
+  guides(color = guide_legend(ncol = 1, title.position="top")) +
+  facet_wrap(~Lake, ncol = 1)
 
 #View
-discrete
+discrete_ice
 ```
 
 # Continuous
@@ -105,7 +125,7 @@ discrete
 #Load data
 #BVR
 bvr_catwalk_format <- read.csv("../01b_Processed_data/BVR_catwalk.csv")
-bvr_met_format <- read.csv("../01b_Processed_data/FCR_met.csv")
+bvr_met_format <- read.csv("../01b_Processed_data/BVR_met.csv")
 bvr_strat <- read.csv("../01b_Processed_data/BVR_stratification_continuous.csv")
 #Rerewhakaaitu
 rere_in_lake <- read.csv("../01b_Processed_data/Rerewhakaaitu_continuous.csv")
@@ -139,32 +159,35 @@ continuous_data <- bvr_catwalk_format %>%
 #Plot
 continuous <- continuous_data %>%
   ggplot(aes(x = x, y = Value * 100, color = Variable)) +
-  scale_color_manual(values = c("purple","pink", "#26c9a3", "goldenrod", "grey50")) +
+  scale_color_manual(values = c("#6B7CB3","#1F363D","#8DD65C", "#FFC233", "#F05D5E")) +
   geom_line(alpha = 0.3) +
   geom_smooth(se = F, method = "gam") +
   theme_bw() + 
   ylab("% of max") +
   ggtitle("Seasonally-varying parameters")  +
   guides(color = guide_legend(ncol = 1, byrow = T)) +
-  scale_x_continuous(breaks = c(0, 91, 182, 273, 365),
-                 labels = c("Winter solstice", "Spring equinox", 
-                            "Summer solstice", "Autumn equinox", "Winter solstice")) +
+  scale_x_continuous(breaks = c(0, 90, 183, 276, 365),
+                 labels = c("Winter\nsolstice", "Spring\nequinox", 
+                            "Summer\nsolstice", "Autumn\nequinox", "Winter\nsolstice")) +
   facet_wrap(~Lake, ncol = 1) +
   theme(legend.position = "bottom",
         legend.title = element_blank(),
         axis.title.x = element_blank(),
-        legend.spacing.y = unit(-1.0, "cm"))
+        legend.spacing.y = unit(-1.0, "cm"),
+        panel.grid.major.x = element_line(color = "grey80"))
 
 #View
 continuous
-
-as.Date("2022-06-21")-as.Date("2021-12-21")
 ```
 
 # Combine and save
 
 ```{r}
 jpeg("../03a_Figures/Seasons_data.jpg", width = 9, height = 5, units = "in", res = 300)
-ggarrange(discrete, continuous, align = "h")
+ggarrange(discrete_strat, continuous, align = "h")
+dev.off()
+
+jpeg("../03a_Figures/Seasons_data_ice.jpg", width = 9, height = 5, units = "in", res = 300)
+ggarrange(discrete_ice, continuous, align = "h")
 dev.off()
 ```

@@ -57,14 +57,14 @@ strat_metrics_long <- catwalk_strat |>
 #write csv in correct format
 strat_export <- strat_metrics_long %>%
   filter(Variable == "Diff_Dens_surf_bot") %>%
-  mutate(Strat = ifelse(Value > 0.1, "Stratified", "Mixed")) %>%
+  mutate(Strat = ifelse(Value > 0.1, "Stratified", "Mixed"),
+         Strat = ifelse(Value < -0.1, "Inversely\nstratified", Strat)) %>%
   filter(!is.na(Value)) %>%
   filter(!Strat == lag(Strat)) %>%
-  full_join(data.frame(Variable = "Diff_Dens_surf_bot", yday = 0, Strat = "Mixed")) %>%
+  full_join(data.frame(Variable = "Diff_Dens_surf_bot", yday = 1, Strat = "Mixed")) %>%
   arrange(yday) %>%
   mutate(end = lead(yday, default = 365)) %>%
   rename(start = yday, Season = Strat) %>%
-  filter(Season == "Stratified") %>%
   select(start, end, Season) %>%
   mutate(Lake = "BVR")
 
@@ -76,6 +76,7 @@ Meteorological data
 
 ```{r}
 #Load data from EDI
+options(timeout=6000)
 met <- read.csv("https://pasta.lternet.edu/package/data/eml/edi/389/8/d4c74bbb3b86ea293e5c52136347fbb0")
 
 #Format continuous data
@@ -128,5 +129,19 @@ ice_format2 <- ice_format %>%
   select(-group, -Year)  %>%
   mutate(Lake = "BVR")
 
-write.csv(ice_format2, "../01b_Processed_data/BVR_ice.csv", row.names = F)
+ice_format3 <- ice_format %>%
+  full_join(data.frame(yday = c(0, 365))) %>%
+  arrange(yday) %>%
+  mutate(group = rep(1:((nrow(ice_format) + 2)/2), each = 2),
+         point = rep(c("start", "end"), times  = (nrow(ice_format) + 2)/2)) %>%
+  select(-Event, -Year) %>%
+  pivot_wider(names_from = point, values_from = yday) %>%
+  mutate(Season = "Open water") %>%
+  select(-group)  %>%
+  mutate(Lake = "BVR")
+
+ice_format_export = ice_format2 %>%
+  full_join(ice_format3)
+
+write.csv(ice_format_export, "../01b_Processed_data/BVR_ice.csv", row.names = F)
 ```

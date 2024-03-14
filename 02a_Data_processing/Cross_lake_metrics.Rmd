@@ -9,91 +9,28 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 
-offset = days(184)
-START = as.Date("2021-01-01")
-END = as.Date("2021-12-31")
+nh_offset <- as.Date("2023-01-01") - as.Date("2022-12-21")
+sh_offset <- as.Date("2023-01-01") - as.Date("2022-06-21")
 ```
 
 Months and solstice/equinox for both hemispheres
 
 ```{r}
-#Months
-months_format_nh <- data.frame(Season = c("Spring", "Summer", "Autumn", "Winter", "Winter"),
-                            start = c(yday("2021-03-01"),
-                                      yday("2021-06-01"),
-                                      yday("2021-09-01"),
-                                      yday("2021-12-01"),
-                                      yday("2021-01-01")),
-                            end = c(yday("2021-06-01"),
-                                    yday("2021-09-01"),
-                                    yday("2021-12-01"),
-                                    yday("2021-12-31"),
-                                    yday("2021-03-01"))) %>%
-  mutate(Method = "Months",
-         Hemisphere = "Northern")
+temperate <- read.csv("../01a_Raw_data/Temperate_seasons.csv") %>%
+  mutate(start = as.Date(start),
+         end = as.Date(end),
+         start = ifelse(Hemisphere == "Northern", yday(start + nh_offset), yday(start + sh_offset)),
+         end = ifelse(Hemisphere == "Northern", yday(end + nh_offset), yday(end + sh_offset)))
 
-months_format_sh_raw <- data.frame(Season = c("Autumn", "Winter", "Spring", "Summer", "Summer"),
-                            start = c(yday(as.Date("2021-03-01") + offset),
-                                      yday(as.Date("2021-06-01") + offset),
-                                      yday(as.Date("2021-09-01") + offset),
-                                      yday(as.Date("2021-12-01") + offset),
-                                      yday(as.Date("2021-01-01") + offset)),
-                            end = c(yday(as.Date("2021-06-01") + offset),
-                                    yday(as.Date("2021-09-01") + offset),
-                                    yday(as.Date("2021-12-01") + offset),
-                                    yday(as.Date("2022-01-01") + offset),
-                                    yday(as.Date("2021-03-01") + offset))) 
-
-months_format_sh = months_format_sh_raw %>%
+temperate_format = temperate %>%
   filter(start > end) %>%
-  mutate(end = yday(END)) %>%
-  full_join(months_format_sh_raw) %>%
-  mutate(start = ifelse(start > end, yday(START), start)) %>%
-  mutate(Method = "Months",
-         Hemisphere = "Southern")
+  mutate(end = 365) %>%
+  full_join(temperate) %>%
+  mutate(start = ifelse(start > end, 1, start)) %>%
+  filter(!end == 1)
 
-#Solstice/equinox
-solstice_format_nh <- data.frame(Season = c("Spring", "Summer", "Autumn", "Winter", "Winter"),
-                              start = c(yday("2021-03-20"),
-                                        yday("2021-06-20"),
-                                        yday("2021-09-22"),
-                                        yday("2021-12-21"),
-                                        yday("2021-01-01")),
-                              end = c(yday("2021-06-20"),
-                                      yday("2021-09-22"),
-                                      yday("2021-12-21"),
-                                      yday("2021-12-31"),
-                                      yday("2021-03-20"))) %>% 
-  mutate(Method = "Solstice/equinox",
-         Hemisphere = "Northern")
-
-solstice_format_sh_raw <- data.frame(Season = c("Autumn", "Winter", "Spring", "Summer", "Summer"),
-                              start = c(yday(as.Date("2021-03-20") + offset),
-                                        yday(as.Date("2021-06-20") + offset),
-                                        yday(as.Date("2021-09-22") + offset),
-                                        yday(as.Date("2021-12-21") + offset),
-                                        yday(as.Date("2021-01-01") + offset)),
-                              end = c(yday(as.Date("2021-06-20") + offset),
-                                      yday(as.Date("2021-09-22") + offset),
-                                      yday(as.Date("2021-12-21") + offset),
-                                      yday(as.Date("2021-01-01") + offset),
-                                      yday(as.Date("2021-03-20") + offset))) 
-
-solstice_format_sh = solstice_format_sh_raw %>%
-  filter(start > end) %>%
-  mutate(end = yday(END)) %>%
-  full_join(solstice_format_sh_raw) %>%
-  mutate(start = ifelse(start > end, yday(START), start)) %>%
-  mutate(Method = "Solstice/equinox",
-         Hemisphere = "Southern")
-
-write.csv(months_format_nh %>%
-            full_join(solstice_format_nh), 
-          "../01b_Processed_data/Temperate_seasons_nh.csv", 
-          row.names = FALSE)
-write.csv(months_format_sh %>%
-            full_join(solstice_format_sh), 
-          "../01b_Processed_data/Temperate_seasons_sh.csv", 
+write.csv(temperate_format,
+          "../01b_Processed_data/Temperate_seasons.csv", 
           row.names = FALSE)
 ```
 

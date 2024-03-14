@@ -2,3 +2,7 @@
 21,23,"Ice","BVR"
 41,42,"Ice","BVR"
 55,58,"Ice","BVR"
+0,21,"Open water","BVR"
+23,41,"Open water","BVR"
+42,55,"Open water","BVR"
+58,365,"Open water","BVR"

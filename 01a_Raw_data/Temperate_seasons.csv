@@ -1,0 +1,17 @@
+﻿Method,Season,Hemisphere,start,end
+Months,Spring,Northern,2022-03-01,2022-06-01
+Months,Summer,Northern,2022-06-01,2022-09-01
+Months,Autumn,Northern,2022-09-01,2022-12-01
+Months,Winter,Northern,2022-12-01,2022-03-01
+Months,Spring,Southern,2022-09-01,2022-12-01
+Months,Summer,Southern,2022-12-01,2022-03-01
+Months,Autumn,Southern,2022-03-01,2022-06-01
+Months,Winter,Southern,2022-06-01,2022-09-01
+Astronomical,Spring,Northern,2022-03-20,2022-06-21
+Astronomical,Summer,Northern,2022-06-21,2022-09-22
+Astronomical,Autumn,Northern,2022-09-22,2022-12-21
+Astronomical,Winter,Northern,2022-12-21,2022-03-20
+Astronomical,Spring,Southern,2022-09-22,2022-12-21
+Astronomical,Summer,Southern,2022-12-21,2022-03-20
+Astronomical,Autumn,Southern,2022-03-20,2022-06-21
+Astronomical,Winter,Southern,2022-06-21,2022-09-22
