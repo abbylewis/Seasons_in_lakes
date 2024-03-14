@@ -1,0 +1,132 @@
+---
+title: "BVR"
+author: "Abby Lewis"
+date: "2024-02-29"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(rLakeAnalyzer)
+
+offset = as.Date("2021-01-01") - as.Date("2020-12-21")
+```
+
+Catwalk data (temperature, chlorophyll-a, stratification)
+
+```{r}
+#Load data from EDI
+options(timeout=6000)
+catwalk <- read.csv("https://pasta.lternet.edu/package/data/eml/edi/725/3/a9a7ff6fe8dc20f7a8f89447d4dc2038")
+
+# Format continuous data
+catwalk_format <- catwalk %>%
+  mutate(Date = as.Date(DateTime) + offset,
+         Year = year(Date)) %>%
+  filter(Year == 2021) %>%
+  group_by(Date) %>%
+  summarize(Surface_temperature = mean(EXOTemp_C_1.5, na.rm = T),
+            Surface_chla = mean(EXOChla_ugL_1.5, na.rm = T)) %>%
+  mutate(yday = yday(Date)) %>%
+  pivot_longer(cols = c(Surface_temperature, Surface_chla), 
+               names_to = "Variable", values_to = "Value") %>%
+  select(yday, Variable, Value) %>%
+  mutate(Lake = "BVR")
+
+write.csv(catwalk_format, "../01b_Processed_data/BVR_catwalk.csv", row.names = F)
+
+#### stratification metric calcs
+## set up daily thermistor data 
+catwalk_strat <- read.csv("../01b_Processed_data/BVR_longoutput.csv") %>%
+  mutate(Date = as.Date(DateTime) + offset,
+         Year = year(Date)) |> 
+  filter(Year == 2021) |> 
+  group_by(Date, Sensor_depth) |> 
+  summarise_if(is.numeric, mean, na.rm = TRUE) |>  # get daily temp data
+  summarize(Diff_Dens_surf_bot = water.density(Reading[which.max(Sensor_depth)]) -
+              water.density(Reading[which.min(Sensor_depth)]))
+
+#trim to just metrics for plotting 
+strat_metrics_long <- catwalk_strat |> 
+  pivot_longer(cols = Diff_Dens_surf_bot, names_to = "Variable", values_to = "Value") %>%
+  mutate(yday = yday(Date)) %>%
+  select(yday, Variable, Value) %>%
+  mutate(Lake = "BVR")
+
+#write csv in correct format
+strat_export <- strat_metrics_long %>%
+  filter(Variable == "Diff_Dens_surf_bot") %>%
+  mutate(Strat = ifelse(Value > 0.1, "Stratified", "Mixed")) %>%
+  filter(!is.na(Value)) %>%
+  filter(!Strat == lag(Strat)) %>%
+  full_join(data.frame(Variable = "Diff_Dens_surf_bot", yday = 0, Strat = "Mixed")) %>%
+  arrange(yday) %>%
+  mutate(end = lead(yday, default = 365)) %>%
+  rename(start = yday, Season = Strat) %>%
+  filter(Season == "Stratified") %>%
+  select(start, end, Season) %>%
+  mutate(Lake = "BVR")
+
+write.csv(strat_export, "../01b_Processed_data/BVR_stratification_discrete.csv", row.names = F)
+write.csv(strat_metrics_long, "../01b_Processed_data/BVR_stratification_continuous.csv", row.names = F)
+```
+
+Meteorological data
+
+```{r}
+#Load data from EDI
+met <- read.csv("https://pasta.lternet.edu/package/data/eml/edi/389/8/d4c74bbb3b86ea293e5c52136347fbb0")
+
+#Format continuous data
+met_format <- met %>%
+  mutate(Date = as.Date(DateTime) + offset,
+         Year = year(Date)) %>%
+  filter(Year == 2021) %>%
+  group_by(Date) %>%
+  summarize(AirTemp_C_Average = mean(AirTemp_C_Average, na.rm = T),
+            Rain_Total_mm = sum(Rain_Total_mm),
+            Shortwave = mean(ShortwaveRadiationDown_Average_W_m2, na.rm = T)) %>%
+  mutate(yday = yday(Date)) %>%
+  pivot_longer(cols = c(AirTemp_C_Average,
+                        Rain_Total_mm,
+                        Shortwave), 
+               names_to = "Variable", values_to = "Value")  %>%
+  mutate(Lake = "BVR") %>%
+  select(-Date)
+
+write.csv(met_format, "../01b_Processed_data/BVR_met.csv", row.names = F)
+```
+
+Ice data
+
+```{r}
+#Load data from EDI
+ice <- read.csv("https://pasta.lternet.edu/package/data/eml/edi/456/5/ebfaad16975326a7b874a21beb50c151")
+
+#Note: it is always true that either IceOn == 1 or IceOff == 1
+
+ice_format <- ice %>%
+  mutate(Date = as.Date(Date) + offset) %>%
+  filter(Reservoir == "BVR") %>%
+  filter(Year == 2021) %>%
+  mutate(Year = year(Date), 
+         yday = yday(Date),
+         Event = ifelse(IceOn == 1, "Ice on", "Ice off")) %>%
+  group_by(yday, Date) %>%
+  filter(!n() > 1) %>% #remove dates where ice went on and off in the same day
+  ungroup() %>%
+  select(Year, yday, Event)
+
+# arrange for plot
+ice_format2 <- ice_format %>%
+  mutate(group = rep(1:(nrow(ice_format)/2), each = 2),
+         point = rep(c("start", "end"), times  = nrow(ice_format)/2)) %>%
+  select(-Event) %>%
+  pivot_wider(names_from = point, values_from = yday) %>%
+  mutate(Season = "Ice") %>%
+  select(-group, -Year)  %>%
+  mutate(Lake = "BVR")
+
+write.csv(ice_format2, "../01b_Processed_data/BVR_ice.csv", row.names = F)
+```

@@ -1,0 +1,55 @@
+---
+title: "BVR_pre_processing"
+author: "Abby Lewis"
+date: "2024-03-14"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+#Load package
+library(tidyverse)
+```
+
+```{r}
+sensor <- read.csv("https://pasta.lternet.edu/package/data/eml/edi/725/3/a9a7ff6fe8dc20f7a8f89447d4dc2038")
+depth_offset <- read.csv("https://portal.edirepository.org/nis/dataviewer?packageid=edi.725.3&entityid=5927a50118644fa451badb3b84233bb7")
+
+#Need the actual depth of the thermistor sensors, accounting for changing water level
+bvr_new <- sensor%>%
+  select(Reservoir,Site,DateTime,starts_with("ThermistorTemp"),Depth_m_13)%>%
+  pivot_longer(cols = starts_with("ThermistorTemp"), 
+               values_to = "Reading", 
+               names_prefix = "ThermistorTemp_C_",
+               names_to = "Position")%>%
+  mutate(Position = as.numeric(Position))%>%
+  full_join(depth_offset)
+
+bvr_pre_05APR21 <- bvr_new%>%
+  filter(DateTime<="2021-04-05 13:20")%>%
+  mutate(Sensor_depth=Depth_m_13-Offset_before_05APR21) #this gives you the depth of the thermistors from the surface
+  
+bvr_post_05APR21 <- bvr_new%>%
+  filter(DateTime>"2021-04-05 13:20")%>%
+  mutate(Sensor_depth=Depth_m_13-Offset_after_05APR21) #this gives you the depth of the thermistor from the surface
+
+# combine the pre April 5th and the post April 5th. Drop if the sensor depth is NA because can't
+# figure out the depth of the sensors. This will give you a depth for each sensor reading. 
+cat_long <- bvr_pre_05APR21%>%
+  rbind(.,bvr_post_05APR21)%>%
+  filter(!is.na(Sensor_depth),
+         year(DateTime)%in% c(2021,2022))%>%
+  select(-Offset_before_05APR21, -Offset_after_05APR21)%>%
+  mutate(Reservoir_depth=Depth_m_13+0.5)%>%
+  select(Reservoir, 
+         Site,
+         DateTime, 
+         Reading, 
+         Sensor_depth) %>%
+  filter(Sensor_depth >= 0)
+
+write.csv(cat_long %>% filter(Sensor_depth>0),
+          "../01b_Processed_data/BVR_longoutput.csv", row.names = F)
+```
+

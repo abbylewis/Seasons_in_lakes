@@ -17,7 +17,7 @@ library(ggnewscale) # For multiple color scales on the discrete panel
 if(!file.exists("../03a_Figures")){dir.create("../03a_Figures")}
 
 #Southern hemisphere offset
-offset = 184
+offset = as.Date("2023-01-01") - as.Date("2022-06-21")
 sh_lakes <- c("Rerewhakaaitu")
 ```
 
@@ -27,9 +27,9 @@ NOTE: add color for mixed period
 
 ```{r}
 #Load discrete data
-#FCR
-ice_format <- read.csv("../01b_Processed_data/FCR_ice.csv") 
-strat <- read.csv("../01b_Processed_data/FCR_stratification_discrete.csv") 
+#BVR
+ice_format <- read.csv("../01b_Processed_data/BVR_ice.csv") 
+strat <- read.csv("../01b_Processed_data/BVR_stratification_discrete.csv") 
 #General
 nh <- read.csv("../01b_Processed_data/Temperate_seasons_nh.csv")
 sh <- read.csv("../01b_Processed_data/Temperate_seasons_sh.csv")
@@ -103,19 +103,19 @@ discrete
 
 ```{r}
 #Load data
-#FCR
-fcr_catwalk_format <- read.csv("../01b_Processed_data/FCR_catwalk.csv")
-fcr_met_format <- read.csv("../01b_Processed_data/FCR_met.csv")
-fcr_strat <- read.csv("../01b_Processed_data/FCR_stratification_continuous.csv")
+#BVR
+bvr_catwalk_format <- read.csv("../01b_Processed_data/BVR_catwalk.csv")
+bvr_met_format <- read.csv("../01b_Processed_data/FCR_met.csv")
+bvr_strat <- read.csv("../01b_Processed_data/BVR_stratification_continuous.csv")
 #Rerewhakaaitu
 rere_in_lake <- read.csv("../01b_Processed_data/Rerewhakaaitu_continuous.csv")
 rere_strat <- read.csv("../01b_Processed_data/Rerewhakaaitu_stratification_continuous.csv")
 rere_met <- read.csv("../01b_Processed_data/Rerewhakaaitu_met.csv")
 
 #Format
-continuous_data <- fcr_catwalk_format %>%
-  full_join(fcr_met_format) %>%
-  full_join(fcr_strat) %>%
+continuous_data <- bvr_catwalk_format %>%
+  full_join(bvr_met_format) %>%
+  full_join(bvr_strat) %>%
   full_join(rere_in_lake) %>%
   full_join(rere_strat) %>%
   full_join(rere_met) %>%
@@ -130,25 +130,26 @@ continuous_data <- fcr_catwalk_format %>%
                                       "Air temperature",
                                       "Surface chlorophyll-a",
                                       "Shortwave",
-                                      "Epi-hypo dens. difference")),
-         Lake = ifelse(is.na(Lake), "FCR", Lake)) %>%
+                                      "Epi-hypo dens. difference"))) %>%
   filter(!is.na(Variable)) %>%
   group_by(Variable, Lake) %>%
   mutate(Value = (Value)/(max(Value))) %>%
-  mutate(x = ifelse(Lake %in% sh_lakes, yday - offset, yday))
+  mutate(x = yday)
 
 #Plot
 continuous <- continuous_data %>%
-  ggplot(aes(x = as.Date("2021-01-01") + x, y = Value * 100, color = Variable)) +
+  ggplot(aes(x = x, y = Value * 100, color = Variable)) +
   scale_color_manual(values = c("purple","pink", "#26c9a3", "goldenrod", "grey50")) +
   geom_line(alpha = 0.3) +
   geom_smooth(se = F, method = "gam") +
   theme_bw() + 
-  scale_x_date(date_labels = "%b") +
   ylab("% of max") +
   ggtitle("Seasonally-varying parameters")  +
   guides(color = guide_legend(ncol = 1, byrow = T)) +
-  facet_wrap(~Lake, ncol = 1, scales = "free_x") +
+  scale_x_continuous(breaks = c(0, 91, 182, 273, 365),
+                 labels = c("Winter solstice", "Spring equinox", 
+                            "Summer solstice", "Autumn equinox", "Winter solstice")) +
+  facet_wrap(~Lake, ncol = 1) +
   theme(legend.position = "bottom",
         legend.title = element_blank(),
         axis.title.x = element_blank(),
@@ -156,6 +157,8 @@ continuous <- continuous_data %>%
 
 #View
 continuous
+
+as.Date("2022-06-21")-as.Date("2021-12-21")
 ```
 
 # Combine and save
