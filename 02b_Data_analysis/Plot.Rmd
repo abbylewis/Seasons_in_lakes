@@ -27,25 +27,34 @@ NOTE: add color for mixed period
 ```{r}
 #Load discrete data
 #BVR
-ice_format <- read.csv("../01b_Processed_data/BVR_ice.csv") %>%
-  mutate(Method = "Ice") %>%
-  full_join(data.frame(Lake = "Rerewhakaaitu",
-                       Season = "Open water",
-                       Method = "Ice",
-                       start = 0,
-                       end = 365))
-strat <- read.csv("../01b_Processed_data/BVR_stratification_discrete.csv") 
+bvr_ice <- read.csv("../01b_Processed_data/BVR_ice.csv") 
+bvr_strat <- read.csv("../01b_Processed_data/BVR_stratification_discrete.csv") 
 #General
 temperate_raw <- read.csv("../01b_Processed_data/Temperate_seasons.csv")
 #Rerewhakaaitu
 rere_strat <- read.csv("../01b_Processed_data/Rerewhakaaitu_stratification_discrete.csv") 
+rere_ice <- read.csv("../01b_Processed_data/Rerewhakaaitu_ice.csv")
+#Sunapee
+sun_strat <- read.csv("../01b_Processed_data/Sunapee_stratification_discrete.csv") 
+sun_ice <- read.csv("../01b_Processed_data/Sunapee_ice.csv") 
 
 #Format
-in_lake <- strat %>% 
+in_lake <- bvr_strat %>% 
+  full_join(sun_strat) %>%
   full_join(rere_strat) %>%
   mutate(Method = "Stratification",
          x = start,
-         xend = end)
+         xend = end,
+         Lake = factor(Lake, levels = c("Lake Sunapee (2008)", 
+                                        "Beaverdam Reservoir (2021)", 
+                                        "Rerewhakaaitu (2022-2023)")))
+
+ice_format <- bvr_ice %>%
+  full_join(rere_ice) %>%
+  full_join(sun_ice) %>%
+  mutate(Lake = factor(Lake, levels = c("Lake Sunapee (2008)", 
+                                        "Beaverdam Reservoir (2021)", 
+                                        "Rerewhakaaitu (2022-2023)")))
 
 #Format
 temperate <- temperate_raw %>% filter(is.na(start)) #make empty df
@@ -55,6 +64,10 @@ for(lake in unique(in_lake$Lake)) {
     full_join(temperate_raw %>% mutate(Lake = lake) %>%
                 filter(Hemisphere == hemi))
 }
+temperate <- temperate %>%
+  mutate(Lake = factor(Lake, levels = c("Lake Sunapee (2008)", 
+                                        "Beaverdam Reservoir (2021)", 
+                                        "Rerewhakaaitu (2022-2023)")))
 
 #Plot
 #First the temperate metrics
@@ -142,6 +155,10 @@ bvr_strat <- read.csv("../01b_Processed_data/BVR_stratification_continuous.csv")
 rere_in_lake <- read.csv("../01b_Processed_data/Rerewhakaaitu_continuous.csv")
 rere_strat <- read.csv("../01b_Processed_data/Rerewhakaaitu_stratification_continuous.csv")
 rere_met <- read.csv("../01b_Processed_data/Rerewhakaaitu_met.csv")
+#Sunapee
+sun_in_lake <- read.csv("../01b_Processed_data/Sunapee_continuous.csv")
+sun_strat <- read.csv("../01b_Processed_data/Sunapee_stratification_continuous.csv")
+sun_met <- read.csv("../01b_Processed_data/Sunapee_met.csv")
 
 #Format
 #A bit of magic to get explicit NAs
@@ -151,6 +168,9 @@ full <- bvr_catwalk_format %>%
   full_join(rere_in_lake) %>%
   full_join(rere_strat) %>%
   full_join(rere_met) %>%
+  full_join(sun_in_lake) %>%
+  full_join(sun_strat) %>%
+  full_join(sun_met) %>%
   expand(Variable, yday, Lake)
 
 continuous_data <- bvr_catwalk_format %>%
@@ -159,26 +179,43 @@ continuous_data <- bvr_catwalk_format %>%
   full_join(rere_in_lake) %>%
   full_join(rere_strat) %>%
   full_join(rere_met) %>%
+  full_join(sun_in_lake) %>%
+  full_join(sun_strat) %>%
+  full_join(sun_met) %>%
   right_join(full) %>%
   mutate(Variable = factor(Variable, 
                            levels = c("Surface_temperature", 
                                       "AirTemp_C_Average", 
                                       "Surface_chla", 
+                                      "Surface_DO",
+                                      "Bottom_DO",
+                                      "Turbidity",
                                       "Shortwave",
                                       "Diff_Dens_surf_bot"),
                            labels = c("Surface temperature", 
                                       "Air temperature",
                                       "Surface chlorophyll-a",
-                                      "Shortwave",
+                                      "Surface DO",
+                                      "Bottom-water DO",
+                                      "Surface turbidity",
+                                      "Solar radiation",
                                       "Epi-hypo dens. difference"))) %>%
   filter(!is.na(Variable)) %>%
   group_by(Variable, Lake) %>%
   mutate(Value = (Value)/(max(Value, na.rm = T))) %>%
   mutate(x = yday) %>%
-  mutate(var_class = ifelse(Variable == "Surface chlorophyll-a", "Bio", "Phys"))
+  mutate(var_class = ifelse(Variable %in% c("Surface chlorophyll-a", 
+                                            "Bottom-water DO",
+                                            "Surface turbidity",
+                                            "Surface DO"), 
+                            "Bio/chem", "Phys"),
+         Lake = factor(Lake, levels = c("Lake Sunapee (2008)", 
+                                        "Beaverdam Reservoir (2021)", 
+                                        "Rerewhakaaitu (2022-2023)")))
 
 #Plot
 continuous <- continuous_data %>%
+  filter(!Variable %in% c("Bottom-water DO", "Surface turbidity","Surface DO")) %>%
   ggplot(aes(x = x, y = Value * 100, color = Variable)) +
   scale_color_manual(values = c("#6B7CB3","#1F363D","#8DD65C", "#FFC233", "#F05D5E")) +
   geom_line(alpha = 0.2) +
@@ -190,7 +227,7 @@ continuous <- continuous_data %>%
   scale_x_continuous(breaks = c(0, 90, 183, 276, 365),
                  labels = c("Winter\nsolstice", "Spring\nequinox", 
                             "Summer\nsolstice", "Autumn\nequinox", "Winter\nsolstice")) +
-  facet_wrap(~Lake, ncol = 1) +
+  facet_wrap(~Lake, ncol = 1, scales = "free_y") +
   theme(legend.position = "bottom",
         legend.title = element_blank(),
         axis.title.x = element_blank(),
@@ -207,11 +244,11 @@ continuous
 # Combine and save
 
 ```{r}
-jpeg("../03a_Figures/Seasons_data.jpg", width = 9, height = 5, units = "in", res = 300)
+jpeg("../03a_Figures/Seasons_data.jpg", width = 9, height = 7, units = "in", res = 300)
 ggarrange(discrete_strat, continuous, align = "h")
 dev.off()
 
-jpeg("../03a_Figures/Seasons_data_ice.jpg", width = 8.5, height = 4.5, units = "in", res = 300)
+jpeg("../03a_Figures/Seasons_data_ice.jpg", width = 8.5, height = 6, units = "in", res = 300)
 ggarrange(discrete_ice, continuous, align = "h")
 dev.off()
 ```
@@ -237,21 +274,23 @@ discrete_ice2 <- discrete_strat +
         legend.key.spacing.y = unit(0, "mm"),
         panel.grid.minor = element_blank()) +
   guides(color = guide_legend(ncol = 1, title.position="top")) +
-  facet_grid(rows = vars(Lake))
+  facet_wrap(~Lake, ncol = 1) +
+  labs(subtitle = "")
 
 continuous2 <- continuous_data %>%
+  filter(var_class == "Bio/chem") %>%
   ggplot(aes(x = x, y = Value * 100, color = Variable)) +
-  scale_color_manual(values = c("#6B7CB3","#1F363D","#8DD65C", "#FFC233", "#F05D5E")) +
+  scale_color_manual(values = c("#8DD65C", "blue","#7b32c9","black")) +
   geom_line(alpha = 0.2) +
   geom_smooth(se = F, method = "gam") +
   theme_bw() + 
   ylab("% of max") +
-  ggtitle("Seasonally-varying parameters")  +
+  #ggtitle("Seasonally-varying parameters")  +
   guides(color = guide_legend(ncol = 1)) +
   scale_x_continuous(breaks = c(0, 90, 183, 276, 365),
                  labels = c("Winter\nsolstice", "Spring\nequinox", 
                             "Summer\nsolstice", "Autumn\nequinox", "Winter\nsolstice")) +
-  facet_grid(rows = vars(Lake), cols = vars(var_class)) +
+  facet_wrap(~Lake, ncol = 1)+ 
   theme(legend.position = "bottom",
         legend.title = element_blank(),
         axis.title.x = element_blank(),
@@ -260,10 +299,38 @@ continuous2 <- continuous_data %>%
         legend.key.height = unit(3, "mm"),
         panel.grid.major.y = element_blank(),
         panel.grid.major.x = element_line(color = "grey80"),
-        strip.text.x = element_blank())
+        #strip.text.x = element_blank()
+        )+
+  labs(subtitle = "Biological/chemical")
 
-jpeg("../03a_Figures/Seasons_data_ice2.jpg", width = 8.5, height = 4.5, units = "in", res = 300)
-ggarrange(discrete_ice2, continuous2, widths = c(1,1.5), align = "h")
+continuous3 <- continuous_data %>%
+  filter(var_class == "Phys") %>%
+  ggplot(aes(x = x, y = Value * 100, color = Variable)) +
+  scale_color_manual(values = c("#6B7CB3","#1F363D", "#FFC233","#F05D5E")) +
+  geom_line(alpha = 0.2) +
+  geom_smooth(se = F, method = "gam") +
+  theme_bw() + 
+  ylab("% of max") +
+  guides(color = guide_legend(ncol = 1)) +
+  scale_x_continuous(breaks = c(0, 90, 183, 276, 365),
+                 labels = c("Winter\nsolstice", "Spring\nequinox", 
+                            "Summer\nsolstice", "Autumn\nequinox", "Winter\nsolstice")) +
+  ggtitle("Seasonally-varying parameters")  +
+  facet_wrap(~Lake, ncol = 1) +
+  theme(legend.position = "bottom",
+        legend.title = element_blank(),
+        axis.title.x = element_blank(),
+        panel.grid.minor = element_blank(),
+        strip.background = element_rect(fill = "white", color = "white"),
+        legend.key.height = unit(3, "mm"),
+        panel.grid.major.y = element_blank(),
+        panel.grid.major.x = element_line(color = "grey80"),
+        #strip.text.x = element_blank()
+        )+
+  labs(subtitle = "Physical")
+
+jpeg("../03a_Figures/Seasons_data_ice2.jpg", width = 10, height = 6, units = "in", res = 300)
+ggarrange(discrete_ice2, continuous3, continuous2, align = "h", nrow = 1, widths = c(1.2, 1,1))
 dev.off()
 ```
 

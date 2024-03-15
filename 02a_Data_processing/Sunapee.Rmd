@@ -1,0 +1,123 @@
+---
+title: "Template"
+author: "Abby Lewis"
+date: "2024-03-11"
+output: html_document
+---
+
+# Sunapee
+
+Data on EDI here:
+https://portal.edirepository.org/nis/metadataviewer?packageid=edi.234.5
+https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=499&revision=4
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(rLakeAnalyzer)
+
+#Offset so all yday values are from the winter solstice
+offset = as.Date("2008-01-01") - as.Date("2007-12-21")
+LAKE = "Lake Sunapee (2008)"
+```
+
+In-lake data (temperature, chlorophyll-a, stratification)
+
+```{r}
+# Load data
+DO_2007 <- read.csv("https://pasta.lternet.edu/package/data/eml/edi/499/4/d7678325ec3a430959b52c8a933c810a")
+temp_2007 <- read.csv("https://pasta.lternet.edu/package/data/eml/edi/499/4/8aa419258c486d5533fc016c7385afdd")
+DO_2008 <- read.csv("https://pasta.lternet.edu/package/data/eml/edi/499/4/212faee8c415ed9dd76941e1377b20e6")
+temp_2008 <- read.csv("https://pasta.lternet.edu/package/data/eml/edi/499/4/107e661231ad954a2f9ce746ed934971")
+
+in_lake_data <- DO_2007 %>%
+  full_join(DO_2008) %>%
+  full_join(temp_2007) %>%
+  full_join(temp_2008) %>%
+  mutate(Date = as.Date(datetime) + offset,
+         yday = yday(Date)) %>%
+  filter(year(Date) == 2008) %>%
+  group_by(yday) %>%
+  summarize(across(where(is.numeric), ~mean(., na.rm = T)))
+
+# Format continuous data
+in_lake_formatted <- in_lake_data %>%
+  rename(Surface_DO = oxygenDissolvedPercentOfSaturation_pct_1p5m,
+         Surface_temperature = waterTemperature_degC_0p5m) %>%
+  pivot_longer(cols = c(Surface_temperature, Surface_DO), 
+               names_to = "Variable", values_to = "Value") %>%
+  select(yday, Variable, Value) %>%
+  mutate(Lake = LAKE)
+         
+write.csv(in_lake_formatted, "../01b_Processed_data/Sunapee_continuous.csv", row.names = F)
+
+# Stratification metric calcs (both discrete and continuous)
+strat_export_cont <- in_lake_data %>%
+  group_by(yday) %>%
+  summarize(Diff_Dens_surf_bot = water.density(waterTemperature_degC_13p5m) - 
+              water.density(waterTemperature_degC_0p5m),
+            Diff_Dens_surf_bot = ifelse(is.na(Diff_Dens_surf_bot),
+                                        water.density(waterTemperature_degC_11p5m) - 
+                                          water.density(waterTemperature_degC_0p5m),
+                                        Diff_Dens_surf_bot)) %>%
+  pivot_longer(Diff_Dens_surf_bot, names_to = "Variable", values_to = "Value") %>%
+  mutate(Lake = LAKE)
+
+strat_export_discrete <- strat_export_cont %>%
+  mutate(Strat = ifelse(Value > 0.1, "Stratified", "Mixed"),
+         Strat = ifelse(Value < -0.1, "Inversely\nstratified", Strat)) %>%
+  filter(!is.na(Value)) %>%
+  ungroup() %>%
+  filter(Strat != lag(Strat)) %>%
+  full_join(data.frame(Variable = "Diff_Dens_surf_9", yday = 1, Strat = "Mixed")) %>%
+  arrange(yday) %>%
+  mutate(end = lead(yday, default = 365)) %>%
+  rename(start = yday, Season = Strat) %>%
+  select(start, end, Season) %>%
+  mutate(Lake = LAKE)
+
+write.csv(strat_export_discrete, 
+          "../01b_Processed_data/Sunapee_stratification_discrete.csv", 
+          row.names = F)
+write.csv(strat_export_cont, 
+          "../01b_Processed_data/Sunapee_stratification_continuous.csv", 
+          row.names = F)
+```
+
+Meteorological data
+
+```{r}
+# Load data
+met_2007 <- read.csv("https://pasta.lternet.edu/package/data/eml/edi/234/5/2b93f48b1a3cae30a612ea49bb476b5a")
+met_2008 <- read.csv("https://pasta.lternet.edu/package/data/eml/edi/234/5/1ce6bfd69cfebfa723bb27c6028e5e40")
+
+# Format continuous data
+met_formatted <- met_2007 %>%
+  full_join(met_2008) %>%
+  mutate(Date = as.Date(datetime) + offset,
+         yday = yday(Date)) %>%
+  filter(year(Date) == 2008) %>%
+  rename(AirTemp_C_Average = airTemperature_degC,
+         Shortwave = radiationIncomingPAR_umolm2s) %>%
+  pivot_longer(cols = c(AirTemp_C_Average, Shortwave), 
+               names_to = "Variable", values_to = "Value") %>%
+  group_by(yday, Variable) %>%
+  summarize(Value = mean(Value, na.rm = T), .groups = "drop") %>%
+  mutate(Lake = LAKE)
+
+write.csv(met_formatted, "../01b_Processed_data/Sunapee_met.csv", row.names = F)
+```
+
+Ice data
+"Using the thermal stability metric, we determined the day of ice-on to be 06 December 2007 and ice-off day to be 25 April 2008 (Table 1; Fig. 2)"
+https://aslopubs.onlinelibrary.wiley.com/doi/10.1002/lno.10014
+
+```{r}
+ice <- data.frame(Lake = c(LAKE, LAKE),
+                  Season = c("Ice","Open water"),
+                  Method = c("Ice","Ice"),
+                  start = c(0, yday(as.Date("2008-04-24") + offset)),
+                  end = c(yday(as.Date("2008-04-24") + offset), 365))
+
+write.csv(ice, "../01b_Processed_data/Sunapee_ice.csv", row.names = F)
+```

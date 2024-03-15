@@ -26,6 +26,7 @@ library(tidyverse)
 library(rLakeAnalyzer)
 
 offset = as.Date("2023-01-01") - as.Date("2022-06-21")
+LAKE = "Rerewhakaaitu (2022-2023)" 
 ```
 
 In-lake data (temperature, chlorophyll-a, stratification)
@@ -43,12 +44,25 @@ in_lake_data <- in_lake_raw %>%
          !is.na(yday)) 
 
 # Format continuous data
-in_lake_formatted <- in_lake_data %>%
+in_lake_bottom <- in_lake_data %>%
+  filter(Variable == "DOconc") %>%
+  group_by(yday, Variable) %>%
+  summarize(Value = mean(Value[depth_rdn = which.max(depth_rnd)], na.rm = T)) %>%
+  select(Variable, Value, yday) %>%
+  mutate(Variable = "Bottom_DO",
+         Lake = LAKE)
+
+in_lake_surface <- in_lake_data %>%
   filter(depth_rnd == 1) %>%
   select(Variable, Value, yday) %>%
   mutate(Variable = ifelse(Variable == "TmpWtr", "Surface_temperature", Variable),
-         Variable = ifelse(Variable == "FlChlr", "Surface_chla", Variable)) %>%
-  mutate(Lake = "Rerewhakaaitu")
+         Variable = ifelse(Variable == "FlChlr", "Surface_chla", Variable),
+         Variable = ifelse(Variable == "TurbRT", "Turbidity", Variable),
+         Variable = ifelse(Variable == "DOpsat", "Surface_DO", Variable)) %>%
+  mutate(Lake = LAKE)
+
+in_lake_formatted <- in_lake_surface %>%
+  full_join(in_lake_bottom)
 
 write.csv(in_lake_formatted, "../01b_Processed_data/Rerewhakaaitu_continuous.csv", row.names = F)
 
@@ -62,7 +76,7 @@ strat_export_cont <- in_lake_data %>%
                                         water.density(Temp_11) - water.density(Temp_1),
                                         Diff_Dens_surf_bot)) %>%
   pivot_longer(-1, names_to = "Variable", values_to = "Value") %>%
-  mutate(Lake = "Rerewhakaaitu")
+  mutate(Lake = LAKE)
 
 strat_export_discrete <- strat_export_cont %>%
   mutate(Strat = ifelse(Value > 0.1, "Stratified", "Mixed"),
@@ -75,7 +89,7 @@ strat_export_discrete <- strat_export_cont %>%
   mutate(end = lead(yday, default = 365)) %>%
   rename(start = yday, Season = Strat) %>%
   select(start, end, Season) %>%
-  mutate(Lake = "Rerewhakaaitu")
+  mutate(Lake = LAKE)
 
 write.csv(strat_export_discrete, 
           "../01b_Processed_data/Rerewhakaaitu_stratification_discrete.csv", 
@@ -104,10 +118,19 @@ met_formatted <- met %>%
   summarize(Value = mean(value, na.rm = T), .groups = "drop") %>%
   mutate(yday = yday(Date)) %>%
   select(-Date) %>%
-  mutate(Lake = "Rerewhakaaitu")
+  mutate(Lake = LAKE)
 
 write.csv(met_formatted, "../01b_Processed_data/Rerewhakaaitu_met.csv", row.names = F)
 ```
 
 Ice data
 (no ice)
+```{r}
+ice <- data.frame(Lake = LAKE,
+                  Season = "Open water",
+                  Method = "Ice",
+                  start = 0,
+                  end = 365)
+write.csv(ice, "../01b_Processed_data/Rerewhakaaitu_ice.csv", row.names = F)
+```
+

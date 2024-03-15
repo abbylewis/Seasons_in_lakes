@@ -11,6 +11,7 @@ library(tidyverse)
 library(rLakeAnalyzer)
 
 offset = as.Date("2021-01-01") - as.Date("2020-12-21")
+LAKE = "Beaverdam Reservoir (2021)" 
 ```
 
 Catwalk data (temperature, chlorophyll-a, stratification)
@@ -27,12 +28,15 @@ catwalk_format <- catwalk %>%
   filter(Year == 2021) %>%
   group_by(Date) %>%
   summarize(Surface_temperature = mean(EXOTemp_C_1.5, na.rm = T),
-            Surface_chla = mean(EXOChla_ugL_1.5, na.rm = T)) %>%
+            Surface_chla = mean(EXOChla_ugL_1.5, na.rm = T),
+            Surface_DO = mean(EXODOsat_percent_1.5, na.rm = T),
+            Bottom_DO = mean(RDO_mgL_13, na.rm = T),
+            Turbidity = mean(EXOTurbidity_FNU_1.5, na.rm = T)) %>%
   mutate(yday = yday(Date)) %>%
-  pivot_longer(cols = c(Surface_temperature, Surface_chla), 
+  pivot_longer(cols = c(Surface_temperature, Surface_chla, Bottom_DO, Turbidity, Surface_DO), 
                names_to = "Variable", values_to = "Value") %>%
   select(yday, Variable, Value) %>%
-  mutate(Lake = "Beaverdam Reservoir")
+  mutate(Lake = LAKE)
 
 write.csv(catwalk_format, "../01b_Processed_data/BVR_catwalk.csv", row.names = F)
 
@@ -52,9 +56,9 @@ strat_metrics_long <- catwalk_strat |>
   pivot_longer(cols = Diff_Dens_surf_bot, names_to = "Variable", values_to = "Value") %>%
   mutate(yday = yday(Date)) %>%
   select(yday, Variable, Value) %>%
-  mutate(Lake = "Beaverdam Reservoir")
+  mutate(Lake = LAKE)
 
-#write csv in correct format
+#Re-format
 strat_export <- strat_metrics_long %>%
   filter(Variable == "Diff_Dens_surf_bot") %>%
   mutate(Strat = ifelse(Value > 0.1, "Stratified", "Mixed"),
@@ -66,7 +70,7 @@ strat_export <- strat_metrics_long %>%
   mutate(end = lead(yday, default = 365)) %>%
   rename(start = yday, Season = Strat) %>%
   select(start, end, Season) %>%
-  mutate(Lake = "Beaverdam Reservoir")
+  mutate(Lake = LAKE)
 
 write.csv(strat_export, "../01b_Processed_data/BVR_stratification_discrete.csv", row.names = F)
 write.csv(strat_metrics_long, "../01b_Processed_data/BVR_stratification_continuous.csv", row.names = F)
@@ -93,7 +97,7 @@ met_format <- met %>%
                         Rain_Total_mm,
                         Shortwave), 
                names_to = "Variable", values_to = "Value")  %>%
-  mutate(Lake = "Beaverdam Reservoir") %>%
+  mutate(Lake = LAKE) %>%
   select(-Date)
 
 write.csv(met_format, "../01b_Processed_data/BVR_met.csv", row.names = F)
@@ -127,7 +131,8 @@ ice_format2 <- ice_format %>%
   pivot_wider(names_from = point, values_from = yday) %>%
   mutate(Season = "Ice") %>%
   select(-group, -Year)  %>%
-  mutate(Lake = "Beaverdam Reservoir")
+  mutate(Lake = LAKE,
+         Method = "Ice")
 
 ice_format3 <- ice_format %>%
   full_join(data.frame(yday = c(0, 365))) %>%
@@ -138,7 +143,8 @@ ice_format3 <- ice_format %>%
   pivot_wider(names_from = point, values_from = yday) %>%
   mutate(Season = "Open water") %>%
   select(-group)  %>%
-  mutate(Lake = "Beaverdam Reservoir")
+  mutate(Lake = LAKE,
+         Method = "Ice")
 
 ice_format_export = ice_format2 %>%
   full_join(ice_format3)

@@ -24,6 +24,9 @@ For discrete data, the output format has four columns
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(rLakeAnalyzer)
+
+#Offset so all yday values are from the winter solstice
+offset = as.Date("2023-01-01") - as.Date("2022-12-21")
 ```
 
 In-lake data (temperature, chlorophyll-a, stratification)
