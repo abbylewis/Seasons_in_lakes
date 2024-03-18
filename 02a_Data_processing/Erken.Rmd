@@ -1,0 +1,153 @@
+---
+title: "Template"
+author: "Abby Lewis"
+date: "2024-03-11"
+output: html_document
+---
+
+# Erken
+
+https://meta.fieldsites.se/objects/55l-RxzRQE4YQt7IRY6zN1pa
+https://www.hydroshare.org/resource/2dead0d54fe74ee7943e89ae4159aab1/ 
+https://meta.fieldsites.se/objects/QLqXw2wkqxXrr0ahsxeQaWbp
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(rLakeAnalyzer)
+
+#Offset so all yday values are from the winter solstice
+offset = as.Date("2018-01-01") - as.Date("2017-12-21")
+LAKE = "Lake Erken (2018)"
+```
+
+In-lake data (temperature, chlorophyll-a, stratification)
+
+```{r}
+# Load data
+temp <- read.csv("../01a_Raw_data/2017-2018_ErkenWaterTempProfile.dat", skip = 1)
+do <- read.table("../01a_Raw_data/2018_Erken_ODO_mg_l.dat", skip = 4)
+do_depths <- seq(1, 17.5, by = 0.5)
+colnames(do) <- c("Date", "Time", paste0("DO_", do_depths))
+chla <- read.table("../01a_Raw_data/2018_Erken_Chl.dat", skip = 4)
+colnames(chla) <- c("Date", "Time", paste0("Chla_", do_depths))
+#2017 data also available (may to sep)
+
+# Format continuous data
+temp_format <- temp %>%
+  mutate(Date = as.Date(TMSTAMP) + offset, 
+         yday = yday(Date),
+         Year = year(Date)) %>%
+  filter(Year == 2018) %>%
+  group_by(yday) %>%
+  summarise(Surface_temperature = mean(WTemp1_00_Avg, na.rm = T)) 
+
+do_format <- do %>%
+  mutate(Date = as.Date(Date) + offset, 
+         yday = yday(Date),
+         Year = year(Date)) %>%
+  filter(Year == 2018) %>%
+  group_by(yday) %>%
+  summarise(Surface_DO = mean(DO_1, na.rm = T),
+            Bottom_DO = mean(DO_17.5, na.rm = T))
+
+chla_format <- chla %>%
+  mutate(Date = as.Date(Date) + offset, 
+         yday = yday(Date),
+         Year = year(Date)) %>%
+  filter(Year == 2018) %>%
+  group_by(yday) %>%
+  summarise(Surface_chla = mean(Chla_1, na.rm = T))
+  
+in_lake_formatted <- temp_format %>%
+  full_join(do_format) %>%
+  full_join(chla_format) %>%
+  pivot_longer(cols = c(Surface_temperature, Surface_chla, Bottom_DO, Surface_DO), 
+               names_to = "Variable", values_to = "Value") %>%
+  select(yday, Variable, Value) %>%
+  mutate(Lake = LAKE)
+
+write.csv(in_lake_formatted, "../01b_Processed_data/Erken_continuous.csv", row.names = F)
+
+# Stratification metric calcs (both discrete and continuous)
+strat_export_cont <- temp %>%
+  mutate(Date = as.Date(TMSTAMP) + offset, 
+         yday = yday(Date),
+         Year = year(Date)) %>%
+  filter(Year == 2018) %>%
+  group_by(yday) %>%
+  summarize(WTemp1_00_Avg = mean(WTemp1_00_Avg, na.rm = T),
+            WTemp14_50_Avg = mean(WTemp14_50_Avg, na.rm = T)) %>%
+  group_by(yday) %>%
+  summarize(Diff_Dens_surf_bot = water.density(WTemp14_50_Avg) - water.density(WTemp1_00_Avg)) %>%
+  pivot_longer(Diff_Dens_surf_bot, names_to = "Variable", values_to = "Value") %>%
+  mutate(Lake = LAKE)
+
+strat_export_discrete <- strat_export_cont %>%
+  mutate(Strat = ifelse(Value > 0.1, "Stratified", "Mixed"),
+         Strat = ifelse(Value < -0.1, "Inversely\nstratified", Strat)) %>%
+  filter(!is.na(Value)) %>%
+  ungroup() %>%
+  filter(Strat != lag(Strat)) %>%
+  full_join(data.frame(Variable = "Diff_Dens_surf_9", yday = 1, Strat = "Mixed")) %>%
+  arrange(yday) %>%
+  mutate(end = lead(yday, default = 365)) %>%
+  rename(start = yday, Season = Strat) %>%
+  select(start, end, Season) %>%
+  mutate(Lake = LAKE)
+
+write.csv(strat_export_discrete, 
+          "../01b_Processed_data/Erken_stratification_discrete.csv", 
+          row.names = F)
+write.csv(strat_export_cont, 
+          "../01b_Processed_data/Erken_stratification_continuous.csv", 
+          row.names = F)
+```
+
+Meteorological data
+
+```{r}
+# Load data
+met <- read.csv("../01a_Raw_data/ErkenMalmaIslanMetData_2015-2018.csv", skip = 3)
+
+# Format continuous data
+met_formatted <- met %>%
+  mutate(Date = as.Date(TMSTAMP) + offset,
+         Year = year(Date)) %>%
+  filter(Year == 2018) %>%
+  group_by(Date) %>%
+  summarize(AirTemp_C_Average = mean(Air_Temp_AS_Avg, na.rm = T),
+            Rain_Total_mm = sum(Rain_Tot),
+            Shortwave = mean(SW_Rad_Avg, na.rm = T)) %>%
+  mutate(yday = yday(Date)) %>%
+  pivot_longer(cols = c(AirTemp_C_Average,
+                        Rain_Total_mm,
+                        Shortwave), 
+               names_to = "Variable", values_to = "Value")  %>%
+  mutate(Lake = LAKE) %>%
+  select(-Date)
+
+write.csv(met_formatted, "../01b_Processed_data/Erken_met.csv", row.names = F)
+```
+
+Ice data
+
+```{r}
+#Load data
+ice <- read.csv("../01a_Raw_data/SITES_ICE_ERK_MAI_1941-2022_L2_annual.csv", skip = 27)
+
+inspect <- ice %>%
+  mutate(TIME_ICE_ON = as.Date(TIME_ICE_ON) + offset,
+         TIME_ICE_OFF = as.Date(TIME_ICE_OFF) + offset, 
+         start = yday(TIME_ICE_ON),
+         end = yday(TIME_ICE_OFF)) %>%
+  filter(TIMESTAMP %in% c(2018))
+
+ice_formatted <- data.frame(start = c(0, inspect$start, inspect$end),
+                           end = c(inspect$start, inspect$end, 365),
+                           Season = c("Open water", "Ice", "Open water")) %>%
+  mutate(Lake = LAKE,
+         Method = "Ice") 
+
+write.csv(ice_formatted, "../01b_Processed_data/Erken_ice.csv", row.names = F)
+```
