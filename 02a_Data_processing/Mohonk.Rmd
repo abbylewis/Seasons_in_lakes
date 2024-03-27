@@ -1,0 +1,90 @@
+---
+title: "Template"
+author: "Abby Lewis"
+date: "2024-03-11"
+output: html_document
+---
+
+# Mohonk
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(rLakeAnalyzer)
+
+#Offset so all yday values are from the winter solstice
+offset = as.Date("2017-01-01") - as.Date("2016-12-21")
+LAKE = "Mohonk Lake (2017)"
+```
+
+All data in one file
+
+```{r}
+# Load data
+in_lake_data <- read.csv("../01a_Raw_data/Mohonk2017-Seasons-PhysicalData.csv") %>%
+  mutate(Date = as.Date(DateTime) + offset,
+         yday = yday(Date)) %>%
+  filter(year(Date) == 2017) %>%
+  group_by(yday) %>%
+  summarize(across(where(is.numeric), ~mean(., na.rm = T)))
+
+# Format continuous data
+in_lake_formatted <- in_lake_data %>%
+  rename(Surface_temperature = Temp_0m,
+         AirTemp_C_Average = AirTemp_2m_degC,
+         Shortwave = solar_insolation_avg_Wpm2) %>%
+  pivot_longer(cols = c(Surface_temperature, AirTemp_C_Average, Shortwave), 
+               names_to = "Variable", values_to = "Value") %>%
+  select(yday, Variable, Value) %>%
+  mutate(Lake = LAKE)
+
+write.csv(in_lake_formatted, "../01b_Processed_data/Mohonk_continuous.csv", row.names = F)
+
+# Stratification metric calcs (both discrete and continuous)
+strat_sum <- in_lake_data %>%
+  group_by(yday) %>%
+  summarize(Diff_Dens_surf_bot = water.density(Temp_9m) - water.density(Temp_0m),
+            Inverse = ifelse(Temp_9m > Temp_0m,
+                             T, F))
+
+strat_export_discrete <- strat_sum %>%
+  mutate(Strat = ifelse(Diff_Dens_surf_bot > 0.05, "Stratified", "Mixed"),
+         Strat = ifelse(Inverse & Strat == "Stratified", "Inversely\nstratified", Strat)) %>%
+  filter(!is.na(Strat)) %>%
+  ungroup() %>%
+  filter(Strat != lag(Strat)) %>%
+  full_join(data.frame(Variable = "Diff_Dens_surf_9", yday = 1, Strat = "Mixed")) %>%
+  arrange(yday) %>%
+  mutate(end = lead(yday, default = 365)) %>%
+  rename(start = yday, Season = Strat) %>%
+  select(start, end, Season) %>%
+  mutate(Lake = LAKE)
+
+strat_export_cont <- strat_sum %>%
+  select(yday, Diff_Dens_surf_bot) %>%
+  pivot_longer(Diff_Dens_surf_bot, names_to = "Variable", values_to = "Value") %>%
+  mutate(Lake = LAKE)
+
+
+write.csv(strat_export_discrete, 
+          "../01b_Processed_data/Mohonk_stratification_discrete.csv", 
+          row.names = F)
+write.csv(strat_export_cont, 
+          "../01b_Processed_data/Mohonk_stratification_continuous.csv", 
+          row.names = F)
+```
+
+Ice data
+
+```{r}
+in_lake_data
+
+#Manual to deal with NAs
+ice <- data.frame(Lake = c(LAKE, LAKE),
+                  Season = c("Ice","Open water"),
+                  Method = c("Ice","Ice"),
+                  start = c(0, 132),
+                  end = c(88, 365))
+
+write.csv(ice, "../01b_Processed_data/Mohonk_ice.csv", row.names = F)
+```

@@ -40,16 +40,21 @@ sun_ice <- read.csv("../01b_Processed_data/Sunapee_ice.csv")
 #Erken
 erken_strat <- read.csv("../01b_Processed_data/Erken_stratification_discrete.csv") 
 erken_ice <- read.csv("../01b_Processed_data/Erken_ice.csv") 
+#Mohonk
+mohonk_strat <- read.csv("../01b_Processed_data/Mohonk_stratification_discrete.csv") 
+mohonk_ice <- read.csv("../01b_Processed_data/Mohonk_ice.csv") 
 
 #Format
 in_lake <- bvr_strat %>% 
   full_join(sun_strat) %>%
   full_join(rere_strat) %>%
   full_join(erken_strat) %>%
+  full_join(mohonk_strat) %>%
   mutate(Method = "Stratification",
          x = start,
          xend = end,
          Lake = factor(Lake, levels = c("Lake Erken (2018)",
+                                        "Mohonk Lake (2017)",
                                         "Lake Sunapee (2008)", 
                                         "Beaverdam Reservoir (2021)", 
                                         "Lake Rerewhakaaitu (2022-2023)")))
@@ -58,7 +63,9 @@ ice_format <- bvr_ice %>%
   full_join(rere_ice) %>%
   full_join(sun_ice) %>%
   full_join(erken_ice) %>%
+  full_join(mohonk_ice) %>%
   mutate(Lake = factor(Lake, levels = c("Lake Erken (2018)",
+                                        "Mohonk Lake (2017)",
                                         "Lake Sunapee (2008)", 
                                         "Beaverdam Reservoir (2021)", 
                                         "Lake Rerewhakaaitu (2022-2023)")))
@@ -73,6 +80,7 @@ for(lake in unique(in_lake$Lake)) {
 }
 temperate <- temperate %>%
   mutate(Lake = factor(Lake, levels = c("Lake Erken (2018)",
+                                        "Mohonk Lake (2017)",
                                         "Lake Sunapee (2008)", 
                                         "Beaverdam Reservoir (2021)", 
                                         "Lake Rerewhakaaitu (2022-2023)")))
@@ -171,6 +179,9 @@ sun_met <- read.csv("../01b_Processed_data/Sunapee_met.csv")
 erken_in_lake <- read.csv("../01b_Processed_data/Erken_continuous.csv")
 erken_strat <- read.csv("../01b_Processed_data/Erken_stratification_continuous.csv")
 erken_met <- read.csv("../01b_Processed_data/Erken_met.csv")
+#Mohonk
+mohonk_in_lake <- read.csv("../01b_Processed_data/Mohonk_continuous.csv")
+mohonk_strat <- read.csv("../01b_Processed_data/Mohonk_stratification_continuous.csv")
 
 #Format
 #A bit of magic to get explicit NAs
@@ -186,6 +197,8 @@ full <- bvr_catwalk_format %>%
   full_join(erken_in_lake) %>%
   full_join(erken_strat) %>%
   full_join(erken_met) %>%
+  full_join(mohonk_in_lake) %>%
+  full_join(mohonk_strat) %>%
   expand(Variable, yday, Lake)
 
 continuous_data <- bvr_catwalk_format %>%
@@ -200,6 +213,8 @@ continuous_data <- bvr_catwalk_format %>%
   full_join(erken_in_lake) %>%
   full_join(erken_strat) %>%
   full_join(erken_met) %>%
+  full_join(mohonk_in_lake) %>%
+  full_join(mohonk_strat) %>%
   right_join(full) %>%
   mutate(Variable = factor(Variable, 
                            levels = c("Surface_temperature", 
@@ -220,7 +235,8 @@ continuous_data <- bvr_catwalk_format %>%
                                       "Epi-hypo dens. difference"))) %>%
   filter(!is.na(Variable)) %>%
   group_by(Variable, Lake) %>%
-  mutate(Value = (Value)/(max(Value, na.rm = T))) %>%
+  mutate(Value = ((Value) - min(Value, na.rm = T))/
+           (max((Value) - min(Value, na.rm = T), na.rm = T))) %>%
   mutate(x = yday) %>%
   mutate(var_class = ifelse(Variable %in% c("Surface chlorophyll-a", 
                                             "Bottom-water DO",
@@ -228,6 +244,7 @@ continuous_data <- bvr_catwalk_format %>%
                                             "Surface DO"), 
                             "Bio/chem", "Phys"),
          Lake = factor(Lake, levels = c("Lake Erken (2018)",
+                                        "Mohonk Lake (2017)",
                                         "Lake Sunapee (2008)", 
                                         "Beaverdam Reservoir (2021)", 
                                         "Lake Rerewhakaaitu (2022-2023)")))
@@ -240,7 +257,7 @@ continuous <- continuous_data %>%
   geom_line(alpha = 0.2) +
   geom_smooth(se = F, method = "gam") +
   theme_bw() + 
-  ylab("% of max") +
+  ylab("% of range") +
   ggtitle("Seasonally-varying parameters")  +
   guides(color = guide_legend(ncol = 1)) +
   scale_x_continuous(breaks = c(0, 90, 183, 276, 365),
