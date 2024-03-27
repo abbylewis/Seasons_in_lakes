@@ -49,22 +49,27 @@ catwalk_strat <- read.csv("../01b_Processed_data/BVR_longoutput.csv") %>%
   group_by(Date, Sensor_depth) |> 
   summarise_if(is.numeric, mean, na.rm = TRUE) |>  # get daily temp data
   summarize(Diff_Dens_surf_bot = water.density(Reading[which.max(Sensor_depth)]) -
-              water.density(Reading[which.min(Sensor_depth)]))
+              water.density(Reading[which.min(Sensor_depth)]),
+            Inverse = ifelse(Reading[which.max(Sensor_depth)]>Reading[which.min(Sensor_depth)],
+                             T, F))
 
 #trim to just metrics for plotting 
-strat_metrics_long <- catwalk_strat |> 
+strat_metrics_long <- catwalk_strat %>%
+  select(Date, Diff_Dens_surf_bot) %>%
   pivot_longer(cols = Diff_Dens_surf_bot, names_to = "Variable", values_to = "Value") %>%
   mutate(yday = yday(Date)) %>%
   select(yday, Variable, Value) %>%
   mutate(Lake = LAKE)
 
 #Re-format
-strat_export <- strat_metrics_long %>%
-  filter(Variable == "Diff_Dens_surf_bot") %>%
-  mutate(Strat = ifelse(Value > 0.1, "Stratified", "Mixed"),
-         Strat = ifelse(Value < -0.1, "Inversely\nstratified", Strat)) %>%
-  filter(!is.na(Value)) %>%
-  filter(!Strat == lag(Strat)) %>%
+strat_export <- catwalk_strat %>%
+  mutate(yday = yday(Date)) %>%
+  mutate(Variable = "Diff_Dens_surf_bot",
+         Strat = ifelse(Diff_Dens_surf_bot > 0.05, "Stratified", "Mixed"),
+         Strat = ifelse(Strat == "Stratified" & Inverse, "Inversely\nstratified", Strat)) %>%
+  filter(!is.na(Strat),
+         !Strat == lag(Strat)) %>%
+  select(-Inverse) %>%
   full_join(data.frame(Variable = "Diff_Dens_surf_bot", yday = 1, Strat = "Mixed")) %>%
   arrange(yday) %>%
   mutate(end = lead(yday, default = 365)) %>%

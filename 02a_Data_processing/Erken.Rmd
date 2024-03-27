@@ -70,23 +70,21 @@ in_lake_formatted <- temp_format %>%
 write.csv(in_lake_formatted, "../01b_Processed_data/Erken_continuous.csv", row.names = F)
 
 # Stratification metric calcs (both discrete and continuous)
-strat_export_cont <- temp %>%
+strat_sum <- temp %>%
   mutate(Date = as.Date(TMSTAMP) + offset, 
          yday = yday(Date),
          Year = year(Date)) %>%
   filter(Year == 2018) %>%
   group_by(yday) %>%
   summarize(WTemp1_00_Avg = mean(WTemp1_00_Avg, na.rm = T),
-            WTemp14_50_Avg = mean(WTemp14_50_Avg, na.rm = T)) %>%
-  group_by(yday) %>%
-  summarize(Diff_Dens_surf_bot = water.density(WTemp14_50_Avg) - water.density(WTemp1_00_Avg)) %>%
-  pivot_longer(Diff_Dens_surf_bot, names_to = "Variable", values_to = "Value") %>%
-  mutate(Lake = LAKE)
+            WTemp14_50_Avg = mean(WTemp14_50_Avg, na.rm = T),
+            Diff_Dens_surf_bot = water.density(WTemp14_50_Avg) - water.density(WTemp1_00_Avg)) 
 
-strat_export_discrete <- strat_export_cont %>%
-  mutate(Strat = ifelse(Value > 0.1, "Stratified", "Mixed"),
-         Strat = ifelse(Value < -0.1, "Inversely\nstratified", Strat)) %>%
-  filter(!is.na(Value)) %>%
+strat_export_discrete <- strat_sum %>%
+  mutate(Strat = ifelse(Diff_Dens_surf_bot > 0.05, "Stratified", "Mixed"),
+         Strat = ifelse(Strat == "Stratified" & WTemp1_00_Avg < WTemp14_50_Avg,
+                        "Inversely\nstratified", Strat)) %>%
+  filter(!is.na(Strat)) %>%
   ungroup() %>%
   filter(Strat != lag(Strat)) %>%
   full_join(data.frame(Variable = "Diff_Dens_surf_9", yday = 1, Strat = "Mixed")) %>%
@@ -94,6 +92,11 @@ strat_export_discrete <- strat_export_cont %>%
   mutate(end = lead(yday, default = 365)) %>%
   rename(start = yday, Season = Strat) %>%
   select(start, end, Season) %>%
+  mutate(Lake = LAKE)
+
+strat_export_cont <- strat_sum %>%
+  select(yday, Diff_Dens_surf_bot) %>%
+  pivot_longer(Diff_Dens_surf_bot, names_to = "Variable", values_to = "Value") %>%
   mutate(Lake = LAKE)
 
 write.csv(strat_export_discrete, 

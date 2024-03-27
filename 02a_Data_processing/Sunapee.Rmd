@@ -52,21 +52,25 @@ in_lake_formatted <- in_lake_data %>%
 write.csv(in_lake_formatted, "../01b_Processed_data/Sunapee_continuous.csv", row.names = F)
 
 # Stratification metric calcs (both discrete and continuous)
-strat_export_cont <- in_lake_data %>%
+strat_sum <- in_lake_data %>%
   group_by(yday) %>%
   summarize(Diff_Dens_surf_bot = water.density(waterTemperature_degC_13p5m) - 
               water.density(waterTemperature_degC_0p5m),
             Diff_Dens_surf_bot = ifelse(is.na(Diff_Dens_surf_bot),
                                         water.density(waterTemperature_degC_11p5m) - 
                                           water.density(waterTemperature_degC_0p5m),
-                                        Diff_Dens_surf_bot)) %>%
-  pivot_longer(Diff_Dens_surf_bot, names_to = "Variable", values_to = "Value") %>%
-  mutate(Lake = LAKE)
+                                        Diff_Dens_surf_bot),
+            Inverse = ifelse(waterTemperature_degC_13p5m > waterTemperature_degC_0p5m,
+                             T, F),
+            Inverse = ifelse(is.na(Diff_Dens_surf_bot),
+                             ifelse(waterTemperature_degC_13p5m > waterTemperature_degC_0p5m,
+                             T, F),
+                             Inverse))
 
-strat_export_discrete <- strat_export_cont %>%
-  mutate(Strat = ifelse(Value > 0.1, "Stratified", "Mixed"),
-         Strat = ifelse(Value < -0.1, "Inversely\nstratified", Strat)) %>%
-  filter(!is.na(Value)) %>%
+strat_export_discrete <- strat_sum %>%
+  mutate(Strat = ifelse(Diff_Dens_surf_bot > 0.05, "Stratified", "Mixed"),
+         Strat = ifelse(Inverse & Strat == "Stratified", "Inversely\nstratified", Strat)) %>%
+  filter(!is.na(Strat)) %>%
   ungroup() %>%
   filter(Strat != lag(Strat)) %>%
   full_join(data.frame(Variable = "Diff_Dens_surf_9", yday = 1, Strat = "Mixed")) %>%
@@ -74,6 +78,11 @@ strat_export_discrete <- strat_export_cont %>%
   mutate(end = lead(yday, default = 365)) %>%
   rename(start = yday, Season = Strat) %>%
   select(start, end, Season) %>%
+  mutate(Lake = LAKE)
+
+strat_export_cont <- strat_sum %>%
+  select(yday, Diff_Dens_surf_bot) %>%
+  pivot_longer(Diff_Dens_surf_bot, names_to = "Variable", values_to = "Value") %>%
   mutate(Lake = LAKE)
 
 write.csv(strat_export_discrete, 

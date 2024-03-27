@@ -52,7 +52,7 @@ in_lake <- bvr_strat %>%
          Lake = factor(Lake, levels = c("Lake Erken (2018)",
                                         "Lake Sunapee (2008)", 
                                         "Beaverdam Reservoir (2021)", 
-                                        "Rerewhakaaitu (2022-2023)")))
+                                        "Lake Rerewhakaaitu (2022-2023)")))
 
 ice_format <- bvr_ice %>%
   full_join(rere_ice) %>%
@@ -61,7 +61,7 @@ ice_format <- bvr_ice %>%
   mutate(Lake = factor(Lake, levels = c("Lake Erken (2018)",
                                         "Lake Sunapee (2008)", 
                                         "Beaverdam Reservoir (2021)", 
-                                        "Rerewhakaaitu (2022-2023)")))
+                                        "Lake Rerewhakaaitu (2022-2023)")))
 
 #Format
 temperate <- temperate_raw %>% filter(is.na(start)) #make empty df
@@ -75,7 +75,7 @@ temperate <- temperate %>%
   mutate(Lake = factor(Lake, levels = c("Lake Erken (2018)",
                                         "Lake Sunapee (2008)", 
                                         "Beaverdam Reservoir (2021)", 
-                                        "Rerewhakaaitu (2022-2023)")))
+                                        "Lake Rerewhakaaitu (2022-2023)")))
 
 #Plot
 #First the temperate metrics
@@ -91,7 +91,7 @@ discrete_temperate <- temperate %>%
   ggtitle("Discrete seasonal clasifications") +
   scale_color_manual("Temperate\nseasons",
                      values = c("grey80", "grey67", "grey37", "grey10", 
-                                "grey", "grey", "grey", "grey"), #placeholders
+                                "grey", "grey", "grey", "grey", "grey"), #placeholders
                      breaks = c("Winter", "Spring", "Summer", "Autumn")) +
   scale_x_continuous(breaks = c(0, 90, 183, 276, 365),
                  labels = c("Winter\nsolstice", "Spring\nequinox", 
@@ -109,7 +109,7 @@ discrete_strat <- discrete_temperate +
                    xend = end, 
                    color = Season), 
                lwd = 5) +
-  scale_color_manual("Stratification", values = c("blue", "#FACFCF", "#F05D5E"),
+  scale_color_manual("Stratification", values = c("#FACFCF", "#F49090", "#CC4949"),
                      breaks = c("Inversely\nstratified", "Mixed", "Stratified")) +
   guides(color = guide_legend(ncol = 1, title.position="top")) +
   theme(legend.position = "bottom",
@@ -230,7 +230,7 @@ continuous_data <- bvr_catwalk_format %>%
          Lake = factor(Lake, levels = c("Lake Erken (2018)",
                                         "Lake Sunapee (2008)", 
                                         "Beaverdam Reservoir (2021)", 
-                                        "Rerewhakaaitu (2022-2023)")))
+                                        "Lake Rerewhakaaitu (2022-2023)")))
 
 #Plot
 continuous <- continuous_data %>%
