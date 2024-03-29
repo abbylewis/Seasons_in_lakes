@@ -54,8 +54,8 @@ in_lake <- bvr_strat %>%
          x = start,
          xend = end,
          Lake = factor(Lake, levels = c("Lake Erken (2018)",
-                                        "Mohonk Lake (2017)",
                                         "Lake Sunapee (2008)", 
+                                        "Mohonk Lake (2017)",
                                         "Beaverdam Reservoir (2021)", 
                                         "Lake Rerewhakaaitu (2022-2023)")))
 
@@ -65,8 +65,8 @@ ice_format <- bvr_ice %>%
   full_join(erken_ice) %>%
   full_join(mohonk_ice) %>%
   mutate(Lake = factor(Lake, levels = c("Lake Erken (2018)",
-                                        "Mohonk Lake (2017)",
                                         "Lake Sunapee (2008)", 
+                                        "Mohonk Lake (2017)",
                                         "Beaverdam Reservoir (2021)", 
                                         "Lake Rerewhakaaitu (2022-2023)")))
 
@@ -80,8 +80,8 @@ for(lake in unique(in_lake$Lake)) {
 }
 temperate <- temperate %>%
   mutate(Lake = factor(Lake, levels = c("Lake Erken (2018)",
-                                        "Mohonk Lake (2017)",
                                         "Lake Sunapee (2008)", 
+                                        "Mohonk Lake (2017)",
                                         "Beaverdam Reservoir (2021)", 
                                         "Lake Rerewhakaaitu (2022-2023)")))
 
@@ -244,8 +244,8 @@ continuous_data <- bvr_catwalk_format %>%
                                             "Surface DO"), 
                             "Bio/chem", "Phys"),
          Lake = factor(Lake, levels = c("Lake Erken (2018)",
-                                        "Mohonk Lake (2017)",
                                         "Lake Sunapee (2008)", 
+                                        "Mohonk Lake (2017)",
                                         "Beaverdam Reservoir (2021)", 
                                         "Lake Rerewhakaaitu (2022-2023)")))
 

@@ -23,9 +23,24 @@ if(!file.exists("../03a_Figures")){dir.create("../03a_Figures")}
 ```
 
 ```{r}
-for_map <- data.frame(Lake = c("Sunapee", "Erken", "BVR", "Rerewhakaaitu", "Tanganyika"),
-                       Latitude_DD = c(43.3802, 59.83917, 37.3164747, -38.2936, -6.166),
-                       Longitude_DD = c(-72.05065, 18.6334, 279.8188267-360, 176.5022, 29.52544))
+for_map <- data.frame(Lake = c("Sunapee", 
+                               "Erken", 
+                               "BVR", 
+                               "Rerewhakaaitu", 
+                               #"Tanganyika", 
+                               "Mohonk"),
+                       Latitude_DD = c(43.3802, 
+                                       59.83917, 
+                                       37.3164747, 
+                                       -38.2936, 
+                                       #-6.166, 
+                                       41.765984891547966),
+                       Longitude_DD = c(-72.05065, 
+                                        18.6334, 
+                                        279.8188267-360, 
+                                        176.5022, 
+                                        #29.52544, 
+                                        -74.15761300441983))
 
 #Create a world map of the sites in this analysis
 world <- ne_countries(scale = "medium", returnclass = "sf")
@@ -37,7 +52,7 @@ world_map <- ggplot(data = world) +
   coord_sf(expand = FALSE)+
   geom_point(data = for_map, aes(Longitude_DD, Latitude_DD), 
              fill = "maroon",shape = 21, color = "white", size = 5, alpha  =.7, stroke = .4)+
-  geom_hline(yintercept = 0) +
+  geom_hline(yintercept = 0, lwd = 0.1) +
   theme_void()+
   theme(plot.margin = margin(0, 0, 0, 0, "cm"),
     legend.box.background = element_rect(fill = "white", color = "white"))+
