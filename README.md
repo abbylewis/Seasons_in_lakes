@@ -23,7 +23,6 @@ We would love to have figures generated for as many lakes as possible! If you ar
 1.  Clone this repo.
 2.  Add raw data files to `01a_Raw_data`
 3.  Copy the `Template.Rmd` script in `02a_Data processing` and rename to match you lake. Use this script to format your raw data (one year) for the figure. Processed data files should then be output to `01b_Processed_data.`
-4.  Make a copy of `02b_Data_analysis/Plot.Rmd` and modify the script to use your own data
-5.  Create a pull request to contribute your changes
+4.  Create a pull request to contribute your changes
 
 I (Abby) am very happy to help with all steps of this workflow! Please just let me know how I can help. Thanks!
