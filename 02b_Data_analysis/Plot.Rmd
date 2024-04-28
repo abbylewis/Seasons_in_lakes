@@ -18,6 +18,14 @@ if(!file.exists("../03a_Figures")){dir.create("../03a_Figures")}
 
 #Southern hemisphere lakes
 sh_lakes <- c("Rerewhakaaitu")
+
+LAKES <- c("Lake Erken (2018)",
+           "Arendsee (2020)",
+           "Midway Pond (2023)",
+           "Lake Sunapee (2008)", 
+           "Mohonk Lake (2017)",
+           "Beaverdam Reservoir (2021)", 
+           "Lake Rerewhakaaitu (2022-2023)")
 ```
 
 # Discrete
@@ -46,6 +54,8 @@ mohonk_ice <- read.csv("../01b_Processed_data/Mohonk_ice.csv")
 #Arendsee
 arendsee_strat <- read.csv("../01b_Processed_data/Arendsee_stratification_discrete.csv") 
 arendsee_ice <- read.csv("../01b_Processed_data/Arendsee_ice.csv") 
+#Midway
+midway_strat <- read.csv("../01b_Processed_data/Midway_stratification_discrete.csv") 
 
 #Format
 in_lake <- bvr_strat %>% 
@@ -54,15 +64,11 @@ in_lake <- bvr_strat %>%
   full_join(erken_strat) %>%
   full_join(mohonk_strat) %>%
   full_join(arendsee_strat) %>%
+  full_join(midway_strat) %>%
   mutate(Method = "Stratification",
          x = start,
          xend = end,
-         Lake = factor(Lake, levels = c("Lake Erken (2018)",
-                                        "Lake Sunapee (2008)", 
-                                        "Arendsee (2020)",
-                                        "Mohonk Lake (2017)",
-                                        "Beaverdam Reservoir (2021)", 
-                                        "Lake Rerewhakaaitu (2022-2023)")))
+         Lake = factor(Lake, levels = LAKES))
 
 ice_format <- bvr_ice %>%
   full_join(rere_ice) %>%
@@ -70,12 +76,7 @@ ice_format <- bvr_ice %>%
   full_join(erken_ice) %>%
   full_join(mohonk_ice) %>%
   full_join(arendsee_ice) %>%
-  mutate(Lake = factor(Lake, levels = c("Lake Erken (2018)",
-                                        "Lake Sunapee (2008)", 
-                                        "Arendsee (2020)",
-                                        "Mohonk Lake (2017)",
-                                        "Beaverdam Reservoir (2021)", 
-                                        "Lake Rerewhakaaitu (2022-2023)")))
+  mutate(Lake = factor(Lake, levels = LAKES))
 
 #Format
 temperate <- temperate_raw %>% filter(is.na(start)) #make empty df
@@ -86,12 +87,7 @@ for(lake in unique(in_lake$Lake)) {
                 filter(Hemisphere == hemi))
 }
 temperate <- temperate %>%
-  mutate(Lake = factor(Lake, levels = c("Lake Erken (2018)",
-                                        "Lake Sunapee (2008)", 
-                                        "Arendsee (2020)",
-                                        "Mohonk Lake (2017)",
-                                        "Beaverdam Reservoir (2021)", 
-                                        "Lake Rerewhakaaitu (2022-2023)")))
+  mutate(Lake = factor(Lake, levels = LAKES))
 
 #Plot
 #First the temperate metrics
@@ -194,10 +190,13 @@ mohonk_strat <- read.csv("../01b_Processed_data/Mohonk_stratification_continuous
 arendsee_in_lake <- read.csv("../01b_Processed_data/Arendsee_continuous.csv")
 arendsee_strat <- read.csv("../01b_Processed_data/Arendsee_stratification_continuous.csv")
 arendsee_met <- read.csv("../01b_Processed_data/Arendsee_met.csv")
+#Midway
+midway_in_lake <- read.csv("../01b_Processed_data/Midway_continuous.csv")
+midway_strat <- read.csv("../01b_Processed_data/Midway_stratification_continuous.csv")
 
 #Format
 #A bit of magic to get explicit NAs
-full <- bvr_catwalk_format %>%
+all <- bvr_catwalk_format %>%
   full_join(bvr_met_format) %>%
   full_join(bvr_strat) %>%
   full_join(rere_in_lake) %>%
@@ -214,25 +213,13 @@ full <- bvr_catwalk_format %>%
   full_join(arendsee_in_lake) %>%
   full_join(arendsee_strat) %>%
   full_join(arendsee_met) %>%
+  full_join(midway_in_lake) %>%
+  full_join(midway_strat)
+
+full <- all %>%
   expand(Variable, yday, Lake)
 
-continuous_data <- bvr_catwalk_format %>%
-  full_join(bvr_met_format) %>%
-  full_join(bvr_strat) %>%
-  full_join(rere_in_lake) %>%
-  full_join(rere_strat) %>%
-  full_join(rere_met) %>%
-  full_join(sun_in_lake) %>%
-  full_join(sun_strat) %>%
-  full_join(sun_met) %>%
-  full_join(erken_in_lake) %>%
-  full_join(erken_strat) %>%
-  full_join(erken_met) %>%
-  full_join(mohonk_in_lake) %>%
-  full_join(mohonk_strat) %>%
-  full_join(arendsee_in_lake) %>%
-  full_join(arendsee_strat) %>%
-  full_join(arendsee_met) %>%
+continuous_data <- all %>%
   right_join(full) %>%
   mutate(Variable = factor(Variable, 
                            levels = c("Surface_temperature", 
@@ -261,12 +248,7 @@ continuous_data <- bvr_catwalk_format %>%
                                             "Surface turbidity",
                                             "Surface DO"), 
                             "Bio/chem", "Phys"),
-         Lake = factor(Lake, levels = c("Lake Erken (2018)",
-                                        "Lake Sunapee (2008)", 
-                                        "Arendsee (2020)",
-                                        "Mohonk Lake (2017)",
-                                        "Beaverdam Reservoir (2021)", 
-                                        "Lake Rerewhakaaitu (2022-2023)")))
+         Lake = factor(Lake, levels = LAKES))
 
 #Plot
 continuous <- continuous_data %>%
