@@ -15,7 +15,7 @@ library(rLakeAnalyzer)
 
 #Offset so all yday values are from the winter solstice
 offset = as.Date("2020-01-01") - as.Date("2019-12-21")
-LAKE = "Lake Arendsee (2020)"
+LAKE = "Arendsee (2020)"
 ```
 
 In-lake data (temperature, chlorophyll-a, stratification)
@@ -38,7 +38,7 @@ in_lake_formatted <- in_lake_data_chla %>%
   mutate(Depth_m = as.numeric(str_extract(Depth_m, "[0-9]+")),
          Date = as.Date(time) + offset,
          Year = year(Date)) %>%
-  filter(Year == 2023,
+  filter(Year == 2020,
          Depth_m %in% c(1,47)) %>%
   pivot_wider(names_from = c(var, Depth_m), values_from = Value) %>%
   group_by(Date) %>%
