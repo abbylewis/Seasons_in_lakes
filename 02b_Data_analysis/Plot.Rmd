@@ -19,13 +19,14 @@ if(!file.exists("../03a_Figures")){dir.create("../03a_Figures")}
 #Southern hemisphere lakes
 sh_lakes <- c("Rerewhakaaitu")
 
-LAKES <- c("Lake Erken (2018)",
-           "Arendsee (2020)",
-           "Midway Pond (2023)",
-           "Lake Sunapee (2008)", 
-           "Mohonk Lake (2017)",
-           "Beaverdam Reservoir (2021)", 
-           "Lake Rerewhakaaitu (2022-2023)")
+LAKES <- c("Lake Erken (2018)", #59.83917
+           "Arendsee (2020)", #52.89099
+           "Lake Ägeri (2023)", #47.1213
+           "Midway Pond (2023)", #44.9312
+           "Lake Sunapee (2008)", #43.3802
+           "Mohonk Lake (2017)", #41.76598
+           "Beaverdam Reservoir (2021)", #37.3164
+           "Lake Rerewhakaaitu (2022-2023)") #-38.2936
 ```
 
 # Discrete
@@ -56,6 +57,9 @@ arendsee_strat <- read.csv("../01b_Processed_data/Arendsee_stratification_discre
 arendsee_ice <- read.csv("../01b_Processed_data/Arendsee_ice.csv") 
 #Midway
 midway_strat <- read.csv("../01b_Processed_data/Midway_stratification_discrete.csv") 
+#Arendsee
+Ägeri_strat <- read.csv("../01b_Processed_data/Ägeri_stratification_discrete.csv") 
+Ägeri_ice <- read.csv("../01b_Processed_data/Ägeri_ice.csv") 
 
 #Format
 in_lake <- bvr_strat %>% 
@@ -65,6 +69,7 @@ in_lake <- bvr_strat %>%
   full_join(mohonk_strat) %>%
   full_join(arendsee_strat) %>%
   full_join(midway_strat) %>%
+  full_join(Ägeri_strat) %>%
   mutate(Method = "Stratification",
          x = start,
          xend = end,
@@ -76,6 +81,7 @@ ice_format <- bvr_ice %>%
   full_join(erken_ice) %>%
   full_join(mohonk_ice) %>%
   full_join(arendsee_ice) %>%
+  full_join(Ägeri_ice) %>%
   mutate(Lake = factor(Lake, levels = LAKES))
 
 #Format
@@ -193,6 +199,10 @@ arendsee_met <- read.csv("../01b_Processed_data/Arendsee_met.csv")
 #Midway
 midway_in_lake <- read.csv("../01b_Processed_data/Midway_continuous.csv")
 midway_strat <- read.csv("../01b_Processed_data/Midway_stratification_continuous.csv")
+#Ägeri
+Ägeri_in_lake <- read.csv("../01b_Processed_data/Ägeri_continuous.csv")
+Ägeri_strat <- read.csv("../01b_Processed_data/Ägeri_stratification_continuous.csv")
+Ägeri_met <- read.csv("../01b_Processed_data/Ägeri_met.csv")
 
 #Format
 #A bit of magic to get explicit NAs
@@ -214,7 +224,10 @@ all <- bvr_catwalk_format %>%
   full_join(arendsee_strat) %>%
   full_join(arendsee_met) %>%
   full_join(midway_in_lake) %>%
-  full_join(midway_strat)
+  full_join(midway_strat) %>%
+  full_join(Ägeri_in_lake) %>%
+  full_join(Ägeri_strat) %>%
+  full_join(Ägeri_met)
 
 full <- all %>%
   expand(Variable, yday, Lake)
@@ -281,11 +294,11 @@ continuous
 # Combine and save
 
 ```{r}
-jpeg("../03a_Figures/Seasons_data.jpg", width = 9, height = 9, units = "in", res = 300)
+jpeg("../03a_Figures/Seasons_data.jpg", width = 9, height = 10, units = "in", res = 300)
 ggarrange(discrete_strat, continuous, align = "h")
 dev.off()
 
-jpeg("../03a_Figures/Seasons_data_ice.jpg", width = 8.5, height = 8, units = "in", res = 300)
+jpeg("../03a_Figures/Seasons_data_ice.jpg", width = 8.5, height = 9, units = "in", res = 300)
 ggarrange(discrete_ice, continuous, align = "h")
 dev.off()
 ```
@@ -366,7 +379,7 @@ continuous3 <- continuous_data %>%
         )+
   labs(subtitle = "Physical")
 
-jpeg("../03a_Figures/Seasons_data_ice2.jpg", width = 10, height = 8, units = "in", res = 300)
+jpeg("../03a_Figures/Seasons_data_ice2.jpg", width = 10, height = 10, units = "in", res = 300)
 ggarrange(discrete_ice2, continuous3, continuous2, align = "h", nrow = 1, widths = c(1.2, 1,1))
 dev.off()
 ```
