@@ -1,0 +1,160 @@
+---
+title: "Template"
+author: "Abby Lewis"
+date: "2024-03-11"
+output: html_document
+---
+
+# Lake Ägeri
+
+https://www.datalakes-eawag.ch/datadetail/1077
+
+https://www.datalakes-eawag.ch/datadetail/1073 
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(rLakeAnalyzer)
+library(ncdf4)
+
+#Offset so all yday values are from the winter solstice
+offset = as.Date("2023-01-01") - as.Date("2022-12-21")
+LAKE = "Lake Ägeri (2023)"
+```
+
+In-lake data (temperature, chlorophyll-a, stratification)
+
+```{r}
+# Load data
+files <- list.files("../01a_Raw_data/lakeaegeriidronautdepthtimegrid_datalakesdownload", full.names = T)
+files <- files[grepl(".nc", files)]
+
+read_ncdf_lake <- function(file) {
+  nc <- nc_open(file)
+  depth <- ncvar_get(nc, "depth")
+  time <- ncvar_get(nc, "time")
+  time <- as.Date("1970-01-01") + seconds(time)
+  temp <- ncvar_get(nc, "Temp")
+  do <- ncvar_get(nc, "O2mgL")
+  chla <- ncvar_get(nc, "ChlA")
+  combined_df = data.frame(DateTime = rep(time, length(depth)), 
+                           Depth_m = rep(depth, each = length(time)),
+                           Temp_C = c(temp),
+                           DO_mgL = c(do),
+                           Chla_ugL = c(chla))
+  return(combined_df)
+}
+
+in_lake_data <- files %>%
+  map(read_ncdf_lake) %>%
+  bind_rows()
+
+# Format continuous data
+in_lake_formatted <- in_lake_data %>%
+  mutate(Date = as.Date(DateTime) + offset) %>%
+  filter(year(Date) == 2023) %>%
+  group_by(Date) %>%
+  summarise(Surface_temperature = mean(Temp_C[Depth_m == 2], na.rm = T),
+            Surface_chla = mean(Chla_ugL[Depth_m == 2], na.rm = T),
+            Surface_DO = mean(DO_mgL[Depth_m == 2], na.rm = T),
+            Bottom_DO = mean(DO_mgL[Depth_m == max(Depth_m)], na.rm = T)) %>%
+  mutate(yday = yday(Date)) %>%
+  pivot_longer(cols = c(Surface_temperature, Surface_chla, Bottom_DO, Surface_DO), 
+               names_to = "Variable", values_to = "Value") %>%
+  select(yday, Variable, Value) %>%
+  mutate(Lake = LAKE)
+
+write.csv(in_lake_formatted, "../01b_Processed_data/Ägeri_continuous.csv", row.names = F)
+
+# Stratification metric calcs (both discrete and continuous)
+strat_sum <- in_lake_data %>%
+  mutate(Date = as.Date(DateTime) + offset) %>%
+  filter(year(Date) == 2023) %>%
+  group_by(Date) %>%
+  summarise(Surface_temperature = mean(Temp_C[Depth_m == 2], na.rm = T),
+            Bottom_temperature = mean(Temp_C[Depth_m == max(Depth_m)], na.rm = T)) %>%
+  mutate(yday = yday(Date)) %>%
+  mutate(Diff_Dens_surf_bot = water.density(Bottom_temperature) - 
+           water.density(Surface_temperature),
+         Inverse = ifelse(Bottom_temperature > Surface_temperature,
+                          T, F))
+
+strat_export_discrete <- strat_sum %>%
+  mutate(Strat = ifelse(Diff_Dens_surf_bot > 0.05, "Stratified", "Mixed"),
+         Strat = ifelse(Inverse & Strat == "Stratified", "Inversely\nstratified", Strat)) %>%
+  filter(!is.na(Strat)) %>%
+  ungroup() %>%
+  filter(Strat != lag(Strat)) %>%
+  full_join(data.frame(Variable = "Diff_Dens_surf_9", yday = 1, Strat = "Mixed")) %>%
+  arrange(yday) %>%
+  mutate(end = lead(yday, default = 365)) %>%
+  rename(start = yday, Season = Strat) %>%
+  select(start, end, Season) %>%
+  mutate(Lake = LAKE)
+
+strat_export_cont <- strat_sum %>%
+  select(yday, Diff_Dens_surf_bot) %>%
+  pivot_longer(Diff_Dens_surf_bot, names_to = "Variable", values_to = "Value") %>%
+  mutate(Lake = LAKE)
+
+write.csv(strat_export_discrete, 
+          "../01b_Processed_data/Ägeri_stratification_discrete.csv", 
+          row.names = F)
+write.csv(strat_export_cont, 
+          "../01b_Processed_data/Ägeri_stratification_continuous.csv", 
+          row.names = F)
+```
+
+Meteorological data
+
+```{r}
+# Load data
+files <- list.files("../01a_Raw_data/meteostationlakeaegeri_datalakesdownload", full.names = T)
+files <- files[grepl(".nc", files)]
+
+read_ncdf_met <- function(file) {
+  nc <- nc_open(file)
+  time <- ncvar_get(nc, "time")
+  time <- as.Date("1970-01-01") + seconds(time)
+  temp <- ncvar_get(nc, "AirTC")
+  solar <- ncvar_get(nc, "Slrw")
+  combined_df = data.frame(DateTime = time, 
+                           Temp_C = temp,
+                           Solar = solar)
+  return(combined_df)
+}
+
+met <- files %>%
+  map(read_ncdf_met) %>%
+  bind_rows()
+
+# Format continuous data
+met_formatted <- met %>%
+  mutate(Date = as.Date(DateTime) + offset,
+         Year = year(Date)) %>%
+  filter(Year == 2023) %>%
+  group_by(Date) %>%
+  summarize(AirTemp_C_Average = mean(Temp_C, na.rm = T),
+            Shortwave = mean(Solar, na.rm = T)) %>%
+  mutate(yday = yday(Date)) %>%
+  pivot_longer(cols = c(AirTemp_C_Average,
+                        Shortwave), 
+               names_to = "Variable", values_to = "Value")  %>%
+  mutate(Lake = LAKE) %>%
+  select(-Date)
+
+write.csv(met_formatted, "../01b_Processed_data/Ägeri_met.csv", row.names = F)
+```
+
+Ice data
+
+```{r}
+#Load data
+ice <- data.frame(Lake = c(LAKE),
+                  Season = c("Open water"),
+                  Method = c("Ice"),
+                  start = c(0),
+                  end = c(365))
+
+write.csv(ice, "../01b_Processed_data/Ägeri_ice.csv", row.names = F)
+```

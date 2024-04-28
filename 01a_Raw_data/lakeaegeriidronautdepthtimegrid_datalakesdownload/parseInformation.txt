@@ -1,0 +1,23 @@
+Datalakes Parse Parameters 
+The table below maps the physical parameter to its given axis. 
+ 
+Axis | Parameter | NetCDF Parameter Name | Unit | Description 
+x | Time | time | seconds since 1970-01-01 00:00:00 | Time 
+y | Depth | depth | m | Depth is the vertical distance below the surface. 
+z | Water temperature | Temp | °C | Lake water temperature is the in situ temperature of the lake water. To specify the depth at which the temperature applies use a vertical coordinate variable or scalar coordinate variable. There are standard names for lake_surface_temperature, lake_surface_skin_temperature, lake_surface_subskin_temperature and lake_surface_foundation_temperature which can be used to describe data located at the specified surfaces. 
+z1 | Conductivity | Cond | mS/cm | Electrical conductivity (EC) estimates the amount of total dissolved salts (TDS), or the total amount of dissolved ions in the water. 
+z2 | Conductivity (20degC) | Cond20 | mS/cm | Electrical conductivity (EC) estimates the amount of total dissolved salts (TDS), or the total amount of dissolved ions in the water. This is normalized to 20 degC. 
+z3 | Oxygen Saturation | O2pc | % | Fractional saturation is the ratio of some measure of concentration to the saturated value of the same quantity. 
+z4 | Dissolved Oxygen | O2mgL | mg/L | Dissolved oxygen refers to the level of free, non-compound oxygen present in water or other liquids. 
+z5 | Chlorophyll A | ChlA | mg/L | 'Mass concentration' means mass per unit volume and is used in the construction mass_concentration_of_X_in_Y, where X is a material constituent of Y. A chemical or biological species denoted by X may be described by a single term such as 'nitrogen' or a phrase such as 'nox_expressed_as_nitrogen'. Chlorophylls are the green pigments found in most plants, algae and cyanobacteria; their presence is essential for photosynthesis to take place. There are several different forms of chlorophyll that occur naturally. All contain a chlorin ring (chemical formula C20H16N4) which gives the green pigment and a side chain whose structure varies. The naturally occurring forms of chlorophyll contain between 35 and 55 carbon atoms. Chlorophyll-a is the most commonly occurring form of natural chlorophyll. The chemical formula of chlorophyll-a is C55H72O5N4Mg. 
+z6 | Phycoerythrin | Pethr |  | Phycoerythrin is a red protein-pigment complex from the light-harvesting phycobiliprotein family, present in red algae and cryptophytes, accessory to the main chlorophyll pigments responsible for photosynthesis. 
+z7 | Phycocyanin | Pchan |  | Phycocyanin is a pigment-protein complex from the light-harvesting phycobiliprotein family, along with allophycocyanin and phycoerythrin. It is an accessory pigment to chlorophyll.  
+z8 | Salinity | Sal | PSU | Salinity is the saltiness or amount of salt dissolved in a body of water, called saline water. 
+z9 | Density | Dens | kg/m3 | Density, mass of a unit volume of a material substance. The formula for density is d = M/V, where d is density, M is mass, and V is volume. Density is commonly expressed in units of grams per cubic centimetre. 
+y1 | Surface temperature | surfTemp | °C | Temperature of the top-most sensor 
+y2 | Bottom temperature | bottTemp | °C | Water temperature at the deepest measurement point 
+y3 | Mixing depth | mixed_layer_depth | m | mixing depth calculated using temperature 
+y4 | Thermocline Depth | thermocline_depth | m | null 
+y5 | Schmidt Stability | schmidt_stability | kg m-2 | null 
+y6 | Heat Content | heat_content | J m-2 | null 
+y7 | Salinity | SalTot | kg | Salinity is the saltiness or amount of salt dissolved in a body of water, called saline water. 

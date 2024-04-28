@@ -252,9 +252,9 @@ continuous_data <- all %>%
 
 #Plot
 continuous <- continuous_data %>%
-  filter(!Variable %in% c("Bottom-water DO", "Surface turbidity","Surface DO")) %>%
+  filter(!Variable %in% c("Surface turbidity","Surface DO")) %>%
   ggplot(aes(x = x, y = Value * 100, color = Variable)) +
-  scale_color_manual(values = c("#6B7CB3","#1F363D","#8DD65C", "#FFC233", "#F05D5E")) +
+  scale_color_manual(values = c("#6B7CB3","#1F363D","#8DD65C", "lightblue","#FFC233", "#F05D5E")) +
   geom_line(alpha = 0.2) +
   geom_smooth(se = F, method = "gam") +
   theme_bw() + 
