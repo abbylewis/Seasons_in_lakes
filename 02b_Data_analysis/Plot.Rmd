@@ -43,6 +43,9 @@ erken_ice <- read.csv("../01b_Processed_data/Erken_ice.csv")
 #Mohonk
 mohonk_strat <- read.csv("../01b_Processed_data/Mohonk_stratification_discrete.csv") 
 mohonk_ice <- read.csv("../01b_Processed_data/Mohonk_ice.csv") 
+#Arendsee
+arendsee_strat <- read.csv("../01b_Processed_data/Arendsee_stratification_discrete.csv") 
+arendsee_ice <- read.csv("../01b_Processed_data/Arendsee_ice.csv") 
 
 #Format
 in_lake <- bvr_strat %>% 
@@ -50,11 +53,13 @@ in_lake <- bvr_strat %>%
   full_join(rere_strat) %>%
   full_join(erken_strat) %>%
   full_join(mohonk_strat) %>%
+  full_join(arendsee_strat) %>%
   mutate(Method = "Stratification",
          x = start,
          xend = end,
          Lake = factor(Lake, levels = c("Lake Erken (2018)",
                                         "Lake Sunapee (2008)", 
+                                        "Arendsee (2020)",
                                         "Mohonk Lake (2017)",
                                         "Beaverdam Reservoir (2021)", 
                                         "Lake Rerewhakaaitu (2022-2023)")))
@@ -64,8 +69,10 @@ ice_format <- bvr_ice %>%
   full_join(sun_ice) %>%
   full_join(erken_ice) %>%
   full_join(mohonk_ice) %>%
+  full_join(arendsee_ice) %>%
   mutate(Lake = factor(Lake, levels = c("Lake Erken (2018)",
                                         "Lake Sunapee (2008)", 
+                                        "Arendsee (2020)",
                                         "Mohonk Lake (2017)",
                                         "Beaverdam Reservoir (2021)", 
                                         "Lake Rerewhakaaitu (2022-2023)")))
@@ -81,6 +88,7 @@ for(lake in unique(in_lake$Lake)) {
 temperate <- temperate %>%
   mutate(Lake = factor(Lake, levels = c("Lake Erken (2018)",
                                         "Lake Sunapee (2008)", 
+                                        "Arendsee (2020)",
                                         "Mohonk Lake (2017)",
                                         "Beaverdam Reservoir (2021)", 
                                         "Lake Rerewhakaaitu (2022-2023)")))
@@ -182,6 +190,10 @@ erken_met <- read.csv("../01b_Processed_data/Erken_met.csv")
 #Mohonk
 mohonk_in_lake <- read.csv("../01b_Processed_data/Mohonk_continuous.csv")
 mohonk_strat <- read.csv("../01b_Processed_data/Mohonk_stratification_continuous.csv")
+#Arendsee
+arendsee_in_lake <- read.csv("../01b_Processed_data/Arendsee_continuous.csv")
+arendsee_strat <- read.csv("../01b_Processed_data/Arendsee_stratification_continuous.csv")
+arendsee_met <- read.csv("../01b_Processed_data/Arendsee_met.csv")
 
 #Format
 #A bit of magic to get explicit NAs
@@ -199,6 +211,9 @@ full <- bvr_catwalk_format %>%
   full_join(erken_met) %>%
   full_join(mohonk_in_lake) %>%
   full_join(mohonk_strat) %>%
+  full_join(arendsee_in_lake) %>%
+  full_join(arendsee_strat) %>%
+  full_join(arendsee_met) %>%
   expand(Variable, yday, Lake)
 
 continuous_data <- bvr_catwalk_format %>%
@@ -215,6 +230,9 @@ continuous_data <- bvr_catwalk_format %>%
   full_join(erken_met) %>%
   full_join(mohonk_in_lake) %>%
   full_join(mohonk_strat) %>%
+  full_join(arendsee_in_lake) %>%
+  full_join(arendsee_strat) %>%
+  full_join(arendsee_met) %>%
   right_join(full) %>%
   mutate(Variable = factor(Variable, 
                            levels = c("Surface_temperature", 
@@ -245,6 +263,7 @@ continuous_data <- bvr_catwalk_format %>%
                             "Bio/chem", "Phys"),
          Lake = factor(Lake, levels = c("Lake Erken (2018)",
                                         "Lake Sunapee (2008)", 
+                                        "Arendsee (2020)",
                                         "Mohonk Lake (2017)",
                                         "Beaverdam Reservoir (2021)", 
                                         "Lake Rerewhakaaitu (2022-2023)")))
@@ -280,11 +299,11 @@ continuous
 # Combine and save
 
 ```{r}
-jpeg("../03a_Figures/Seasons_data.jpg", width = 9, height = 8, units = "in", res = 300)
+jpeg("../03a_Figures/Seasons_data.jpg", width = 9, height = 9, units = "in", res = 300)
 ggarrange(discrete_strat, continuous, align = "h")
 dev.off()
 
-jpeg("../03a_Figures/Seasons_data_ice.jpg", width = 8.5, height = 7, units = "in", res = 300)
+jpeg("../03a_Figures/Seasons_data_ice.jpg", width = 8.5, height = 8, units = "in", res = 300)
 ggarrange(discrete_ice, continuous, align = "h")
 dev.off()
 ```
@@ -365,7 +384,7 @@ continuous3 <- continuous_data %>%
         )+
   labs(subtitle = "Physical")
 
-jpeg("../03a_Figures/Seasons_data_ice2.jpg", width = 10, height = 6, units = "in", res = 300)
+jpeg("../03a_Figures/Seasons_data_ice2.jpg", width = 10, height = 8, units = "in", res = 300)
 ggarrange(discrete_ice2, continuous3, continuous2, align = "h", nrow = 1, widths = c(1.2, 1,1))
 dev.off()
 ```
