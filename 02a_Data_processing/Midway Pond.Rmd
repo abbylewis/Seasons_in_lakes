@@ -1,0 +1,118 @@
+---
+title: "Midway Pond"
+author: "Abby Lewis"
+date: "2024-03-11"
+output: html_document
+---
+
+# Midway Pond
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(rLakeAnalyzer)
+
+#Offset so all yday values are from the winter solstice
+offset = as.Date("2023-01-01") - as.Date("2022-12-21")
+LAKE = "Midway Pond (2023)"
+```
+
+In-lake data (temperature, chlorophyll-a, stratification)
+
+```{r}
+# Load data
+in_lake_data_temp <- read.csv("../01a_Raw_data/MidwayTempAll.csv") %>%
+  mutate(Date = as.Date(`Date.Time..EST.EDT.`, format = "%m/%d/%Y %H:%M:%S")) %>%
+  select(-`Date.Time..EST.EDT.`) %>%
+  pivot_longer(cols = -Date, names_to = "Depth_m", values_to = "Temp_C") %>%
+  mutate(Depth_m = as.numeric(str_extract(Depth_m, "[0-9]+"))) %>%
+  group_by(Date, Depth_m) %>%
+  summarise(Temp_C = mean(Temp_C, na.rm = T))
+in_lake_data_surf <- read.csv("../01a_Raw_data/Midway_chl_dom_surfT.csv") %>%
+  mutate(Date = as.Date(dateTimeET, format = "%m/%d/%y %H:%M")) %>%
+  select(-dateTimeET, -UnixTimeSec) %>%
+  group_by(Date) %>%
+  summarize(across(everything(), \(x) mean(x, na.rm = TRUE)))
+in_lake_data_do <- read.csv("../01a_Raw_data/Midway_DO.csv") %>%
+  mutate(Date = as.Date(dateTimeET, format = "%m/%d/%y %H:%M")) %>%
+  select(-dateTimeET, -TimeUTC_sec) %>%
+  group_by(Date) %>%
+  summarize(across(everything(), \(x) mean(x, na.rm = TRUE)))
+
+# Format continuous data
+in_lake_formatted <- in_lake_data_temp %>%
+  full_join(in_lake_data_surf) %>%
+  full_join(in_lake_data_do) %>%
+  mutate(Date = Date + offset) %>%
+  filter(year(Date) == 2023) %>%
+  rename(Surface_temperature = SurfT_C,
+         Surface_chla = chl_ppb,
+         Surface_DO = Surf_DO_mgL,
+         Bottom_DO = Benth_DO_mgL) %>%
+  mutate(yday = yday(Date)) %>%
+  pivot_longer(cols = c(Surface_temperature, Surface_chla, Bottom_DO, Surface_DO), 
+               names_to = "Variable", values_to = "Value") %>%
+  select(yday, Variable, Value) %>%
+  mutate(Lake = LAKE)
+
+write.csv(in_lake_formatted, "../01b_Processed_data/Midway_continuous.csv", row.names = F)
+
+# Stratification metric calcs (both discrete and continuous)
+strat_sum <- in_lake_data_do %>%
+  mutate(Date = Date + offset,
+         Year = year(Date)) %>%
+  filter(Year == 2023) %>%
+  mutate(yday = yday(Date)) %>%
+  mutate(Diff_Dens_surf_bot = water.density(BenthT_C) - 
+           water.density(SurfT_C),
+         Inverse = ifelse(BenthT_C > SurfT_C,
+                          T, F))
+
+strat_export_discrete <- strat_sum %>%
+  mutate(Strat = ifelse(Diff_Dens_surf_bot > 0.05, "Stratified", "Mixed"),
+         Strat = ifelse(Inverse & Strat == "Stratified", "Inversely\nstratified", Strat)) %>%
+  filter(!is.na(Strat)) %>%
+  ungroup() %>%
+  filter(Strat != lag(Strat)) %>%
+  full_join(data.frame(Variable = "Diff_Dens_surf_9", yday = 1, Strat = "Mixed")) %>%
+  arrange(yday) %>%
+  mutate(end = lead(yday, default = 365)) %>%
+  rename(start = yday, Season = Strat) %>%
+  select(start, end, Season) %>%
+  mutate(Lake = LAKE)
+
+strat_export_cont <- strat_sum %>%
+  select(yday, Diff_Dens_surf_bot) %>%
+  pivot_longer(Diff_Dens_surf_bot, names_to = "Variable", values_to = "Value") %>%
+  mutate(Lake = LAKE)
+
+write.csv(strat_export_discrete, 
+          "../01b_Processed_data/Midway_stratification_discrete.csv", 
+          row.names = F)
+write.csv(strat_export_cont, 
+          "../01b_Processed_data/Midway_stratification_continuous.csv", 
+          row.names = F)
+```
+
+Meteorological data
+
+```{r}
+# Load data
+#met <- read.csv("../01a_Raw_data/YOUR LAKE met.csv")
+
+# Format continuous data
+#met_formatted <- met #apply necessary transformations
+
+#write.csv(met_formatted, "../01b_Processed_data/Midway_met.csv", row.names = F)
+```
+
+Ice data
+
+```{r}
+#Load data
+#ice <- read.csv("../01a_Raw_data/YOUR LAKE ice.csv")
+
+#ice_formatted <- ice #apply necessary transformations
+
+#write.csv(ice_formatted, "../01b_Processed_data/Midway_ice.csv", row.names = F)
+```
