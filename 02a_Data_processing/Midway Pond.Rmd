@@ -109,10 +109,15 @@ Meteorological data
 Ice data
 
 ```{r}
-#Load data
-#ice <- read.csv("../01a_Raw_data/YOUR LAKE ice.csv")
+ice <- data.frame(Lake = c(LAKE, LAKE, LAKE),
+                  Season = c("Ice","Open water", "Ice"),
+                  Method = c("Ice","Ice", "Ice"),
+                  start = c(0, 
+                            yday(as.Date("2023-04-30") + offset), 
+                            yday(as.Date("2023-11-14") + offset)),
+                  end = c(yday(as.Date("2023-04-30") + offset),
+                          yday(as.Date("2023-11-14") + offset), 
+                          365))
 
-#ice_formatted <- ice #apply necessary transformations
-
-#write.csv(ice_formatted, "../01b_Processed_data/Midway_ice.csv", row.names = F)
+write.csv(ice, "../01b_Processed_data/Midway_ice.csv", row.names = F)
 ```

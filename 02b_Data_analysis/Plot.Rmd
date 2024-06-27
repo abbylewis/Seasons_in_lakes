@@ -57,6 +57,7 @@ arendsee_strat <- read.csv("../01b_Processed_data/Arendsee_stratification_discre
 arendsee_ice <- read.csv("../01b_Processed_data/Arendsee_ice.csv") 
 #Midway
 midway_strat <- read.csv("../01b_Processed_data/Midway_stratification_discrete.csv") 
+midway_ice <- read.csv("../01b_Processed_data/Midway_ice.csv") 
 #Arendsee
 Ägeri_strat <- read.csv("../01b_Processed_data/Ägeri_stratification_discrete.csv") 
 Ägeri_ice <- read.csv("../01b_Processed_data/Ägeri_ice.csv") 
@@ -81,6 +82,7 @@ ice_format <- bvr_ice %>%
   full_join(erken_ice) %>%
   full_join(mohonk_ice) %>%
   full_join(arendsee_ice) %>%
+  full_join(midway_ice) %>%
   full_join(Ägeri_ice) %>%
   mutate(Lake = factor(Lake, levels = LAKES))
 

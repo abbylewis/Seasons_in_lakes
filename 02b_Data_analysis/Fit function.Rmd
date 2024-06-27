@@ -1,0 +1,271 @@
+---
+title: "Plot"
+author: "Abby Lewis"
+date: "2024-02-29"
+output: html_document
+---
+
+# Set-up
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(ggpubr)
+
+#The ../03a_Figures folder is not pushed to GitHub
+if(!file.exists("../03a_Figures")){dir.create("../03a_Figures")}
+
+#Southern hemisphere lakes
+sh_lakes <- c("Rerewhakaaitu")
+
+LAKES <- c("Lake Erken (2018)", #59.83917
+           "Arendsee (2020)", #52.89099
+           "Lake Ägeri (2023)", #47.1213
+           "Midway Pond (2023)", #44.9312
+           "Lake Sunapee (2008)", #43.3802
+           "Mohonk Lake (2017)", #41.76598
+           "Beaverdam Reservoir (2021)", #37.3164
+           "Lake Rerewhakaaitu (2022-2023)") #-38.2936
+
+# Lake info
+for_map <- read.csv("../01b_Processed_data/lake_metadata.csv")
+```
+
+# Load continuous data
+
+```{r}
+#Load data
+#BVR
+bvr_catwalk_format <- read.csv("../01b_Processed_data/BVR_catwalk.csv")
+bvr_met_format <- read.csv("../01b_Processed_data/BVR_met.csv")
+bvr_strat <- read.csv("../01b_Processed_data/BVR_stratification_continuous.csv")
+#Rerewhakaaitu
+rere_in_lake <- read.csv("../01b_Processed_data/Rerewhakaaitu_continuous.csv")
+rere_strat <- read.csv("../01b_Processed_data/Rerewhakaaitu_stratification_continuous.csv")
+rere_met <- read.csv("../01b_Processed_data/Rerewhakaaitu_met.csv")
+#Sunapee
+sun_in_lake <- read.csv("../01b_Processed_data/Sunapee_continuous.csv")
+sun_strat <- read.csv("../01b_Processed_data/Sunapee_stratification_continuous.csv")
+sun_met <- read.csv("../01b_Processed_data/Sunapee_met.csv")
+#Erken
+erken_in_lake <- read.csv("../01b_Processed_data/Erken_continuous.csv")
+erken_strat <- read.csv("../01b_Processed_data/Erken_stratification_continuous.csv")
+erken_met <- read.csv("../01b_Processed_data/Erken_met.csv")
+#Mohonk
+mohonk_in_lake <- read.csv("../01b_Processed_data/Mohonk_continuous.csv")
+mohonk_strat <- read.csv("../01b_Processed_data/Mohonk_stratification_continuous.csv")
+#Arendsee
+arendsee_in_lake <- read.csv("../01b_Processed_data/Arendsee_continuous.csv")
+arendsee_strat <- read.csv("../01b_Processed_data/Arendsee_stratification_continuous.csv")
+arendsee_met <- read.csv("../01b_Processed_data/Arendsee_met.csv")
+#Midway
+midway_in_lake <- read.csv("../01b_Processed_data/Midway_continuous.csv")
+midway_strat <- read.csv("../01b_Processed_data/Midway_stratification_continuous.csv")
+#Ägeri
+Ägeri_in_lake <- read.csv("../01b_Processed_data/Ägeri_continuous.csv")
+Ägeri_strat <- read.csv("../01b_Processed_data/Ägeri_stratification_continuous.csv")
+Ägeri_met <- read.csv("../01b_Processed_data/Ägeri_met.csv")
+
+#Format
+#A bit of magic to get explicit NAs
+all <- bvr_catwalk_format %>%
+  full_join(bvr_met_format) %>%
+  full_join(bvr_strat) %>%
+  full_join(rere_in_lake) %>%
+  full_join(rere_strat) %>%
+  full_join(rere_met) %>%
+  full_join(sun_in_lake) %>%
+  full_join(sun_strat) %>%
+  full_join(sun_met) %>%
+  full_join(erken_in_lake) %>%
+  full_join(erken_strat) %>%
+  full_join(erken_met) %>%
+  full_join(mohonk_in_lake) %>%
+  full_join(mohonk_strat) %>%
+  full_join(arendsee_in_lake) %>%
+  full_join(arendsee_strat) %>%
+  full_join(arendsee_met) %>%
+  full_join(midway_in_lake) %>%
+  full_join(midway_strat) %>%
+  full_join(Ägeri_in_lake) %>%
+  full_join(Ägeri_strat) %>%
+  full_join(Ägeri_met)
+
+full <- all %>%
+  expand(Variable, yday, Lake)
+```
+
+Function for day length
+
+```{r}
+getDayLength <- function(date, latitude, longitude){
+  time_origin <- strptime("01/01/2000 12:00", "%d/%m/%Y %H:%M")
+  n <- as.numeric(difftime(date, time_origin, units = "days"))
+  Jstar <- n - longitude / 360
+  M <- (357.5291 + 0.98560028 * Jstar) %% 360
+  C <- 1.9148 * sin(M * 2*pi/360) + 
+       0.0200 * sin(2*M * 2*pi/360) + 
+       0.0003 * sin(3*M * 2*pi/360)
+  lambda <- (M + C + 180 + 102.9372) %% 360
+  Jtransit <- as.double(2451545.000) + 
+              as.double(Jstar) + 
+              as.double(0.0053 * sin(M * 2*pi/360)) - 
+              as.double(0.0069 * sin(lambda * 4*pi/360))
+  sindelta <- sin(lambda * 2*pi/360) * sin(23.44 * 2*pi/360)
+  delta <- asin(sindelta) * 360/(2*pi)
+  cos_omega <- (sin(-0.83 * 2*pi/360) - (sindelta * sin(latitude * 2*pi/360)))/
+                (cos(latitude * 2*pi/360) * cos(delta * 2*pi/360))
+  omega <- acos(cos_omega) * 360 / (2*pi)
+  Jrise <- Jtransit - omega / 360
+  Jset <- Jtransit + omega /360
+  return((Jset - Jrise) * 24)
+}
+```
+
+
+Fit sin function
+
+```{r}
+dayLength <- full %>%
+  select(Lake, yday) %>%
+  left_join(for_map) %>%
+  mutate(Year = str_extract(Lake, "\\d{4}"),
+         Date = Solstice+yday) %>%
+  mutate(DayLength = getDayLength(Date, Latitude_DD, Longitude_DD)) %>%
+  pivot_longer(cols = DayLength, 
+               names_to = "Variable", values_to = "Value") %>%
+  select(Lake, Variable, Value, yday)
+
+continuous_data2 <- all %>%
+  full_join(dayLength) %>%
+  mutate(Variable = factor(Variable, 
+                           levels = c("DayLength",
+                                      "Shortwave",
+                                      "AirTemp_C_Average", 
+                                      "Surface_temperature",
+                                      "Diff_Dens_surf_bot", 
+                                      "Bottom_DO",
+                                      "Surface_DO",
+                                      "Surface_chla"),
+                           labels = c("Day length",
+                                      "Solar radiation",
+                                      "Air temperature",
+                                      "Surface temperature",
+                                      "Epi-hypo dens. difference",
+                                      "Bottom-water DO",
+                                      "Surface DO", 
+                                      "Surface chlorophyll-a"))) %>%
+  filter(!is.na(Variable)) %>%
+  mutate(Lake = factor(Lake, levels = LAKES))
+
+library(ggh4x)
+library(ShellChron)
+
+#Fit sin function
+jpeg("../03a_Figures/Continuous_sin.jpeg", width = 13, height = 12, units = "in", res = 300)
+continuous_data2 %>%
+  filter(!is.na(Value), !is.na(yday)) %>%
+  mutate(yday = yday) %>%
+  group_by(Lake, Variable) %>%
+  mutate(vertical = sinreg(yday, Value, fixed_period = 365.25)[[1]][[1]],
+         amp = sinreg(yday, Value, fixed_period = 365.25)[[1]][[2]],
+         period = sinreg(yday, Value, fixed_period = 365.25)[[1]][[3]],
+         peak = sinreg(yday, Value, fixed_period = 365.25)[[1]][[4]],
+         R2 = sinreg(yday, Value, fixed_period = 365.25)[[1]][[5]],
+         p = sinreg(yday, Value, fixed_period = 365.25)[[1]][[6]],
+         fit = amp*sin((2*pi*yday/period+((peak/period-.25)*2*pi)))+vertical,
+         fit = ifelse(R2 < 0.5, NA, fit),
+         fit = ifelse(p > 0.05, NA, fit)
+         ) %>%
+  ggplot(aes(x = yday, y = Value, color = Lake)) +
+  geom_point() +
+  geom_line(aes(y = fit), color = "black") +
+  ggh4x::facet_grid2(rows = vars(Lake), cols = vars(Variable), scales = "free_y", independent = "y")+
+  theme(legend.position = "bottom")
+dev.off()
+```
+
+```{r}
+sum <- continuous_data2 %>%
+  filter(!is.na(Value), !is.na(yday)) %>%
+  mutate(yday = yday) %>%
+  group_by(Lake, Variable) %>%
+  summarize(vertical = sinreg(yday, Value, fixed_period = 365.25)[[1]][[1]],
+         amp = sinreg(yday, Value, fixed_period = 365.25)[[1]][[2]],
+         period = sinreg(yday, Value, fixed_period = 365.25)[[1]][[3]],
+         peak = sinreg(yday, Value, fixed_period = 365.25)[[1]][[4]],
+         R2 = sinreg(yday, Value, fixed_period = 365.25)[[1]][[5]],
+         p = sinreg(yday, Value, fixed_period = 365.25)[[1]][[6]],
+         fit = amp*sin((2*pi*yday/period+((peak/period-.25)*2*pi)))+vertical,
+         fit = ifelse(R2 < 0.5, NA, fit),
+         fit = ifelse(p > 0.05, NA, fit)
+         ) %>%
+  unique()
+
+jpeg("../03a_Figures/Amplitude by latitude.jpeg", width = 8, height = 4, units = "in", res = 300)
+sum %>%
+  left_join(for_map) %>%
+  filter(R2 > 0.5) %>%
+  ggplot(aes(x = abs(Latitude_DD), y = amp, color = Latitude_DD>0)) +
+  geom_point()+
+  facet_wrap(~Variable, scales = "free_y")+
+  xlab("Latitude (absolute value)")+
+  ylab("Amplitude")+
+  scale_color_manual(values = c("blue", "turquoise"), 
+                     labels = c("Northern\nhemisphere","Southern\nhemisphere"),
+                     name = "")+
+  theme_bw()
+dev.off()
+
+jpeg("../03a_Figures/Vertical shift by latitude.jpeg", width = 8, height = 4, units = "in", res = 300)
+sum %>%
+  left_join(for_map) %>%
+  filter(R2 > 0.5) %>%
+  ggplot(aes(x = abs(Latitude_DD), y = vertical, color = Latitude_DD>0)) +
+  geom_point()+
+  facet_wrap(~Variable, scales = "free_y")+
+  xlab("Latitude (absolute value)")+
+  ylab("Vertical shift (i.e., ~mean value)")+
+  scale_color_manual(values = c("blue","turquoise"), 
+                     labels = c("Northern\nhemisphere","Southern\nhemisphere"),
+                     name = "")+
+  theme_bw()
+dev.off()
+
+sum %>%
+  left_join(for_map) %>%
+  filter(R2 > 0.5) %>%
+  select(Lake, peak, Variable, Latitude_DD, Longitude_DD) %>%
+  pivot_wider(names_from = Variable, values_from = peak) %>%
+  mutate(lag = `Day length` - `Air temperature`) %>%
+  ggplot(aes(x = abs(Latitude_DD), y = lag, color = Latitude_DD>0)) +
+  geom_point()
+
+sum %>%
+  left_join(for_map) %>%
+  filter(R2 > 0.5) %>%
+  select(Lake, peak, Variable, Latitude_DD, Longitude_DD) %>%
+  pivot_wider(names_from = Variable, values_from = peak) %>%
+  mutate(lag = `Day length` - `Surface temperature`) %>%
+  ggplot(aes(x = abs(Latitude_DD), y = lag, color = Latitude_DD>0)) +
+  geom_point()
+
+jpeg("../03a_Figures/Phase shift by latitude.jpeg", width = 8, height = 5, units = "in", res = 300)
+sum %>%
+  left_join(for_map) %>%
+  filter(R2 > 0.5) %>%
+  select(Lake, peak, Variable, Latitude_DD, Longitude_DD) %>%
+  pivot_wider(names_from = Variable, values_from = peak) %>%
+  mutate(lag = `Air temperature` - `Surface temperature`) %>%
+  ggplot(aes(x = abs(Latitude_DD), y = lag, color = Latitude_DD>0)) +
+  geom_point() +
+  xlab("Latitude (absolute value)")+
+  ylab("Difference in phase shift between air temp and water temp\n(i.e., how much of a lag between air and water)")+
+  geom_text(aes(label = Lake), nudge_y = 1)+
+  scale_color_manual(values = c("blue","turquoise"), 
+                     labels = c("Northern\nhemisphere","Southern\nhemisphere"),
+                     name = "")+
+  theme_bw()
+dev.off()
+```
+
