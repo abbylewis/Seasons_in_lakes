@@ -24,7 +24,7 @@ In-lake data (temperature, chlorophyll-a, stratification)
 # Load data
 in_lake_data_chla <- read.csv("../01a_Raw_data/Arendsee_Profiler_ChlA.csv") %>%
   mutate(var = "Chla_ugL")
-in_lake_data_do <- read.csv("../01a_Raw_data/Arendsee_Profiler_DO.csv") %>%
+in_lake_data_do <- read.csv("../01a_Raw_data/AS_DO_chain.dat") %>%
   mutate(var = "DO_mgL")
 in_lake_data_temp <- read.csv("../01a_Raw_data/Arendsee_Profiler_T.csv") %>%
   mutate(var = "Temp_C")
