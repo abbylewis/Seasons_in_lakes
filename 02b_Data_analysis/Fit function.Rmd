@@ -28,7 +28,7 @@ LAKES <- c("Lake Erken (2018)", #59.83917
            "Lake Rerewhakaaitu (2022-2023)") #-38.2936
 
 # Lake info
-for_map <- read.csv("../01b_Processed_data/lake_metadata.csv")
+for_map <- read_csv("../01b_Processed_data/lake_metadata.csv")
 ```
 
 # Load continuous data
@@ -122,7 +122,6 @@ getDayLength <- function(date, latitude, longitude){
 }
 ```
 
-
 Fit sin function
 
 ```{r}
@@ -161,7 +160,16 @@ continuous_data2 <- all %>%
 library(ggh4x)
 library(ShellChron)
 
-#Fit sin function
+#Fit sin function from ShellChron package
+#sinreg fits using a lm that breaks down into sin + cos function: 
+#https://rdrr.io/cran/ShellChron/src/R/sinreg.r
+#sinreg is a sine regression that has the following output:
+  #I = mean annual value of sinusoid (height)
+  #A= amplitude of the sinusoid
+  #Dper = period of sinusoid in x domain
+  #peak = location of the peak in the sinuosid
+  #R2adj=adjusted r2
+  #p = p-value of the fit
 jpeg("../03a_Figures/Continuous_sin.jpeg", width = 13, height = 12, units = "in", res = 300)
 continuous_data2 %>%
   filter(!is.na(Value), !is.na(yday)) %>%
@@ -269,3 +277,12 @@ sum %>%
 dev.off()
 ```
 
+#Possible other fitting techniques####  
+
+```{r}
+#Try fitting with other techniques including using:
+#1. nls (https://stackoverflow.com/questions/59685878/sine-curve-fit-using-lm-nls-and-nls2-in-r) to vary periodicity and other variables
+#2. Using lm but additional harmonics (https://stats.stackexchange.com/questions/60500/how-to-find-a-good-fit-for-semi-sinusoidal-model-in-r) to make more of a sawtooth type function. 
+
+
+```
