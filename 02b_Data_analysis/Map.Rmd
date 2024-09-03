@@ -57,17 +57,18 @@ states <- ne_states(returnclass = "sf",country = "United States of America")
 
 jpeg("../03a_Figures/World Map - just points.jpg", res = 300, width = 6, height = 3.2, units = "in")
 world_map <- ggplot(data = world) +
-  geom_sf(fill = "white", color = "grey50") +
+  geom_sf(fill = "grey95", color = "grey50") +
   coord_sf(expand = FALSE)+
   geom_point(data = for_map, aes(Longitude_DD, Latitude_DD), 
-             fill = "maroon",shape = 21, color = "white", size = 5, alpha  =.7, stroke = .4)+
-  geom_hline(yintercept = 0, lwd = 0.1) +
+             color = "white",shape = 21, fill = "black", size = 5, alpha  =.7, stroke = 1)+
+  geom_hline(yintercept = 0, lwd = 0.1, alpha = 0.2) +
   theme_void()+
   theme(plot.margin = margin(0, 0, 0, 0, "cm"),
     legend.box.background = element_rect(fill = "white", color = "white"))+
   theme(axis.title.x = element_blank(),
         axis.title.y = element_blank(),
-        panel.background = element_rect(fill = "grey93"),
+        panel.background = element_rect(fill = "white"),
+        panel.border = element_rect(colour = "black", fill = NA),
         panel.grid = element_blank(),
         plot.margin = margin(0.1, 0.1, 0.1, 0.1, "cm"),)
 world_map

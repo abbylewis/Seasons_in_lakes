@@ -1,0 +1,200 @@
+---
+title: "Compilation"
+author: "Abby Lewis"
+date: "2024-09-02"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(ggpubr)
+library(ggnewscale) # For multiple color scales on the discrete panel
+
+#The ../03a_Figures folder is not pushed to GitHub
+if(!file.exists("../03a_Figures")){dir.create("../03a_Figures")}
+
+#Southern hemisphere lakes
+sh_lakes <- c("Rerewhakaaitu")
+
+LAKES <- c("Lake Erken (2018)", #59.83917
+           "Arendsee (2020)", #52.89099
+           "Lake Ägeri (2023)", #47.1213
+           "Midway Pond (2023)", #44.9312
+           "Lake Sunapee (2008)", #43.3802
+           "Mohonk Lake (2017)", #41.76598
+           "Beaverdam Reservoir (2021)", #37.3164
+           "Lake Rerewhakaaitu (2022-2023)") #-38.2936
+```
+
+```{r}
+#Load discrete data
+#BVR
+bvr_ice <- read.csv("../01b_Processed_data/BVR_ice.csv") 
+bvr_strat <- read.csv("../01b_Processed_data/BVR_stratification_discrete.csv") 
+#General
+temperate_raw <- read.csv("../01b_Processed_data/Temperate_seasons.csv")
+#Rerewhakaaitu
+rere_strat <- read.csv("../01b_Processed_data/Rerewhakaaitu_stratification_discrete.csv") 
+rere_ice <- read.csv("../01b_Processed_data/Rerewhakaaitu_ice.csv")
+#Sunapee
+sun_strat <- read.csv("../01b_Processed_data/Sunapee_stratification_discrete.csv") 
+sun_ice <- read.csv("../01b_Processed_data/Sunapee_ice.csv") 
+#Erken
+erken_strat <- read.csv("../01b_Processed_data/Erken_stratification_discrete.csv") 
+erken_ice <- read.csv("../01b_Processed_data/Erken_ice.csv") 
+#Mohonk
+mohonk_strat <- read.csv("../01b_Processed_data/Mohonk_stratification_discrete.csv") 
+mohonk_ice <- read.csv("../01b_Processed_data/Mohonk_ice.csv") 
+#Arendsee
+arendsee_strat <- read.csv("../01b_Processed_data/Arendsee_stratification_discrete.csv") 
+arendsee_ice <- read.csv("../01b_Processed_data/Arendsee_ice.csv") 
+#Midway
+midway_strat <- read.csv("../01b_Processed_data/Midway_stratification_discrete.csv") 
+midway_ice <- read.csv("../01b_Processed_data/Midway_ice.csv") 
+#Arendsee
+Ägeri_strat <- read.csv("../01b_Processed_data/Ägeri_stratification_discrete.csv") 
+Ägeri_ice <- read.csv("../01b_Processed_data/Ägeri_ice.csv") 
+
+#Format
+in_lake <- bvr_strat %>% 
+  full_join(sun_strat) %>%
+  full_join(rere_strat) %>%
+  full_join(erken_strat) %>%
+  full_join(mohonk_strat) %>%
+  full_join(arendsee_strat) %>%
+  full_join(midway_strat) %>%
+  full_join(Ägeri_strat) %>%
+  mutate(Method = "Stratification",
+         x = start,
+         xend = end,
+         Lake = factor(Lake, levels = LAKES))
+
+ice_format <- bvr_ice %>%
+  full_join(rere_ice) %>%
+  full_join(sun_ice) %>%
+  full_join(erken_ice) %>%
+  full_join(mohonk_ice) %>%
+  full_join(arendsee_ice) %>%
+  full_join(midway_ice) %>%
+  full_join(Ägeri_ice) %>%
+  mutate(Lake = factor(Lake, levels = LAKES))
+
+#Format
+temperate <- temperate_raw %>% filter(is.na(start)) #make empty df
+for(lake in unique(in_lake$Lake)) {
+  hemi <- ifelse(lake %in% sh_lakes, "Southern", "Northern")
+  temperate <- temperate %>%
+    full_join(temperate_raw %>% mutate(Lake = lake) %>%
+                filter(Hemisphere == hemi))
+}
+temperate <- temperate %>%
+  mutate(Lake = factor(Lake, levels = LAKES))
+
+rbind(ice_format, 
+      in_lake %>% select(-x, -xend), 
+      temperate %>% select(start, end, Season, Lake, Method)) %>% 
+  write.csv("../01b_Processed_data/All_discrete.csv", row.names = FALSE)
+```
+
+```{r}
+#Load data
+#BVR
+bvr_catwalk_format <- read.csv("../01b_Processed_data/BVR_catwalk.csv")
+bvr_met_format <- read.csv("../01b_Processed_data/BVR_met.csv")
+bvr_strat <- read.csv("../01b_Processed_data/BVR_stratification_continuous.csv")
+#Rerewhakaaitu
+rere_in_lake <- read.csv("../01b_Processed_data/Rerewhakaaitu_continuous.csv")
+rere_strat <- read.csv("../01b_Processed_data/Rerewhakaaitu_stratification_continuous.csv")
+rere_met <- read.csv("../01b_Processed_data/Rerewhakaaitu_met.csv")
+#Sunapee
+sun_in_lake <- read.csv("../01b_Processed_data/Sunapee_continuous.csv")
+sun_strat <- read.csv("../01b_Processed_data/Sunapee_stratification_continuous.csv")
+sun_met <- read.csv("../01b_Processed_data/Sunapee_met.csv")
+#Erken
+erken_in_lake <- read.csv("../01b_Processed_data/Erken_continuous.csv")
+erken_strat <- read.csv("../01b_Processed_data/Erken_stratification_continuous.csv")
+erken_met <- read.csv("../01b_Processed_data/Erken_met.csv")
+#Mohonk
+mohonk_in_lake <- read.csv("../01b_Processed_data/Mohonk_continuous.csv")
+mohonk_strat <- read.csv("../01b_Processed_data/Mohonk_stratification_continuous.csv")
+#Arendsee
+arendsee_in_lake <- read.csv("../01b_Processed_data/Arendsee_continuous.csv")
+arendsee_strat <- read.csv("../01b_Processed_data/Arendsee_stratification_continuous.csv")
+arendsee_met <- read.csv("../01b_Processed_data/Arendsee_met.csv")
+#Midway
+midway_in_lake <- read.csv("../01b_Processed_data/Midway_continuous.csv")
+midway_strat <- read.csv("../01b_Processed_data/Midway_stratification_continuous.csv")
+#Ägeri
+Ägeri_in_lake <- read.csv("../01b_Processed_data/Ägeri_continuous.csv")
+Ägeri_strat <- read.csv("../01b_Processed_data/Ägeri_stratification_continuous.csv")
+Ägeri_met <- read.csv("../01b_Processed_data/Ägeri_met.csv")
+
+#Format
+#A bit of magic to get explicit NAs
+all <- bvr_catwalk_format %>%
+  full_join(bvr_met_format) %>%
+  full_join(bvr_strat) %>%
+  full_join(rere_in_lake) %>%
+  full_join(rere_strat) %>%
+  full_join(rere_met) %>%
+  full_join(sun_in_lake) %>%
+  full_join(sun_strat) %>%
+  full_join(sun_met) %>%
+  full_join(erken_in_lake) %>%
+  full_join(erken_strat) %>%
+  full_join(erken_met) %>%
+  full_join(mohonk_in_lake) %>%
+  full_join(mohonk_strat) %>%
+  full_join(arendsee_in_lake) %>%
+  full_join(arendsee_strat) %>%
+  full_join(arendsee_met) %>%
+  full_join(midway_in_lake) %>%
+  full_join(midway_strat) %>%
+  full_join(Ägeri_in_lake) %>%
+  full_join(Ägeri_strat) %>%
+  full_join(Ägeri_met)
+
+full <- all %>%
+  expand(Variable, yday, Lake)
+
+continuous_data <- all %>%
+  right_join(full) %>%
+  mutate(Variable = factor(Variable, 
+                           levels = c("Surface_temperature", 
+                                      "AirTemp_C_Average", 
+                                      "Surface_chla", 
+                                      "Surface_DO",
+                                      "Bottom_DO",
+                                      "Turbidity",
+                                      "Shortwave",
+                                      "Diff_Dens_surf_bot"),
+                           labels = c("Surface temperature", 
+                                      "Air temperature",
+                                      "Surface chlorophyll-a",
+                                      "Surface DO",
+                                      "Bottom-water DO",
+                                      "Surface turbidity",
+                                      "Solar radiation",
+                                      "Epi-hypo dens. difference"))) %>%
+  filter(!is.na(Variable)) %>%
+  group_by(Variable, Lake) %>%
+  mutate(Value = ((Value) - min(Value, na.rm = T))/
+           (max((Value) - min(Value, na.rm = T), na.rm = T))) %>%
+  mutate(x = yday) %>%
+  mutate(var_class = ifelse(Variable %in% c("Surface chlorophyll-a", 
+                                            "Bottom-water DO",
+                                            "Surface turbidity",
+                                            "Surface DO"), 
+                            "Bio/chem", "Phys"),
+         Lake = factor(Lake, levels = LAKES))
+
+#Write
+continuous_data %>%
+  select(-x, -var_class) %>%
+  write.csv("../01b_Processed_data/All_continuous.csv", row.names = FALSE)
+```
+

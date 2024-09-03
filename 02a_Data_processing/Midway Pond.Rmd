@@ -28,11 +28,13 @@ in_lake_data_temp <- read.csv("../01a_Raw_data/MidwayTempAll.csv") %>%
   mutate(Depth_m = as.numeric(str_extract(Depth_m, "[0-9]+"))) %>%
   group_by(Date, Depth_m) %>%
   summarise(Temp_C = mean(Temp_C, na.rm = T))
+
 in_lake_data_surf <- read.csv("../01a_Raw_data/Midway_chl_dom_surfT.csv") %>%
   mutate(Date = as.Date(dateTimeET, format = "%m/%d/%y %H:%M")) %>%
   select(-dateTimeET, -UnixTimeSec) %>%
   group_by(Date) %>%
   summarize(across(everything(), \(x) mean(x, na.rm = TRUE)))
+
 in_lake_data_do <- read.csv("../01a_Raw_data/Midway_DO.csv") %>%
   mutate(Date = as.Date(dateTimeET, format = "%m/%d/%y %H:%M")) %>%
   select(-dateTimeET, -TimeUTC_sec) %>%
@@ -40,8 +42,7 @@ in_lake_data_do <- read.csv("../01a_Raw_data/Midway_DO.csv") %>%
   summarize(across(everything(), \(x) mean(x, na.rm = TRUE)))
 
 # Format continuous data
-in_lake_formatted <- in_lake_data_temp %>%
-  full_join(in_lake_data_surf) %>%
+in_lake_formatted <- in_lake_data_surf %>%
   full_join(in_lake_data_do) %>%
   mutate(Date = Date + offset) %>%
   filter(year(Date) == 2023) %>%
