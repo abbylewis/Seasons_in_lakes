@@ -32,6 +32,88 @@ ggplot(data=sample_lats,aes(x=doy,y=daylength,color=latitude))+geom_point()
 #plot a few select ones
 ggplot(data=sample_lats%>%filter(abs(latitude)<70),aes(x=doy,y=daylength,color=latitude))+geom_point()
 
+#Get out day length 40 and plot the seasons
+
+
+
+ggplot(data=sample_lats%>%filter(latitude==40),aes(x=doy,y=daylength))+
+  geom_rect(aes(xmin=80,xmax=172,ymin=-Inf,ymax=Inf),fill="yellowgreen",color="black")+ #spring box
+  geom_rect(aes(xmin=172,xmax=264,ymin=-Inf,ymax=Inf),fill="green",color="black")+ #summer box
+  geom_rect(aes(xmin=264,xmax=355,ymin=-Inf,ymax=Inf),fill="orange",color="black")+ #fall box
+  geom_point()+
+  geom_vline(xintercept=c(80,172,264,355))+
+  geom_text(data=tibble(doy=c(80-46,172-46,264-46,355-46),height=c(16,16,16,16),label=c("winter","spring","summer","fall")),aes(x=doy,y=height,label=label))+
+  theme_bw()+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())+
+  labs(title="standard",x="day of year",y="Daylength (hrs)")
+
+#Get out day length 40 and plot the seasons based on ecology
+ggplot(data=sample_lats%>%filter(latitude==40),aes(x=doy,y=daylength))+
+  geom_rect(aes(xmin=80-46,xmax=172-46,ymin=-Inf,ymax=Inf),fill="yellowgreen",color="black")+ #spring box
+  geom_rect(aes(xmin=172-46,xmax=264-46,ymin=-Inf,ymax=Inf),fill="green",color="black")+ #summer box
+  geom_rect(aes(xmin=264-46,xmax=355-46,ymin=-Inf,ymax=Inf),fill="orange",color="black")+ #fall box
+  geom_point()+
+  geom_vline(xintercept=c(80-46,172-46,264-46,355-46))+
+  geom_text(data=tibble(doy=c(0,91.5,91.5*2,91.5*3,91.5*3.85),height=c(16,16,16,16,16),label=c("Nadir:\nwinter","Shoulder:\nspring","Peak:\nsummer","Shoulder:\nfall","Nadir:\nwinter")),aes(x=doy,y=height,label=label))+
+  theme_bw()+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())+
+  labs(title="Ecological seasons?",x="day of year",y="Daylength (hrs)")
+
+
+annual_data<-tibble(doy=seq(1,365,by=1),y=(1),y2=2)
+#plot the seasons as a clock####
+ggplot(data=annual_data)+
+  geom_ribbon(aes(x=doy*2*pi/365,ymin=0,ymax=y),color="white",fill="white")+
+  geom_ribbon(aes(x=doy*2*pi/365,ymin=y,ymax=y2),color="black",fill="white")+
+  geom_ribbon(data=annual_data%>%filter(doy>=80&doy<=172),aes(x=doy*2*pi/365,ymin=y,ymax=y2),color="black",fill="yellowgreen")+
+  geom_ribbon(data=annual_data%>%filter(doy>=172&doy<=264),aes(x=doy*2*pi/365,ymin=y,ymax=y2),color="black",fill="green")+
+  geom_ribbon(data=annual_data%>%filter(doy>=264&doy<=355),aes(x=doy*2*pi/365,ymin=y,ymax=y2),color="black",fill="orange")+
+  #geom_rect(aes(xmin=doy,xmax=doy,ymin=1,ymax=2),color="black",fill="grey")+
+  geom_label(aes(x=(80-46)*2*pi/365,y=1.5),label="winter")+
+  geom_label(aes(x=(172-46)*2*pi/365,y=1.5),label="spring")+
+  geom_label(aes(x=(264-46)*2*pi/365,y=1.5),label="summer")+
+  geom_label(aes(x=(355-46)*2*pi/365,y=1.5),label="fall")+
+  geom_text(data=tibble(x=(c(1,32,60,91,121,152,182,213,244,274,305,335))*2*pi/365,y=2.3,label=month.abb),aes(x=x,y=y,label=label))+
+  scale_x_continuous(breaks=(c(1,32,60,91,121,152,182,213,244,274,305,335))*2*pi/365)+
+  coord_polar(start=0)+
+  theme_bw()+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.text.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.title.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.ticks.y=element_blank())+
+  labs(title="Astronomical seasons")
+
+#plot the ecological seasons as a clock####
+ggplot(data=annual_data)+
+  geom_ribbon(aes(x=doy*2*pi/365,ymin=0,ymax=y),color="white",fill="white")+
+  geom_ribbon(aes(x=doy*2*pi/365,ymin=y,ymax=y2),color="black",fill="white")+
+  geom_ribbon(data=annual_data%>%filter(doy>=(80-46)&doy<=(172-46)),aes(x=doy*2*pi/365,ymin=y,ymax=y2),color="black",fill="yellowgreen")+
+  geom_ribbon(data=annual_data%>%filter(doy>=(172-46)&doy<=(264-46)),aes(x=doy*2*pi/365,ymin=y,ymax=y2),color="black",fill="green")+
+  geom_ribbon(data=annual_data%>%filter(doy>=(264-46)&doy<=(355-46)),aes(x=doy*2*pi/365,ymin=y,ymax=y2),color="black",fill="orange")+
+  geom_label(aes(x=(355)*2*pi/365,y=1.5),label="winter")+
+  geom_label(aes(x=(80)*2*pi/365,y=1.5),label="spring")+
+  geom_label(aes(x=(172)*2*pi/365,y=1.5),label="summer")+
+  geom_label(aes(x=(264)*2*pi/365,y=1.5),label="fall")+
+  geom_text(data=tibble(x=(c(1,32,60,91,121,152,182,213,244,274,305,335))*2*pi/365,y=2.3,label=month.abb),aes(x=x,y=y,label=label))+
+  scale_x_continuous(breaks=(c(1,32,60,91,121,152,182,213,244,274,305,335))*2*pi/365)+
+  coord_polar(start=0)+
+  theme_bw()+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.text.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.title.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.ticks.y=element_blank())+
+  labs(title="Ecological seasons")
+
+
+  
 #STOPPED HERE####
 #fit the sin curve to the day length
 ####
@@ -279,7 +361,7 @@ ggplot(data=temp,aes(x=yday,y=Value))+geom_point()+geom_line(aes(y=predictSin_Va
   geom_line(aes(y=f(1:366,a=coeff["a"],b=coeff["b"],c=coeff["c"])),color="purple")
 
 ###################################
-
+###STOPPED HERE - NEED TO ADD IN FITS TO THE CURVES####
 #merge the fits from Abby back together to get a fit curve####
 #y=a*sin(bx+c)+d
   #where a is amplitude (amp here)
