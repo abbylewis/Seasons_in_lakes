@@ -5,19 +5,24 @@ date: "2024-09-02"
 output: html_document
 ---
 
+
+Idea: run this with only lakes where we have 365 days of data, and only the variables in common across all lakes
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
+library(factoextra)
 
 #Load data
-all_continuous <- read_csv("../01b_Processed_data/all_continuous.csv")
+all_continuous <- read_csv("../01b_Processed_data/all_continuous.csv") %>%
+  filter(Variable %in% c("Surface temperature", "Surface chlorophyll-a", "Bottom-water DO", "Air temperature", "Solar radiation", "Epi-hypo dens. difference"))
 all_discrete <- read_csv("../01b_Processed_data/all_discrete.csv")
 ```
 
 ```{r}
 comb <- all_continuous %>%
   left_join(all_discrete, relationship = "many-to-many") %>%
-  filter(yday >= start, yday <= end)
+  filter(yday >= start, yday <= end) 
 
 #Run PCA for each lake
 plots <- list()
@@ -27,12 +32,13 @@ for(i in 1:length(unique(comb$Lake))){
   lake_data <- all_continuous %>%
     filter(Lake == lake_name) %>%
     group_by(Variable) %>%
-    filter(sum(!is.na(Value)) > 100) %>%
+    filter(sum(!is.na(Value)) > 200) %>%
     pivot_wider(names_from = Variable, values_from = Value) %>%
     na.omit()
   #Remove day of year
   for_pca <- lake_data %>%
-    select(-c(yday, Lake))
+    select(-c(yday, Lake)) %>%
+    scale()
   #Run PCA
   res.pca <- prcomp(for_pca, scale = TRUE)
   #Plot
@@ -44,6 +50,7 @@ for(i in 1:length(unique(comb$Lake))){
                gradient.cols = c("grey98", "grey70", "grey98"),
                repel = T,
                label = "var",
+               labelsize = 3,
                title = lake_name) +
     theme(legend.position = "bottom",
           legend.direction = "vertical")
@@ -63,7 +70,7 @@ for(i in 1:length(unique(comb$Lake))){
                legend.title = "Astronomical Season",
                addEllipses = F,
                label = "var",
-               title = lake_name) +
+               title = "") +
     theme(legend.position = "bottom",
           legend.direction = "vertical")
   
@@ -82,9 +89,30 @@ for(i in 1:length(unique(comb$Lake))){
                legend.title = "Season (Months)",
                addEllipses = F,
                label = "var",
-               title = lake_name) +
+               title = "") +
     theme(legend.position = "bottom",
           legend.direction = "vertical")
+  
+  #K-means
+  fit <- kmeans(for_pca, 4)
+  # get cluster means
+  aggregate(for_pca, by=list(fit$cluster), FUN=mean)
+  
+  optim_plot <- fviz_pca_ind(res.pca,
+               col.ind = as.factor(fit$cluster), # color by groups
+               col.var = "black",
+               mean.point = FALSE,
+               legend.title = "Optimized grouping",
+               addEllipses = F,
+               label = "var",
+               title = "") +
+    theme(legend.position = "bottom",
+          legend.direction = "vertical")
+  
+  final <- ggpubr::ggarrange(plot, astro_plot, month_plot, optim_plot, nrow = 1, align = "hv")
+  jpeg(paste0("../03a_Figures/PCA-", lake_name, "-optim.jpeg"), width = 8, height = 4, units = "in", res = 300)
+  print(final)
+  dev.off()
   
   final <- ggpubr::ggarrange(plot, astro_plot, month_plot, nrow = 1, align = "hv")
   jpeg(paste0("../03a_Figures/PCA-", lake_name, ".jpeg"), width = 6, height = 4, units = "in", res = 300)

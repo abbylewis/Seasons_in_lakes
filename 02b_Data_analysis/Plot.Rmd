@@ -144,6 +144,19 @@ discrete_strat <- discrete_temperate +
   facet_wrap(~Lake, ncol = 1)
 discrete_strat
 
+lake_relabel <- function(lakes){
+  index <- which(LAKES == lakes)
+  labels <- c("`Lake Erken (2018): 59.84 ºN, 18.63 ºE; Z`[max]~`= 21 m`", 
+           "`Arendsee (2020): 52.89 N, 11.47 E; Z`[max]~`= 50 m`",
+           "`Lake Ägeri (2023): 47.12 ºN, 8.62 ºE; Z`[max]~`= 83 m`", 
+           "`Midway Pond (2023): 44.93 ºN, 70.54 ºW; Z`[max]~`= 9 m`", 
+           "`Lake Sunapee (2008): 43.38 ºN, 72.05 ºW; Z`[max]~`= 32 m`", 
+           "`Mohonk Lake (2017): 41.77 ºN, 74.16 ºW; Z`[max]~`= 18 m`",
+           "`Beaverdam Reservoir (2021): 37.31 ºN, 80.18 ºW; Z`[max]~`= 11 m`",
+           "`Lake Rerewhakaaitu (2022-2023): 38.29 ºS, 176.5 ºE; Z`[max]~`= 15 m`")
+  return(labels[index])
+}
+
 discrete_ice <- discrete_strat +
   ggnewscale::new_scale_color() +
   geom_segment(data = ice_format,
@@ -161,13 +174,14 @@ discrete_ice <- discrete_strat +
         panel.grid.major.x = element_line(color = "grey70"),
         panel.grid.major.y = element_blank(),
         legend.key.height = unit(0, "mm"),
-        strip.background = element_rect(fill = "white", color = "white"),
+        strip.background = element_rect(fill = "transparent", color = "transparent"),
         legend.key.spacing.y = unit(0, "mm"),
-        panel.grid.minor = element_blank()) +
+        panel.grid.minor = element_blank(),
+        strip.text.x = element_text(hjust = 0),
+        strip.clip= "off") +
   guides(color = guide_legend(ncol = 1, title.position="top")) +
-  facet_wrap(~Lake, ncol = 1)
+  facet_wrap(~Lake, ncol = 1, labeller = as_labeller(lake_relabel, default = label_parsed))
 
-#View
 discrete_ice
 ```
 
@@ -284,10 +298,12 @@ continuous <- continuous_data %>%
         legend.title = element_blank(),
         axis.title.x = element_blank(),
         panel.grid.minor = element_blank(),
+        strip.text.x = element_text(color = "white"),
         strip.background = element_rect(fill = "white", color = "white"),
         legend.key.height = unit(3, "mm"),
         panel.grid.major.y = element_blank(),
-        panel.grid.major.x = element_line(color = "grey80"))
+        panel.grid.major.x = element_line(color = "grey80"),
+        plot.background = element_rect(fill = "transparent"))
 
 #View
 continuous
