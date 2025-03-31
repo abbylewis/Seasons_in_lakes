@@ -27,68 +27,195 @@ NOTE: add color for mixed period
 
 ```{r}
 #Load discrete data
-#FCR
-ice_format <- read.csv("../01b_Processed_data/FCR_ice.csv") 
-strat <- read.csv("../01b_Processed_data/FCR_stratification_discrete.csv") 
-#General
-nh <- read.csv("../01b_Processed_data/Temperate_seasons_nh.csv")
-sh <- read.csv("../01b_Processed_data/Temperate_seasons_sh.csv")
-#Rerewhakaaitu
-rere_strat <- read.csv("../01b_Processed_data/Rerewhakaaitu_stratification_discrete.csv") 
-
-#Format
-in_lake <- ice_format %>%
-  full_join(strat) %>% 
-  full_join(rere_strat) %>%
-  mutate(Method = "Ice/Stratification")
-
-#Format
-temperate <- nh %>% filter(is.na(start)) #make empty df
-for(lake in unique(in_lake$Lake)) {
-  if(lake %in% sh_lakes) {
-    temperate <- temperate %>%
-      full_join(sh %>% mutate(Lake = lake))
-  } else {
-    temperate <- temperate %>%
-      full_join(nh %>% mutate(Lake = lake))
-  }
-}
-
-temperate_chla <- temperate %>%
-  full_join(in_lake) 
+discrete <- read_csv("../01b_Processed_data/Discrete_seasons.csv")
 ```
 
 # Continuous
 
 ```{r}
 #Load data
-#FCR
-fcr_catwalk_format <- read.csv("../01b_Processed_data/FCR_catwalk.csv")
-#Rerewhakaaitu
-rere_in_lake <- read.csv("../01b_Processed_data/Rerewhakaaitu_continuous.csv")
+continuous <- read_csv("../01b_Processed_data/Continuous_data.csv")
 
-#Format
-continuous_data <- fcr_catwalk_format %>%
-  full_join(rere_in_lake) %>%
-  filter(!is.na(Value)) %>%
-  mutate(Variable = factor(Variable, 
-                           levels = c("Surface_chla"),
-                           labels = c("Surface chlorophyll-a")),
-         Lake = ifelse(is.na(Lake), "FCR", Lake)) %>%
-  filter(!is.na(Variable)) %>%
-  mutate(x = ifelse(Lake %in% sh_lakes, yday - offset, yday),
-         x = ifelse(x < 1, x+365, x))
+jpeg("../03a_Figures/Chla_sum.jpg", width = 6, height = 4, units = "in", res = 300)
+continuous %>%
+  left_join(discrete %>% select(-x), relationship = "many-to-many") %>%
+  mutate(Lake = sub(" ", "\n", sub(" \\(", "\n(", Lake)),
+         Season = factor(Season, levels = c("Spring", "Summer", "Autumn", "Winter"))) %>%
+  filter(yday >= start, 
+         yday <= end,
+         Variable == "Surface chlorophyll-a",
+         Method %in% c("Astronomical", "Months"),
+         !is.na(Value)) %>%
+  group_by(Lake, Season, Variable) %>%
+  filter(length(unique(Method)) == 2) %>%
+  mutate(p = wilcox.test(Value ~ Method)$p.value,
+         p = case_when(p > 0.05 ~"n.s.",
+                       p <= 0.05 & p > 0.01 ~ "*",
+                       p <= 0.01 & p > 0.001 ~ "**",
+                       p <= 0.001 ~ "***"),
+         sig = p != "n.s.",
+         label_height = max(Value)) %>%
+  ggplot(aes(x = Method, y = Value, color = sig)) +
+  geom_boxplot() +
+  geom_text(aes(label = p, y = label_height), x = 1.5, hjust = 0.5, vjust = 1, size = 3, 
+            data = . %>% 
+              select(p, label_height, Season, Lake, sig) %>%
+              distinct) +
+  ylab("Chlorophyll-a (µg/L)") +
+  scale_y_continuous(expand = expansion(mult = c(0.05, 0.3))) +
+  ggh4x::facet_grid2(Season~Lake, scales = "free", independent = "y")+
+  theme_bw(base_size = 9)+
+  scale_color_manual(values = c("grey50", "black"))+
+  theme(legend.position = "none",
+        axis.text.x = element_text(angle = 20, hjust = 1))
+dev.off()
 
-continuous_data %>%
-  left_join(temperate_chla) %>%
-  filter(x >= start, 
-         x <= end) %>%
-  group_by(Lake, Season, Method) %>%
-  summarize(mean = mean(Value, na.rm = TRUE),
-            sd = sd(Value, na.rm = TRUE),
-            n = n()) %>%
-  ggplot(aes(x = Season)) +
-  geom_point(aes(y = mean, color = Method)) +
-  geom_errorbar(aes(ymin = mean - sd, ymax = mean + sd), width = 0.2) +
-  facet_wrap(~Lake)
+jpeg("../03a_Figures/DO_sum.jpg", width = 6, height = 4, units = "in", res = 300)
+continuous %>%
+  left_join(discrete %>% select(-x), relationship = "many-to-many") %>%
+  mutate(Lake = sub(" ", "\n", sub(" \\(", "\n(", Lake)),
+         Season = factor(Season, levels = c("Spring", "Summer", "Autumn", "Winter"))) %>%
+  filter(yday >= start, 
+         yday <= end,
+         Variable == "Bottom-water DO",
+         Method %in% c("Astronomical", "Months"),
+         !is.na(Value)) %>%
+  group_by(Lake, Season, Variable) %>%
+  filter(length(unique(Method)) == 2) %>%
+  mutate(p = wilcox.test(Value ~ Method)$p.value,
+         p = case_when(p > 0.05 ~"n.s.",
+                       p <= 0.05 & p > 0.01 ~ "*",
+                       p <= 0.01 & p > 0.001 ~ "**",
+                       p <= 0.001 ~ "***"),
+         sig = p != "n.s.",
+         label_height = max(Value)) %>%
+  ggplot(aes(x = Method, y = Value, color = sig)) +
+  geom_boxplot() +
+  geom_text(aes(label = p, y = label_height), x = 1.5, hjust = 0.5, vjust = 1, size = 3, 
+            data = . %>% 
+              select(p, label_height, Season, Lake, sig) %>%
+              distinct) +
+  ylab("Bottom-water DO (mg/L)") +
+  scale_y_continuous(expand = expansion(mult = c(0.05, 0.3))) +
+  ggh4x::facet_grid2(Season~Lake, scales = "free", independent = "y")+
+  theme_bw(base_size = 9)+
+  scale_color_manual(values = c("grey50", "black"))+
+  theme(legend.position = "none",
+        axis.text.x = element_text(angle = 20, hjust = 1))
+dev.off()
+
+
+jpeg("../03a_Figures/Surface_temp.jpg", width = 6, height = 4, units = "in", res = 300)
+continuous %>%
+  left_join(discrete %>% select(-x), relationship = "many-to-many") %>%
+  mutate(Lake = sub(" ", "\n", sub(" \\(", "\n(", Lake)),
+         Season = factor(Season, levels = c("Spring", "Summer", "Autumn", "Winter"))) %>%
+  filter(yday >= start, 
+         yday <= end,
+         Variable == "Surface temperature",
+         Method %in% c("Astronomical", "Months"),
+         !is.na(Value)) %>%
+  group_by(Lake, Season, Variable) %>%
+  filter(length(unique(Method)) == 2) %>%
+  mutate(p = wilcox.test(Value ~ Method)$p.value,
+         p = case_when(p > 0.05 ~"n.s.",
+                       p <= 0.05 & p > 0.01 ~ "*",
+                       p <= 0.01 & p > 0.001 ~ "**",
+                       p <= 0.001 ~ "***"),
+         sig = p != "n.s.",
+         label_height = max(Value)) %>%
+  ggplot(aes(x = Method, y = Value, color = sig)) +
+  geom_boxplot() +
+  geom_text(aes(label = p, y = label_height), x = 1.5, hjust = 0.5, vjust = 1, size = 3, 
+            data = . %>% 
+              select(p, label_height, Season, Lake, sig) %>%
+              distinct) +
+  ylab("Surface temperature (ºC)") +
+  scale_y_continuous(expand = expansion(mult = c(0.05, 0.3))) +
+  ggh4x::facet_grid2(Season~Lake, scales = "free", independent = "y")+
+  theme_bw(base_size = 9)+
+  scale_color_manual(values = c("grey60", "black"))+
+  theme(legend.position = "none",
+        axis.text.x = element_text(angle = 20, hjust = 1))
+dev.off()
 ```
+```{r}
+jpeg("../03a_Figures/All_vars.jpg", width = 6, height = 6, units = "in", res = 300)
+continuous %>%
+  left_join(discrete %>% select(-x), relationship = "many-to-many") %>%
+  mutate(Lake = sub(" ", "\n", sub(" \\(", "\n(", Lake)),
+         Season = factor(Season, levels = c("Spring", "Summer", "Autumn", "Winter"))) %>%
+  filter(yday >= start, 
+         yday <= end,
+         Method %in% c("Astronomical", "Months"),
+         !Variable == "Surface turbidity",
+         !is.na(Value)) %>%
+  group_by(Lake, Season, Variable) %>%
+  filter(length(unique(Method)) == 2) %>%
+  summarize(p = wilcox.test(Value ~ Method)$p.value,
+            p = case_when(p > 0.05 ~"n.s.",
+                          p <= 0.05 & p > 0.01 ~ "*",
+                          p <= 0.01 & p > 0.001 ~ "**",
+                          p <= 0.001 ~ "***"),
+            sig = p != "n.s.",
+            label_height = max(Value),
+            month_mean = mean(Value[Method == "Months"], na.rm = T),
+            astro_mean = mean(Value[Method == "Astronomical"], na.rm = T),
+            pct_dif = abs(month_mean - astro_mean) / abs((month_mean + astro_mean)/2) * 100) %>%
+  mutate(label = substr(Lake, 1,2)) %>%
+  ggplot(aes(x = Season, y = pct_dif)) +
+  ylab("Percent difference in mean value\nbetween monthly and astronomical definitions")+
+  geom_boxplot(color = "grey80", outlier.shape = NA)+
+  geom_point(position = position_dodge(width = .8), 
+             aes(shape = Lake, color = sig),
+             size = 1.5) +
+  geom_hline(yintercept = 0)+
+  facet_wrap(~Variable, scales = "free", ncol = 2)+
+  theme_bw(base_size = 9)+
+  scale_color_manual(values = c("grey60", "black"))+
+  scale_shape_manual(values = c("A", "B", "G", "E", "R", "S", "M", "O"))+
+  theme(axis.text.x = element_text(angle = 20, hjust = 1),
+        panel.grid.major.x = element_blank(),
+        legend.position = "bottom")
+dev.off()
+
+jpeg("../03a_Figures/All_vars_by_season.jpg", width = 6, height = 6, units = "in", res = 300)
+continuous %>%
+  left_join(discrete %>% select(-x), relationship = "many-to-many") %>%
+  mutate(Lake = sub(" ", "\n", sub(" \\(", "\n(", Lake)),
+         Season = factor(Season, levels = c("Spring", "Summer", "Autumn", "Winter"))) %>%
+  filter(yday >= start, 
+         yday <= end,
+         Method %in% c("Astronomical", "Months"),
+         !Variable == "Surface turbidity",
+         !is.na(Value)) %>%
+  group_by(Lake, Season, Variable) %>%
+  filter(length(unique(Method)) == 2) %>%
+  summarize(p = wilcox.test(Value ~ Method)$p.value,
+            p = case_when(p > 0.05 ~"n.s.",
+                          p <= 0.05 & p > 0.01 ~ "*",
+                          p <= 0.01 & p > 0.001 ~ "**",
+                          p <= 0.001 ~ "***"),
+            sig = p != "n.s.",
+            label_height = max(Value),
+            month_mean = mean(Value[Method == "Months"], na.rm = T),
+            astro_mean = mean(Value[Method == "Astronomical"], na.rm = T),
+            pct_dif = abs(month_mean - astro_mean) / abs((month_mean + astro_mean)/2) * 100) %>%
+  mutate(label = substr(Lake, 1,2)) %>%
+  ggplot(aes(x = Variable, y = pct_dif)) +
+  ylab("Percent difference in mean value\nbetween monthly and astronomical definitions")+
+  geom_boxplot(color = "grey80", outlier.shape = NA)+
+  geom_point(position = position_dodge(width = .8), 
+             aes(shape = Lake, color = sig),
+             size = 1.5) +
+  geom_hline(yintercept = 0)+
+  facet_wrap(~Season, ncol = 2)+
+  theme_bw(base_size = 9)+
+  scale_color_manual(values = c("grey60", "black"))+
+  scale_shape_manual(values = c("A", "B", "G", "E", "R", "S", "M", "O"))+
+  theme(axis.text.x = element_text(angle = 20, hjust = 1),
+        panel.grid.major.x = element_blank(),
+        legend.position = "bottom")
+dev.off()
+```
+

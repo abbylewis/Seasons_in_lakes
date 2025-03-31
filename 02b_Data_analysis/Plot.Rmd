@@ -94,8 +94,11 @@ for(lake in unique(in_lake$Lake)) {
     full_join(temperate_raw %>% mutate(Lake = lake) %>%
                 filter(Hemisphere == hemi))
 }
-temperate <- temperate %>%
-  mutate(Lake = factor(Lake, levels = LAKES))
+discrete <- temperate %>%
+  mutate(Lake = factor(Lake, levels = LAKES)) %>%
+  full_join(in_lake) %>%
+  full_join(ice_format)
+write_csv(discrete, "../01b_Processed_data/Discrete_seasons.csv", row.names = FALSE)
 
 #Plot
 #First the temperate metrics
@@ -278,6 +281,28 @@ continuous_data <- all %>%
                                             "Surface DO"), 
                             "Bio/chem", "Phys"),
          Lake = factor(Lake, levels = LAKES))
+
+write_csv(all %>%
+            right_join(full) %>%
+            mutate(Variable = factor(Variable, 
+                                     levels = c("Surface_temperature", 
+                                                "AirTemp_C_Average", 
+                                                "Surface_chla", 
+                                                "Surface_DO",
+                                                "Bottom_DO",
+                                                "Turbidity",
+                                                "Shortwave",
+                                                "Diff_Dens_surf_bot"),
+                                     labels = c("Surface temperature", 
+                                                "Air temperature",
+                                                "Surface chlorophyll-a",
+                                                "Surface DO",
+                                                "Bottom-water DO",
+                                                "Surface turbidity",
+                                                "Solar radiation",
+                                                "Epi-hypo dens. difference"))) %>%
+            filter(!is.na(Variable)), 
+          "../01b_Processed_data/continuous_data.csv")
 
 #Plot
 continuous <- continuous_data %>%

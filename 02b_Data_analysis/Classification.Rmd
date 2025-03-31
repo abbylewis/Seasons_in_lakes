@@ -6,8 +6,6 @@ output: html_document
 ---
 
 
-Idea: run this with only lakes where we have 365 days of data, and only the variables in common across all lakes
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
