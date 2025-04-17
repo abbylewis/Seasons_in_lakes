@@ -383,7 +383,7 @@ ggplot(data=annual_data_bdr)+
   
   #Set up ribbon for Surface temperature
   geom_ribbon(data=annual_data_bdr,aes(x=doy*2*pi/365,ymin=y2*1.05,ymax=y2*1.1),color="black",fill=rgb(red=255,green=255,blue=255,maxColorValue=255,alpha=100))+
-    geom_point(data=bdr_surfacetemp,aes(x=yday*2*pi/365,y=annual_data_bdr$y2[1]*(1.05+1.1)/2,fill=Value),color=alpha("white",1),stroke=0.01)+
+    geom_point(data=bdr_surfacetemp,aes(x=yday*2*pi/365,y=annual_data_bdr$y2[1]*(1.05+1.1)/2,fill=Value),shape=22,color=alpha("white",0),stroke=0.1,size=5)+
   #geom_point(data=bvr_ice2,aes(x=doy*2*pi/365,y=(annual_data_bdr$y2[1]+annual_data_bdr$y2[1]*1.05)/2),shape=21,color="black",fill="lightblue",size=3)+ #put blue dots for ice days in the outer ring
   
   #Day length as a line####
