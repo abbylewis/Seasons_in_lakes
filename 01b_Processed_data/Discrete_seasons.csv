@@ -1,0 +1,201 @@
+"Method","Season","Hemisphere","start","end","Lake","x","xend"
+"Months","Winter","Northern",346,365,"Beaverdam Reservoir (2021)",NA,NA
+"Astronomical","Autumn","Northern",276,365,"Beaverdam Reservoir (2021)",NA,NA
+"Months","Spring","Northern",71,163,"Beaverdam Reservoir (2021)",NA,NA
+"Months","Summer","Northern",163,255,"Beaverdam Reservoir (2021)",NA,NA
+"Months","Autumn","Northern",255,346,"Beaverdam Reservoir (2021)",NA,NA
+"Months","Winter","Northern",1,71,"Beaverdam Reservoir (2021)",NA,NA
+"Astronomical","Spring","Northern",90,183,"Beaverdam Reservoir (2021)",NA,NA
+"Astronomical","Summer","Northern",183,276,"Beaverdam Reservoir (2021)",NA,NA
+"Astronomical","Winter","Northern",1,90,"Beaverdam Reservoir (2021)",NA,NA
+"Months","Winter","Northern",346,365,"Lake Sunapee (2008)",NA,NA
+"Astronomical","Autumn","Northern",276,365,"Lake Sunapee (2008)",NA,NA
+"Months","Spring","Northern",71,163,"Lake Sunapee (2008)",NA,NA
+"Months","Summer","Northern",163,255,"Lake Sunapee (2008)",NA,NA
+"Months","Autumn","Northern",255,346,"Lake Sunapee (2008)",NA,NA
+"Months","Winter","Northern",1,71,"Lake Sunapee (2008)",NA,NA
+"Astronomical","Spring","Northern",90,183,"Lake Sunapee (2008)",NA,NA
+"Astronomical","Summer","Northern",183,276,"Lake Sunapee (2008)",NA,NA
+"Astronomical","Winter","Northern",1,90,"Lake Sunapee (2008)",NA,NA
+"Months","Winter","Northern",346,365,"Lake Rerewhakaaitu (2022-2023)",NA,NA
+"Astronomical","Autumn","Northern",276,365,"Lake Rerewhakaaitu (2022-2023)",NA,NA
+"Months","Spring","Northern",71,163,"Lake Rerewhakaaitu (2022-2023)",NA,NA
+"Months","Summer","Northern",163,255,"Lake Rerewhakaaitu (2022-2023)",NA,NA
+"Months","Autumn","Northern",255,346,"Lake Rerewhakaaitu (2022-2023)",NA,NA
+"Months","Winter","Northern",1,71,"Lake Rerewhakaaitu (2022-2023)",NA,NA
+"Astronomical","Spring","Northern",90,183,"Lake Rerewhakaaitu (2022-2023)",NA,NA
+"Astronomical","Summer","Northern",183,276,"Lake Rerewhakaaitu (2022-2023)",NA,NA
+"Astronomical","Winter","Northern",1,90,"Lake Rerewhakaaitu (2022-2023)",NA,NA
+"Months","Winter","Northern",346,365,"Lake Erken (2018)",NA,NA
+"Astronomical","Autumn","Northern",276,365,"Lake Erken (2018)",NA,NA
+"Months","Spring","Northern",71,163,"Lake Erken (2018)",NA,NA
+"Months","Summer","Northern",163,255,"Lake Erken (2018)",NA,NA
+"Months","Autumn","Northern",255,346,"Lake Erken (2018)",NA,NA
+"Months","Winter","Northern",1,71,"Lake Erken (2018)",NA,NA
+"Astronomical","Spring","Northern",90,183,"Lake Erken (2018)",NA,NA
+"Astronomical","Summer","Northern",183,276,"Lake Erken (2018)",NA,NA
+"Astronomical","Winter","Northern",1,90,"Lake Erken (2018)",NA,NA
+"Months","Winter","Northern",346,365,"Mohonk Lake (2017)",NA,NA
+"Astronomical","Autumn","Northern",276,365,"Mohonk Lake (2017)",NA,NA
+"Months","Spring","Northern",71,163,"Mohonk Lake (2017)",NA,NA
+"Months","Summer","Northern",163,255,"Mohonk Lake (2017)",NA,NA
+"Months","Autumn","Northern",255,346,"Mohonk Lake (2017)",NA,NA
+"Months","Winter","Northern",1,71,"Mohonk Lake (2017)",NA,NA
+"Astronomical","Spring","Northern",90,183,"Mohonk Lake (2017)",NA,NA
+"Astronomical","Summer","Northern",183,276,"Mohonk Lake (2017)",NA,NA
+"Astronomical","Winter","Northern",1,90,"Mohonk Lake (2017)",NA,NA
+"Months","Winter","Northern",346,365,"Arendsee (2020)",NA,NA
+"Astronomical","Autumn","Northern",276,365,"Arendsee (2020)",NA,NA
+"Months","Spring","Northern",71,163,"Arendsee (2020)",NA,NA
+"Months","Summer","Northern",163,255,"Arendsee (2020)",NA,NA
+"Months","Autumn","Northern",255,346,"Arendsee (2020)",NA,NA
+"Months","Winter","Northern",1,71,"Arendsee (2020)",NA,NA
+"Astronomical","Spring","Northern",90,183,"Arendsee (2020)",NA,NA
+"Astronomical","Summer","Northern",183,276,"Arendsee (2020)",NA,NA
+"Astronomical","Winter","Northern",1,90,"Arendsee (2020)",NA,NA
+"Months","Winter","Northern",346,365,"Midway Pond (2023)",NA,NA
+"Astronomical","Autumn","Northern",276,365,"Midway Pond (2023)",NA,NA
+"Months","Spring","Northern",71,163,"Midway Pond (2023)",NA,NA
+"Months","Summer","Northern",163,255,"Midway Pond (2023)",NA,NA
+"Months","Autumn","Northern",255,346,"Midway Pond (2023)",NA,NA
+"Months","Winter","Northern",1,71,"Midway Pond (2023)",NA,NA
+"Astronomical","Spring","Northern",90,183,"Midway Pond (2023)",NA,NA
+"Astronomical","Summer","Northern",183,276,"Midway Pond (2023)",NA,NA
+"Astronomical","Winter","Northern",1,90,"Midway Pond (2023)",NA,NA
+"Months","Winter","Northern",346,365,"Lake Ägeri (2023)",NA,NA
+"Astronomical","Autumn","Northern",276,365,"Lake Ägeri (2023)",NA,NA
+"Months","Spring","Northern",71,163,"Lake Ägeri (2023)",NA,NA
+"Months","Summer","Northern",163,255,"Lake Ägeri (2023)",NA,NA
+"Months","Autumn","Northern",255,346,"Lake Ägeri (2023)",NA,NA
+"Months","Winter","Northern",1,71,"Lake Ägeri (2023)",NA,NA
+"Astronomical","Spring","Northern",90,183,"Lake Ägeri (2023)",NA,NA
+"Astronomical","Summer","Northern",183,276,"Lake Ägeri (2023)",NA,NA
+"Astronomical","Winter","Northern",1,90,"Lake Ägeri (2023)",NA,NA
+"Stratification","Mixed",NA,1,78,"Beaverdam Reservoir (2021)",1,78
+"Stratification","Stratified",NA,78,323,"Beaverdam Reservoir (2021)",78,323
+"Stratification","Mixed",NA,323,324,"Beaverdam Reservoir (2021)",323,324
+"Stratification","Stratified",NA,324,326,"Beaverdam Reservoir (2021)",324,326
+"Stratification","Mixed",NA,326,327,"Beaverdam Reservoir (2021)",326,327
+"Stratification","Stratified",NA,327,328,"Beaverdam Reservoir (2021)",327,328
+"Stratification","Mixed",NA,328,333,"Beaverdam Reservoir (2021)",328,333
+"Stratification","Stratified",NA,333,334,"Beaverdam Reservoir (2021)",333,334
+"Stratification","Mixed",NA,334,365,"Beaverdam Reservoir (2021)",334,365
+"Stratification","Mixed",NA,1,13,"Lake Sunapee (2008)",1,13
+"Stratification","Inversely
+stratified",NA,13,20,"Lake Sunapee (2008)",13,20
+"Stratification","Mixed",NA,20,26,"Lake Sunapee (2008)",20,26
+"Stratification","Inversely
+stratified",NA,26,119,"Lake Sunapee (2008)",26,119
+"Stratification","Mixed",NA,119,138,"Lake Sunapee (2008)",119,138
+"Stratification","Stratified",NA,138,144,"Lake Sunapee (2008)",138,144
+"Stratification","Mixed",NA,144,145,"Lake Sunapee (2008)",144,145
+"Stratification","Stratified",NA,145,274,"Lake Sunapee (2008)",145,274
+"Stratification","Mixed",NA,274,275,"Lake Sunapee (2008)",274,275
+"Stratification","Stratified",NA,275,281,"Lake Sunapee (2008)",275,281
+"Stratification","Mixed",NA,281,283,"Lake Sunapee (2008)",281,283
+"Stratification","Stratified",NA,283,291,"Lake Sunapee (2008)",283,291
+"Stratification","Mixed",NA,291,324,"Lake Sunapee (2008)",291,324
+"Stratification","Stratified",NA,324,325,"Lake Sunapee (2008)",324,325
+"Stratification","Mixed",NA,325,365,"Lake Sunapee (2008)",325,365
+"Stratification","Mixed",NA,1,93,"Lake Rerewhakaaitu (2022-2023)",1,93
+"Stratification","Stratified",NA,93,103,"Lake Rerewhakaaitu (2022-2023)",93,103
+"Stratification","Mixed",NA,103,105,"Lake Rerewhakaaitu (2022-2023)",103,105
+"Stratification","Stratified",NA,105,108,"Lake Rerewhakaaitu (2022-2023)",105,108
+"Stratification","Mixed",NA,108,110,"Lake Rerewhakaaitu (2022-2023)",108,110
+"Stratification","Stratified",NA,110,119,"Lake Rerewhakaaitu (2022-2023)",110,119
+"Stratification","Mixed",NA,119,120,"Lake Rerewhakaaitu (2022-2023)",119,120
+"Stratification","Stratified",NA,120,122,"Lake Rerewhakaaitu (2022-2023)",120,122
+"Stratification","Mixed",NA,122,124,"Lake Rerewhakaaitu (2022-2023)",122,124
+"Stratification","Stratified",NA,124,158,"Lake Rerewhakaaitu (2022-2023)",124,158
+"Stratification","Mixed",NA,158,160,"Lake Rerewhakaaitu (2022-2023)",158,160
+"Stratification","Stratified",NA,160,162,"Lake Rerewhakaaitu (2022-2023)",160,162
+"Stratification","Mixed",NA,162,163,"Lake Rerewhakaaitu (2022-2023)",162,163
+"Stratification","Stratified",NA,163,164,"Lake Rerewhakaaitu (2022-2023)",163,164
+"Stratification","Mixed",NA,164,165,"Lake Rerewhakaaitu (2022-2023)",164,165
+"Stratification","Stratified",NA,165,172,"Lake Rerewhakaaitu (2022-2023)",165,172
+"Stratification","Mixed",NA,172,174,"Lake Rerewhakaaitu (2022-2023)",172,174
+"Stratification","Stratified",NA,174,200,"Lake Rerewhakaaitu (2022-2023)",174,200
+"Stratification","Mixed",NA,200,207,"Lake Rerewhakaaitu (2022-2023)",200,207
+"Stratification","Stratified",NA,207,223,"Lake Rerewhakaaitu (2022-2023)",207,223
+"Stratification","Mixed",NA,223,229,"Lake Rerewhakaaitu (2022-2023)",223,229
+"Stratification","Stratified",NA,229,238,"Lake Rerewhakaaitu (2022-2023)",229,238
+"Stratification","Mixed",NA,238,239,"Lake Rerewhakaaitu (2022-2023)",238,239
+"Stratification","Stratified",NA,239,240,"Lake Rerewhakaaitu (2022-2023)",239,240
+"Stratification","Mixed",NA,240,241,"Lake Rerewhakaaitu (2022-2023)",240,241
+"Stratification","Stratified",NA,241,282,"Lake Rerewhakaaitu (2022-2023)",241,282
+"Stratification","Mixed",NA,282,284,"Lake Rerewhakaaitu (2022-2023)",282,284
+"Stratification","Stratified",NA,284,291,"Lake Rerewhakaaitu (2022-2023)",284,291
+"Stratification","Mixed",NA,291,295,"Lake Rerewhakaaitu (2022-2023)",291,295
+"Stratification","Stratified",NA,295,296,"Lake Rerewhakaaitu (2022-2023)",295,296
+"Stratification","Mixed",NA,296,297,"Lake Rerewhakaaitu (2022-2023)",296,297
+"Stratification","Stratified",NA,297,299,"Lake Rerewhakaaitu (2022-2023)",297,299
+"Stratification","Mixed",NA,299,311,"Lake Rerewhakaaitu (2022-2023)",299,311
+"Stratification","Stratified",NA,311,313,"Lake Rerewhakaaitu (2022-2023)",311,313
+"Stratification","Mixed",NA,313,327,"Lake Rerewhakaaitu (2022-2023)",313,327
+"Stratification","Stratified",NA,327,331,"Lake Rerewhakaaitu (2022-2023)",327,331
+"Stratification","Mixed",NA,331,365,"Lake Rerewhakaaitu (2022-2023)",331,365
+"Stratification","Mixed",NA,1,35,"Lake Erken (2018)",1,35
+"Stratification","Inversely
+stratified",NA,35,97,"Lake Erken (2018)",35,97
+"Stratification","Mixed",NA,97,131,"Lake Erken (2018)",97,131
+"Stratification","Stratified",NA,131,132,"Lake Erken (2018)",131,132
+"Stratification","Mixed",NA,132,136,"Lake Erken (2018)",132,136
+"Stratification","Stratified",NA,136,266,"Lake Erken (2018)",136,266
+"Stratification","Mixed",NA,266,365,"Lake Erken (2018)",266,365
+"Stratification","Mixed",NA,1,4,"Mohonk Lake (2017)",1,4
+"Stratification","Inversely
+stratified",NA,4,5,"Mohonk Lake (2017)",4,5
+"Stratification","Mixed",NA,5,6,"Mohonk Lake (2017)",5,6
+"Stratification","Inversely
+stratified",NA,6,7,"Mohonk Lake (2017)",6,7
+"Stratification","Mixed",NA,7,9,"Mohonk Lake (2017)",7,9
+"Stratification","Inversely
+stratified",NA,9,33,"Mohonk Lake (2017)",9,33
+"Stratification","Mixed",NA,33,36,"Mohonk Lake (2017)",33,36
+"Stratification","Inversely
+stratified",NA,36,66,"Mohonk Lake (2017)",36,66
+"Stratification","Mixed",NA,66,85,"Mohonk Lake (2017)",66,85
+"Stratification","Inversely
+stratified",NA,85,125,"Mohonk Lake (2017)",85,125
+"Stratification","Stratified",NA,125,324,"Mohonk Lake (2017)",125,324
+"Stratification","Mixed",NA,324,361,"Mohonk Lake (2017)",324,361
+"Stratification","Inversely
+stratified",NA,361,364,"Mohonk Lake (2017)",361,364
+"Stratification","Mixed",NA,364,365,"Mohonk Lake (2017)",364,365
+"Stratification","Mixed",NA,1,110,"Arendsee (2020)",1,110
+"Stratification","Stratified",NA,110,354,"Arendsee (2020)",110,354
+"Stratification","Mixed",NA,354,365,"Arendsee (2020)",354,365
+"Stratification","Mixed",NA,1,139,"Midway Pond (2023)",1,139
+"Stratification","Stratified",NA,139,301,"Midway Pond (2023)",139,301
+"Stratification","Mixed",NA,301,303,"Midway Pond (2023)",301,303
+"Stratification","Stratified",NA,303,304,"Midway Pond (2023)",303,304
+"Stratification","Mixed",NA,304,311,"Midway Pond (2023)",304,311
+"Stratification","Stratified",NA,311,314,"Midway Pond (2023)",311,314
+"Stratification","Mixed",NA,314,365,"Midway Pond (2023)",314,365
+"Stratification","Mixed",NA,1,92,"Lake Ägeri (2023)",1,92
+"Stratification","Stratified",NA,92,95,"Lake Ägeri (2023)",92,95
+"Stratification","Mixed",NA,95,111,"Lake Ägeri (2023)",95,111
+"Stratification","Stratified",NA,111,112,"Lake Ägeri (2023)",111,112
+"Stratification","Mixed",NA,112,116,"Lake Ägeri (2023)",112,116
+"Stratification","Stratified",NA,116,350,"Lake Ägeri (2023)",116,350
+"Stratification","Mixed",NA,350,365,"Lake Ägeri (2023)",350,365
+"Ice","Ice",NA,21,23,"Beaverdam Reservoir (2021)",NA,NA
+"Ice","Ice",NA,41,42,"Beaverdam Reservoir (2021)",NA,NA
+"Ice","Ice",NA,55,58,"Beaverdam Reservoir (2021)",NA,NA
+"Ice","Open water",NA,0,21,"Beaverdam Reservoir (2021)",NA,NA
+"Ice","Open water",NA,23,41,"Beaverdam Reservoir (2021)",NA,NA
+"Ice","Open water",NA,42,55,"Beaverdam Reservoir (2021)",NA,NA
+"Ice","Open water",NA,58,365,"Beaverdam Reservoir (2021)",NA,NA
+"Ice","Open water",NA,0,365,"Lake Rerewhakaaitu (2022-2023)",NA,NA
+"Ice","Ice",NA,0,126,"Lake Sunapee (2008)",NA,NA
+"Ice","Open water",NA,126,365,"Lake Sunapee (2008)",NA,NA
+"Ice","Open water",NA,0,20,"Lake Erken (2018)",NA,NA
+"Ice","Ice",NA,20,121,"Lake Erken (2018)",NA,NA
+"Ice","Open water",NA,121,365,"Lake Erken (2018)",NA,NA
+"Ice","Ice",NA,0,108,"Mohonk Lake (2017)",NA,NA
+"Ice","Open water",NA,109,365,"Mohonk Lake (2017)",NA,NA
+"Ice","Open water",NA,0,365,"Arendsee (2020)",NA,NA
+"Ice","Ice",NA,0,131,"Midway Pond (2023)",NA,NA
+"Ice","Open water",NA,131,329,"Midway Pond (2023)",NA,NA
+"Ice","Ice",NA,329,365,"Midway Pond (2023)",NA,NA
+"Ice","Open water",NA,0,365,"Lake Ägeri (2023)",NA,NA

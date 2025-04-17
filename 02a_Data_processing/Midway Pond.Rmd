@@ -29,15 +29,15 @@ in_lake_data_temp <- read.csv("../01a_Raw_data/MidwayTempAll.csv") %>%
   group_by(Date, Depth_m) %>%
   summarise(Temp_C = mean(Temp_C, na.rm = T))
 
-in_lake_data_surf <- read.csv("../01a_Raw_data/Midway_chl_dom_surfT.csv") %>%
-  mutate(Date = as.Date(dateTimeET, format = "%m/%d/%y %H:%M")) %>%
-  select(-dateTimeET, -UnixTimeSec) %>%
+in_lake_data_surf <- read.csv("../01a_Raw_data/Midway_chl_dom_all.csv") %>%
+  mutate(Date = as.Date(date, format = "%Y-%m-%d %H:%M:%S")) %>%
+  select(-date, -unixT) %>%
   group_by(Date) %>%
   summarize(across(everything(), \(x) mean(x, na.rm = TRUE)))
 
-in_lake_data_do <- read.csv("../01a_Raw_data/Midway_DO.csv") %>%
-  mutate(Date = as.Date(dateTimeET, format = "%m/%d/%y %H:%M")) %>%
-  select(-dateTimeET, -TimeUTC_sec) %>%
+in_lake_data_do <- read.csv("../01a_Raw_data/Midway_DO_all.csv") %>%
+  mutate(Date = as.Date(date, format = "%Y-%m-%d %H:%M:%S")) %>%
+  select(-date, -unixT) %>%
   group_by(Date) %>%
   summarize(across(everything(), \(x) mean(x, na.rm = TRUE)))
 
@@ -46,10 +46,10 @@ in_lake_formatted <- in_lake_data_surf %>%
   full_join(in_lake_data_do) %>%
   mutate(Date = Date + offset) %>%
   filter(year(Date) == 2023) %>%
-  rename(Surface_temperature = SurfT_C,
-         Surface_chla = chl_ppb,
-         Surface_DO = Surf_DO_mgL,
-         Bottom_DO = Benth_DO_mgL) %>%
+  rename(Surface_temperature = surfT_C,
+         Surface_chla = CHL_ppb,
+         Surface_DO = surfDO_mgL,
+         Bottom_DO = benthDO_mgL) %>%
   mutate(yday = yday(Date)) %>%
   pivot_longer(cols = c(Surface_temperature, Surface_chla, Bottom_DO, Surface_DO), 
                names_to = "Variable", values_to = "Value") %>%
@@ -64,9 +64,9 @@ strat_sum <- in_lake_data_do %>%
          Year = year(Date)) %>%
   filter(Year == 2023) %>%
   mutate(yday = yday(Date)) %>%
-  mutate(Diff_Dens_surf_bot = water.density(BenthT_C) - 
-           water.density(SurfT_C),
-         Inverse = ifelse(BenthT_C > SurfT_C,
+  mutate(Diff_Dens_surf_bot = water.density(benthT_C) - 
+           water.density(surfT_C),
+         Inverse = ifelse(benthT_C > surfT_C,
                           T, F))
 
 strat_export_discrete <- strat_sum %>%
