@@ -343,6 +343,9 @@ ggplot(data=left_join(continuous_data2,for_map,by="Lake")%>%
 #Composite clock figure here#####
 #https://docs.google.com/presentation/d/18RpGled962TMjXDMLeXbHc7AHqc8q4t86c3t2Zy3NlU/edit?slide=id.p#slide=id.p####
 
+#Check the variables here####
+unique(bdr_cont$Variable)
+
 #Get out beaverdam reservoir data####
 bdr_cont<-continuous_data2%>%filter(Lake=="Beaverdam Reservoir (2021)")
 
@@ -351,6 +354,8 @@ bdr_daylength<-bdr_cont%>%filter(Variable=="Day length")
 
 #Get out bdr water temp####
 bdr_surfacetemp<-bdr_cont%>%filter(Variable=="Surface temperature")
+#Get out the stratification metric
+bdr_strat<-bdr_cont%>%filter(Variable=="Epi-hypo dens. difference")
 
 
 #Get out bdr day length####
@@ -368,35 +373,43 @@ scalar_season_labels<-1.3
 
 #plot the seasons as a clock####
 ggplot(data=annual_data_bdr)+
-  
+  coord_polar(start=0)+
+  scale_x_continuous(breaks=(c(1,32,60,91,121,152,182,213,244,274,305,335))*2*pi/365)+
   geom_ribbon(aes(x=doy*2*pi/365,ymin=0,ymax=y),color="white",fill="white")+ #Set up inner circle
   
   #Seasons colors for each 1/4####
-  geom_ribbon(aes(x=doy*2*pi/365,ymin=y*0.95,ymax=y2*1.05),color="black",fill="white")+
-  geom_ribbon(data=annual_data_bdr%>%filter(doy>=80&doy<=172),aes(x=doy*2*pi/365,ymin=y*0.95,ymax=y2*1.05),color="black",fill="yellowgreen")+
-  geom_ribbon(data=annual_data_bdr%>%filter(doy>=172&doy<=264),aes(x=doy*2*pi/365,ymin=y*0.95,ymax=y2*1.05),color="black",fill="green")+
-  geom_ribbon(data=annual_data_bdr%>%filter(doy>=264&doy<=355),aes(x=doy*2*pi/365,ymin=y*0.95,ymax=y2*1.05),color="black",fill="orange")+
+  geom_ribbon(aes(x=doy*2*pi/365,ymin=y*0.9,ymax=y2*1.05),color="black",fill="white")+
+  geom_ribbon(data=annual_data_bdr%>%filter(doy>=80&doy<=172),aes(x=doy*2*pi/365,ymin=y*0.9,ymax=y2*1.05),color="black",fill="yellowgreen")+
+  geom_ribbon(data=annual_data_bdr%>%filter(doy>=172&doy<=264),aes(x=doy*2*pi/365,ymin=y*0.9,ymax=y2*1.05),color="black",fill="green")+
+  geom_ribbon(data=annual_data_bdr%>%filter(doy>=264&doy<=355),aes(x=doy*2*pi/365,ymin=y*0.9,ymax=y2*1.05),color="black",fill="orange")+
   
   #Set up ribbon for ice data
   geom_ribbon(data=annual_data_bdr,aes(x=doy*2*pi/365,ymin=y2,ymax=y2*1.05),color="black",fill=rgb(red=255,green=255,blue=255,maxColorValue=255,alpha=100))+
+  #Rectangles for the stratification####
+  geom_rect(data=bdr_strat%>%mutate(x=yday,xend=yday-1,yend=Value),aes(xmin=x*2*pi/365,xmax=xend*2*pi/365,ymin=annual_data_bdr$y2[1],ymax=annual_data_bdr$y2[1]*1.05,fill=Value),color=NA)+
   geom_point(data=bvr_ice2,aes(x=doy*2*pi/365,y=(annual_data_bdr$y2[1]+annual_data_bdr$y2[1]*1.05)/2),shape=21,color="black",fill="lightblue",size=3)+ #put blue dots for ice days in the outer ring
-  
+
   #Set up ribbon for Surface temperature
-  geom_ribbon(data=annual_data_bdr,aes(x=doy*2*pi/365,ymin=y2*1.05,ymax=y2*1.1),color="black",fill=rgb(red=255,green=255,blue=255,maxColorValue=255,alpha=100))+
-    geom_point(data=bdr_surfacetemp,aes(x=yday*2*pi/365,y=annual_data_bdr$y2[1]*(1.05+1.1)/2,fill=Value),shape=22,color=alpha("white",0),stroke=0.1,size=5)+
+  #geom_ribbon(data=annual_data_bdr,aes(x=doy*2*pi/365,ymin=y2*1.05,ymax=y2*1.1),color="black",fill=rgb(red=255,green=255,blue=255,maxColorValue=255,alpha=100))+
+    #geom_point(data=bdr_surfacetemp,aes(x=yday*2*pi/365,y=annual_data_bdr$y2[1]*(1.05+1.1)/2,fill=Value),shape=22,color=alpha("white",0),stroke=0.1,size=5)+
   #geom_point(data=bvr_ice2,aes(x=doy*2*pi/365,y=(annual_data_bdr$y2[1]+annual_data_bdr$y2[1]*1.05)/2),shape=21,color="black",fill="lightblue",size=3)+ #put blue dots for ice days in the outer ring
   
   #Day length as a line####
   geom_line(data=bdr_daylength,aes(x=yday*2*pi/365,y=Value),color="black",size=1.5)+
-
+  
+  #Geometric segments for the months spindles coming out from the middle####
+  geom_segment(data=tibble(x=(c(1,32,60,91,121,152,182,213,244,274,305,335))*2*pi/365,y=2.3)%>%mutate(xend=x,y=y_limit_lower,yend=y_limit_upper),aes(x=x,xend=xend,y=y,yend=yend),color="lightgrey")+  
+  
+  
+  
   #geom_rect(aes(xmin=doy,xmax=doy,ymin=1,ymax=2),color="black",fill="grey")+
   geom_label(aes(x=(80-46)*2*pi/365,y=max(bdr_daylength$Value)*scalar_season_labels),label="winter",label.size=NA)+
   geom_label(aes(x=(172-46)*2*pi/365,y=max(bdr_daylength$Value)*scalar_season_labels),label="spring",label.size=NA)+
   geom_label(aes(x=(264-46)*2*pi/365,y=max(bdr_daylength$Value)*scalar_season_labels),label="summer",label.size=NA)+
   geom_label(aes(x=(355-46)*2*pi/365,y=max(bdr_daylength$Value)*scalar_season_labels),label="fall",label.size=NA)+
   geom_text(data=tibble(x=(c(1,32,60,91,121,152,182,213,244,274,305,335))*2*pi/365,y=2.3,label=month.abb),aes(x=x,y=max(bdr_daylength$Value)*scalar_month_labels,label=label))+
-  scale_x_continuous(breaks=(c(1,32,60,91,121,152,182,213,244,274,305,335))*2*pi/365)+
-  coord_polar(start=0)+
+  #scale_x_continuous(breaks=(c(1,32,60,91,121,152,182,213,244,274,305,335))*2*pi/365)+
+  #coord_polar(start=0)+
   scale_y_continuous(limits=c(y_limit_lower,y_limit_upper))+
   theme_bw()+
   theme(panel.grid.major = element_blank(),
