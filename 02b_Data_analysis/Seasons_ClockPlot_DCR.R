@@ -177,18 +177,26 @@ all_mohk<-annual_data_mohk%>%
           left_join(.,mohk_daylength%>%mutate(day_length=Value)%>%dplyr::select(yday,day_length))%>%
           mutate(Ice=ifelse(yday<=108,"ice","open"),
                  )
-
+#Add on extra values to complete teh circle####
 all_mohk<-all_mohk%>%
         bind_rows(all_mohk%>%slice(1)%>%mutate(yday=0),.)%>% #add in a duplicate first row
         bind_rows(.,all_mohk%>%slice(365)%>%mutate(yday=366)) #add in a duplicate first row
 
+#Fill in the missing data with 0.1
+all_mohk<-all_mohk%>%mutate(delta_density=ifelse(is.na(delta_density),0.1,delta_density))
 
 #set the inner and outer limits to the figure
 y_limit_lower<-7
 y_limit_upper<-20
-scalar_month_labels<-1.2
+scalar_month_labels<-1.18
 scalar_season_labels<-1.3
 
+#Colors for seasons#####
+winter_color<-rgb(215,228,255,maxColorValue = 255)
+spring_color<-rgb(183,234,123,maxColorValue = 255)
+summer_color<-rgb(250,251,114,maxColorValue = 255)
+autumn_color<-rgb(228,141,44,maxColorValue = 255)
+  
 #plot the seasons as a clock####
 ggplot(data=all_mohk)+
   #Put the polar coordinates on with breaks at each of the month starts####
@@ -196,13 +204,16 @@ ggplot(data=all_mohk)+
   scale_x_continuous(breaks=(c(1,32,60,91,121,152,182,213,244,274,305,335))*2*pi/365)+
   #Inner white circle####
   geom_ribbon(aes(x=yday*2*pi/365,ymin=0,ymax=y),color="white",fill="white")+ #Set up inner circle
+  #Weird points to establish the legend for the colors of the seasons#
+  geom_point(data=tibble(x=c(1:4)*2*pi/365,y=y_limit_lower,color=c(winter_color,spring_color,summer_color,autumn_color)),aes(x=x,y=y,color=color))+
+  scale_color_manual(name = "Astronomical\nseasons", values = c(winter_color,spring_color,summer_color,autumn_color), labels = c("Winter", "Spring","Summer","Autumn"))+
   
   #Seasons colors for each 1/4####
-  geom_ribbon(data=tibble(rad=c(-1:80)*2*pi/365),aes(x=rad,ymin=min(mohk_daylength$Value)*0.9,ymax=max(mohk_daylength$Value)*1.05),color="black",fill=rgb(215,228,255,maxColorValue = 255))+ #winter
-  geom_ribbon(data=tibble(rad=c(355:366)*2*pi/365),aes(x=rad,ymin=min(mohk_daylength$Value)*0.9,ymax=max(mohk_daylength$Value)*1.05),color="black",fill=rgb(215,228,255,maxColorValue = 255))+ #winter2
-  geom_ribbon(data=all_mohk%>%filter(yday>=80&yday<=172),aes(x=yday*2*pi/365,ymin=y*0.9,ymax=y2*1.05),color="black",fill=rgb(183,234,123,maxColorValue = 255))+ #spring
-  geom_ribbon(data=all_mohk%>%filter(yday>=172&yday<=264),aes(x=yday*2*pi/365,ymin=y*0.9,ymax=y2*1.05),color="black",fill=rgb(250,251,114,maxColorValue = 255))+ #summer
-  geom_ribbon(data=all_mohk%>%filter(yday>=264&yday<=355),aes(x=yday*2*pi/365,ymin=y*0.9,ymax=y2*1.05),color="black",fill=rgb(228,141,44,maxColorValue = 255))+ #fall
+  geom_ribbon(data=tibble(rad=c(-1:80)*2*pi/365),aes(x=rad,ymin=min(mohk_daylength$Value)*0.9,ymax=max(mohk_daylength$Value)*1.05),color="black",fill=winter_color)+ #winter
+  geom_ribbon(data=tibble(rad=c(355:366)*2*pi/365),aes(x=rad,ymin=min(mohk_daylength$Value)*0.9,ymax=max(mohk_daylength$Value)*1.05),color="black",fill=winter_color)+ #winter2
+  geom_ribbon(data=all_mohk%>%filter(yday>=80&yday<=172),aes(x=yday*2*pi/365,ymin=y*0.9,ymax=y2*1.05),color="black",fill=spring_color)+ #spring
+  geom_ribbon(data=all_mohk%>%filter(yday>=172&yday<=264),aes(x=yday*2*pi/365,ymin=y*0.9,ymax=y2*1.05),color="black",fill=summer_color)+ #summer
+  geom_ribbon(data=all_mohk%>%filter(yday>=264&yday<=355),aes(x=yday*2*pi/365,ymin=y*0.9,ymax=y2*1.05),color="black",fill=autumn_color)+ #fall
   
   #Zoe deerling colors####
   #geom_ribbon(aes(x=yday*2*pi/365,ymin=y*0.9,ymax=y2*1.05),color="black",fill=rgb(212,143,85,maxColorValue = 255))+
@@ -227,7 +238,7 @@ ggplot(data=all_mohk)+
   geom_ribbon(aes(x=yday*2*pi/365,ymin=y2,ymax=y2*1.08),color="black",fill="black")+
   #Rectangles for the stratification####
   geom_rect(aes(xmin=(yday-1)*2*pi/365,xmax=yday*2*pi/365,ymin=all_mohk$y2[1],ymax=all_mohk$y2[1]*1.08,fill=delta_density),color=NA)+
-  
+  #scale_fill_gradientn(colors = c("blue","purple","red"), name = "Type1 value")+
   #Points for ice data
   geom_point(data=all_mohk%>%filter(Ice=="ice"),aes(x=yday*2*pi/365,y=(all_mohk$y2[1]+all_mohk$y2[1]*1.08)/2),shape=21,color=rgb(215,228,255,maxColorValue = 255,alpha=200),fill=rgb(215,228,255,maxColorValue = 255,alpha=200),size=4.5)+ #put blue dots for ice days in the outer ring
 
@@ -245,14 +256,15 @@ ggplot(data=all_mohk)+
   #geom_segment(data=tibble(x=(c(1,32,60,91,121,152,182,213,244,274,305,335))*2*pi/365,y=2.3)%>%mutate(xend=x,y=y_limit_lower,yend=all_mohk$y2[1]*1.1),aes(x=x,xend=xend,y=y,yend=yend),color="lightgrey")+  
   
   #geom_rect(aes(xmin=doy,xmax=doy,ymin=1,ymax=2),color="black",fill="grey")+
-  geom_label(aes(x=(80-46)*2*pi/365,y=max(day_length)*scalar_season_labels),label="winter",label.size=NA)+
-  geom_label(aes(x=(172-46)*2*pi/365,y=max(day_length)*scalar_season_labels),label="spring",label.size=NA)+
-  geom_label(aes(x=(264-46)*2*pi/365,y=max(day_length)*scalar_season_labels),label="summer",label.size=NA)+
-  geom_label(aes(x=(355-46)*2*pi/365,y=max(day_length)*scalar_season_labels),label="fall",label.size=NA)+
+  #geom_label(aes(x=(80-46)*2*pi/365,y=max(day_length)*scalar_season_labels),label="winter",label.size=NA)+
+  #geom_label(aes(x=(172-46)*2*pi/365,y=max(day_length)*scalar_season_labels),label="spring",label.size=NA)+
+  #geom_label(aes(x=(264-46)*2*pi/365,y=max(day_length)*scalar_season_labels),label="summer",label.size=NA)+
+  #geom_label(aes(x=(355-46)*2*pi/365,y=max(day_length)*scalar_season_labels),label="fall",label.size=NA)+
   geom_text(data=tibble(x=(c(1,32,60,91,121,152,182,213,244,274,305,335))*2*pi/365,y=2.3,label=month.abb),aes(x=x,y=max(all_mohk$day_length)*scalar_month_labels,label=label))+
   #scale_x_continuous(breaks=(c(1,32,60,91,121,152,182,213,244,274,305,335))*2*pi/365)+
   #coord_polar(start=0)+
   scale_y_continuous(limits=c(y_limit_lower,y_limit_upper))+
+  
   theme_bw()+
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
@@ -260,5 +272,18 @@ ggplot(data=all_mohk)+
         axis.text.y = element_blank(),
         axis.title.x=element_blank(),
         axis.title.y=element_blank(),
-        axis.ticks.y=element_blank())+
-  labs(title="Astronomical seasons")
+        axis.ticks.y=element_blank(),
+        legend.position = c(0.90,0.5),
+        legend.spacing.y = unit(0.2, "cm") #decrease the space between the two legends
+        #legend.key.size = unit(8,"line") #increase the size of the legend points
+    
+        )+
+  labs(fill="strat.")+
+  guides(color = guide_legend(order = 1,override.aes = list(size=5)), #reorder the legends so seasons goes first
+         fill = guide_colorbar(order=2)    #reorder the legends so stratification goes second
+         )
+
+#QUIT HERE####
+#Fix spacing of the legends
+#Figure out why the day_length is off rotated
+#Labels for day_length, ice, school year
