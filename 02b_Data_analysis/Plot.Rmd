@@ -98,18 +98,19 @@ discrete <- temperate %>%
   mutate(Lake = factor(Lake, levels = LAKES)) %>%
   full_join(in_lake) %>%
   full_join(ice_format)
-write_csv(discrete, "../01b_Processed_data/Discrete_seasons.csv", row.names = FALSE)
+write_csv(discrete, "../01b_Processed_data/Discrete_seasons.csv")
 
 #Plot
 #First the temperate metrics
 discrete_temperate <- temperate %>%
+  mutate(Lake = factor(Lake, levels = LAKES)) %>%
   filter(Method == "Months") %>%
   ggplot(aes(y = Method, 
              yend = Method, 
              x = start, 
              xend = end, 
              color = Season)) +
-  geom_segment(lwd = 5) +
+  geom_segment(lwd = 4) +
   theme_bw() +
   ggtitle("Discrete seasonal clasifications") +
   scale_color_manual("Temperate\nseasons",
@@ -131,14 +132,14 @@ discrete_strat <- discrete_temperate +
                    x = start, 
                    xend = end, 
                    color = Season), 
-               lwd = 5) +
+               lwd = 4) +
   scale_color_manual("Stratification", values = c("#FACFCF", "#F49090", "#CC4949"),
                      breaks = c("Inversely\nstratified", "Mixed", "Stratified")) +
   guides(color = guide_legend(ncol = 1, title.position="top")) +
   theme(legend.position = "bottom",
         axis.title.x = element_blank(),
         legend.title = element_text(vjust = 1),
-        panel.grid.major.x = element_line(color = "grey70"),
+        panel.grid.major.x = element_blank(),
         panel.grid.major.y = element_blank(),
         strip.background = element_rect(fill = "white", color = "white"),
         legend.key.height = unit(0, "mm"),
@@ -148,17 +149,20 @@ discrete_strat <- discrete_temperate +
 discrete_strat
 
 lake_relabel <- function(lakes){
-  index <- which(LAKES == lakes)
-  labels <- c("`Lake Erken (2018): 59.84 ºN, 18.63 ºE; Z`[max]~`= 21 m`", 
-           "`Arendsee (2020): 52.89 N, 11.47 E; Z`[max]~`= 50 m`",
-           "`Lake Ägeri (2023): 47.12 ºN, 8.62 ºE; Z`[max]~`= 83 m`", 
-           "`Midway Pond (2023): 44.93 ºN, 70.54 ºW; Z`[max]~`= 9 m`", 
-           "`Lake Sunapee (2008): 43.38 ºN, 72.05 ºW; Z`[max]~`= 32 m`", 
-           "`Mohonk Lake (2017): 41.77 ºN, 74.16 ºW; Z`[max]~`= 18 m`",
-           "`Beaverdam Reservoir (2021): 37.31 ºN, 80.18 ºW; Z`[max]~`= 11 m`",
-           "`Lake Rerewhakaaitu (2022-2023): 38.29 ºS, 176.5 ºE; Z`[max]~`= 15 m`")
-  return(labels[index])
+  labels <- c(
+    "Lake Erken (2018)" = "`Lake Erken (2018): 59.84 ºN, 18.63 ºE; Z`[max]~`= 21~m`", 
+    "Arendsee (2020)" = "`Arendsee (2020): 52.89 ºN, 11.47 ºE; Z`[max]~`= 50~m`",
+    "Lake Ägeri (2023)" = "`Lake Ägeri (2023): 47.12 ºN, 8.62 ºE; Z`[max]~`= 83~m`", 
+    "Midway Pond (2023)" = "`Midway Pond (2023): 44.93 ºN, 70.54 ºW; Z`[max]~`= 9~m`", 
+    "Lake Sunapee (2008)" = "`Lake Sunapee (2008): 43.38 ºN, 72.05 ºW; Z`[max]~`= 32~m`", 
+    "Mohonk Lake (2017)" = "`Mohonk Lake (2017): 41.77 ºN, 74.16 ºW; Z`[max]~`= 18~m`",
+    "Beaverdam Reservoir (2021)" = "`Beaverdam Reservoir (2021): 37.31 ºN, 80.18 ºW; Z`[max]~`= 11~m`",
+    "Lake Rerewhakaaitu (2022-2023)" = "`Lake Rerewhakaaitu (2022-2023): 38.29 ºS, 176.5 ºE; Z`[max]~`= 15~m`"
+  )
+  
+  return(unname(labels[lakes]))
 }
+
 
 discrete_ice <- discrete_strat +
   ggnewscale::new_scale_color() +
@@ -168,22 +172,27 @@ discrete_ice <- discrete_strat +
                    x = start, 
                    xend = end, 
                    color = Season), 
-               lwd = 5) +
+               lwd = 4) +
+  geom_vline(xintercept = c(0, 90, 183, 276, 365), color = "black", alpha = 0.2)+
   scale_color_manual("Ice", values = c("#8AB4E3", "#E5EDF7"),
                      breaks = c("Open water", "Ice")) +
   theme(legend.position = "bottom",
         axis.title.x = element_blank(),
         legend.title = element_text(vjust = 1),
-        panel.grid.major.x = element_line(color = "grey70"),
+        panel.grid.major.x = element_blank(),
         panel.grid.major.y = element_blank(),
         legend.key.height = unit(0, "mm"),
         strip.background = element_rect(fill = "transparent", color = "transparent"),
         legend.key.spacing.y = unit(0, "mm"),
         panel.grid.minor = element_blank(),
-        strip.text.x = element_text(hjust = 0),
+        panel.spacing.y=unit(0, "lines"),
+        strip.text.x = element_text(hjust = 0, 
+                                    margin = margin(t = 0.5, b = 0, unit = "lines")),
         strip.clip= "off") +
   guides(color = guide_legend(ncol = 1, title.position="top")) +
-  facet_wrap(~Lake, ncol = 1, labeller = as_labeller(lake_relabel, default = label_parsed))
+  facet_wrap(~Lake, ncol = 1, 
+             labeller = as_labeller(lake_relabel, 
+                                    default = label_parsed))
 
 discrete_ice
 ```
@@ -311,6 +320,7 @@ continuous <- continuous_data %>%
   scale_color_manual(values = c("#6B7CB3","#1F363D","#8DD65C", "lightblue","#FFC233", "#F05D5E")) +
   geom_line(alpha = 0.2) +
   geom_smooth(se = F, method = "gam") +
+  geom_vline(xintercept = c(0, 90, 183, 276, 365), color = "black", alpha = 0.2)+
   theme_bw() + 
   ylab("% of range") +
   ggtitle("Seasonally-varying parameters")  +
@@ -323,9 +333,11 @@ continuous <- continuous_data %>%
         legend.title = element_blank(),
         axis.title.x = element_blank(),
         panel.grid.minor = element_blank(),
-        strip.text.x = element_text(color = "white"),
         strip.background = element_rect(fill = "white", color = "white"),
         legend.key.height = unit(3, "mm"),
+        panel.spacing.y=unit(0, "lines"),
+        strip.text.x = element_text(color = "white",
+                                    margin = margin(t = 0.5, b = 0, unit = "lines")),
         panel.grid.major.y = element_blank(),
         panel.grid.major.x = element_line(color = "grey80"),
         plot.background = element_rect(fill = "transparent"))
@@ -354,13 +366,13 @@ discrete_ice2 <- discrete_strat +
                    x = start, 
                    xend = end, 
                    color = Season), 
-               lwd = 5) +
+               lwd = 4) +
   scale_color_manual("Ice", values = c("#8AB4E3", "#E5EDF7"),
                      breaks = c("Open water", "Ice")) +
   theme(legend.position = "bottom",
         axis.title.x = element_blank(),
         legend.title = element_text(vjust = 1),
-        panel.grid.major.x = element_line(color = "grey70"),
+        panel.grid.major.x = element_blank(),
         panel.grid.major.y = element_blank(),
         legend.key.height = unit(0, "mm"),
         strip.background = element_rect(fill = "white", color = "white"),

@@ -140,29 +140,66 @@ continuous %>%
 dev.off()
 ```
 ```{r}
-jpeg("../03a_Figures/All_vars.jpg", width = 6, height = 6, units = "in", res = 300)
-continuous %>%
+LAKES <- c("Lake\nErken\n(2018)", #59.83917
+           "Arendsee\n(2020)", #52.89099
+           "Lake\nÄgeri\n(2023)", #47.1213
+           "Midway\nPond\n(2023)", #44.9312
+           "Lake\nSunapee\n(2008)", #43.3802
+           "Mohonk\nLake\n(2017)", #41.76598
+           "Beaverdam\nReservoir\n(2021)", #37.3164
+           "Lake\nRerewhakaaitu\n(2022-2023)") #-38.2936
+lats <- c(59.83917,
+          52.89099,
+          47.1213,
+          44.9312,
+          43.3802,
+          41.76598,
+          37.3164,
+          -38.2936)
+ref <- data.frame(LAKES, lats)
+
+for_plot <- continuous %>%
   left_join(discrete %>% select(-x), relationship = "many-to-many") %>%
   mutate(Lake = sub(" ", "\n", sub(" \\(", "\n(", Lake)),
+         Lake = factor(Lake, levels = LAKES),
          Season = factor(Season, levels = c("Spring", "Summer", "Autumn", "Winter"))) %>%
+  left_join(ref, by = c("Lake" = "LAKES")) %>%
   filter(yday >= start, 
          yday <= end,
          Method %in% c("Astronomical", "Months"),
          !Variable == "Surface turbidity",
          !is.na(Value)) %>%
-  group_by(Lake, Season, Variable) %>%
+  mutate(Variable = factor(Variable, 
+                           levels = c("Surface temperature", 
+                                      "Air temperature",
+                                      "Surface chlorophyll-a",
+                                      "Surface DO",
+                                      "Bottom-water DO",
+                                      "Solar radiation",
+                                      "Epi-hypo dens. difference"),
+                           labels = c("Surface temperature (ºC)", 
+                                      "Air temperature (ºC)",
+                                      "Surface chlorophyll-a (µg/L)",
+                                      "Surface DO (mg/L)",
+                                      "Bottom-water DO (mg/L)",
+                                      "Solar radiation",
+                                      "Surface-bottom density difference"))) %>%
+  group_by(Lake, Season, Variable, lats) %>%
   filter(length(unique(Method)) == 2) %>%
   summarize(p = wilcox.test(Value ~ Method)$p.value,
-            p = case_when(p > 0.05 ~"n.s.",
-                          p <= 0.05 & p > 0.01 ~ "*",
-                          p <= 0.01 & p > 0.001 ~ "**",
-                          p <= 0.001 ~ "***"),
-            sig = p != "n.s.",
+            p = case_when(p >= 0.05 ~"n.s.",
+                          p < 0.05 & p >= 0.01 ~ "*",
+                          p < 0.01 & p >= 0.001 ~ "**",
+                          p < 0.001 ~ "***"),
+            sig = ifelse(p != "n.s.", "p < 0.05", "p ≥ 0.05"),
             label_height = max(Value),
             month_mean = mean(Value[Method == "Months"], na.rm = T),
             astro_mean = mean(Value[Method == "Astronomical"], na.rm = T),
-            pct_dif = abs(month_mean - astro_mean) / abs((month_mean + astro_mean)/2) * 100) %>%
-  mutate(label = substr(Lake, 1,2)) %>%
+            pct_dif = (month_mean - astro_mean) / abs((month_mean + astro_mean)/2) * 100) %>%
+  mutate(label = substr(Lake, 1,2))
+
+jpeg("../03a_Figures/All_vars.jpg", width = 6, height = 7, units = "in", res = 300)
+for_plot  %>%
   ggplot(aes(x = Season, y = pct_dif)) +
   ylab("Percent difference in mean value\nbetween monthly and astronomical definitions")+
   geom_boxplot(color = "grey80", outlier.shape = NA)+
@@ -172,36 +209,19 @@ continuous %>%
   geom_hline(yintercept = 0)+
   facet_wrap(~Variable, scales = "free", ncol = 2)+
   theme_bw(base_size = 9)+
-  scale_color_manual(values = c("grey60", "black"))+
-  scale_shape_manual(values = c("A", "B", "G", "E", "R", "S", "M", "O"))+
+  scale_color_manual(values = c("black", "grey60"), 
+                     name = "Significance of difference between\ndefinitions at each lake")+
+  scale_shape_manual(values = c("E", "A", "G", "M", "S", "O", "B", "R"))+
   theme(axis.text.x = element_text(angle = 20, hjust = 1),
         panel.grid.major.x = element_blank(),
-        legend.position = "bottom")
+        legend.title.position = "top",
+        legend.position = "bottom",
+        legend.title = element_text(hjust = 0.5),
+        axis.title.x = element_blank())
 dev.off()
 
 jpeg("../03a_Figures/All_vars_by_season.jpg", width = 6, height = 6, units = "in", res = 300)
-continuous %>%
-  left_join(discrete %>% select(-x), relationship = "many-to-many") %>%
-  mutate(Lake = sub(" ", "\n", sub(" \\(", "\n(", Lake)),
-         Season = factor(Season, levels = c("Spring", "Summer", "Autumn", "Winter"))) %>%
-  filter(yday >= start, 
-         yday <= end,
-         Method %in% c("Astronomical", "Months"),
-         !Variable == "Surface turbidity",
-         !is.na(Value)) %>%
-  group_by(Lake, Season, Variable) %>%
-  filter(length(unique(Method)) == 2) %>%
-  summarize(p = wilcox.test(Value ~ Method)$p.value,
-            p = case_when(p > 0.05 ~"n.s.",
-                          p <= 0.05 & p > 0.01 ~ "*",
-                          p <= 0.01 & p > 0.001 ~ "**",
-                          p <= 0.001 ~ "***"),
-            sig = p != "n.s.",
-            label_height = max(Value),
-            month_mean = mean(Value[Method == "Months"], na.rm = T),
-            astro_mean = mean(Value[Method == "Astronomical"], na.rm = T),
-            pct_dif = abs(month_mean - astro_mean) / abs((month_mean + astro_mean)/2) * 100) %>%
-  mutate(label = substr(Lake, 1,2)) %>%
+for_plot %>%
   ggplot(aes(x = Variable, y = pct_dif)) +
   ylab("Percent difference in mean value\nbetween monthly and astronomical definitions")+
   geom_boxplot(color = "grey80", outlier.shape = NA)+
@@ -216,6 +236,30 @@ continuous %>%
   theme(axis.text.x = element_text(angle = 20, hjust = 1),
         panel.grid.major.x = element_blank(),
         legend.position = "bottom")
+dev.off()
+
+jpeg("../03a_Figures/All_vars_color.jpg", width = 4, height = 7, units = "in", res = 300)
+for_plot %>%
+  mutate(label = substr(Lake, 1,2)) %>%
+  ggplot(aes(x = Season, y = pct_dif)) +
+  ylab("Percent difference in mean value\nbetween monthly and astronomical definitions")+
+  geom_boxplot(color = "grey80", outlier.shape = NA)+
+  geom_jitter(aes(fill = abs(lats), shape = sig), width = 0.2, 
+              color = "black", stroke = 0.2) +
+  geom_hline(yintercept = 0)+
+  facet_wrap(~Variable, scales = "free", ncol = 2)+
+  theme_bw(base_size = 9)+
+  scale_shape_manual(name = "Significance of difference\nbetween definitions\nat each lake",
+                     values = c(21,24))+
+  scale_fill_distiller(palette = "Spectral", name = "Absolute latitude")+
+  theme(axis.text.x = element_text(angle = 20, hjust = 1),
+        panel.grid.major.x = element_blank(),
+        legend.title.position = "top",
+        legend.position = c(.75,.08),
+        legend.spacing.y = unit(0.1, "cm"),
+        legend.direction = "horizontal",
+        legend.title = element_text(hjust = 0.5),
+        axis.title.x = element_blank())
 dev.off()
 ```
 
