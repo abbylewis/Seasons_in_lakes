@@ -10,6 +10,8 @@ library(ggpubr)
 library(geosphere) #Gets daylength based on latitude and doy
 library(ggh4x)
 library(ShellChron)
+library(rLakeAnalyzer) #water.density function
+library(patchwork) #plot panels
 
 #Id latitude of our study lakes####
 LAKES <- c("Lake Erken (2018)", #59.83917
@@ -177,13 +179,13 @@ ggplot(data=daylength_Mohonk,aes(x=yday,y=DayLength))+geom_point()
 mohk_strat<-mohk_cont%>%filter(Variable=="Epi-hypo dens. difference")
 
 #Set up the annual data to get the template
-annual_data_mohk<-tibble(yday=seq(1,365,by=1),y=min(mohk_daylength$Value),y2=max(mohk_daylength$Value))
+annual_data_mohk<-tibble(yday=seq(1,365,by=1),y=min(daylength_Mohonk$DayLength),y2=max(daylength_Mohonk$DayLength))
 
 #Mohonk ice####
 #Join them all together, add Mohonk Ice####
 all_mohk<-annual_data_mohk%>%
           left_join(.,mohk_strat%>%mutate(delta_density=Value)%>%dplyr::select(yday,delta_density))%>%
-          left_join(.,mohk_daylength%>%mutate(day_length=Value)%>%dplyr::select(yday,day_length))%>%
+          left_join(.,daylength_Mohonk%>%mutate(day_length=DayLength)%>%dplyr::select(yday,day_length))%>%
           mutate(Ice=ifelse(yday<=108,"ice","open"),
                  )
 #Add on extra values to complete teh circle####
@@ -211,7 +213,7 @@ autumn_color<-rgb(228,141,44,maxColorValue = 255)
 (gg.clock.mohonk<-ggplot(data=all_mohk)+
   #Put the polar coordinates on with breaks at each of the month starts####
   coord_polar(start=0*2*pi/365,clip="off")+
-  scale_x_continuous(breaks=(c(1,32,60,91,121,152,182,213,244,274,305,335))*2*pi/365)+
+  scale_x_continuous(breaks=(c(1,32,60,91,121,152,182,213,244,274,305,335))*2*pi/365,limits=c(0,2*pi),oob = scales::oob_keep)+ #the limits and oob indicates to connect the circle
   #Inner white circle####
   geom_ribbon(aes(x=yday*2*pi/365,ymin=0,ymax=y),color="white",fill="white")+ #Set up inner circle
   #Weird points to establish the legend for the colors of the seasons#
@@ -219,8 +221,8 @@ autumn_color<-rgb(228,141,44,maxColorValue = 255)
   scale_color_manual(name = "Astronomical\nseasons", values = c(winter_color,spring_color,summer_color,autumn_color), labels = c("Winter", "Spring","Summer","Autumn"))+
   
   #Seasons colors for each 1/4####
-  geom_ribbon(data=tibble(rad=c(-1:80)*2*pi/365),aes(x=rad,ymin=min(mohk_daylength$Value)*0.9,ymax=max(mohk_daylength$Value)*1.05),color="black",fill=winter_color)+ #winter
-  geom_ribbon(data=tibble(rad=c(355:366)*2*pi/365),aes(x=rad,ymin=min(mohk_daylength$Value)*0.9,ymax=max(mohk_daylength$Value)*1.05),color="black",fill=winter_color)+ #winter2
+  geom_ribbon(data=tibble(rad=c(-1:80)*2*pi/365),aes(x=rad,ymin=min(daylength_Mohonk$DayLength)*0.9,ymax=max(daylength_Mohonk$DayLength)*1.05),color="black",fill=winter_color)+ #winter
+  geom_ribbon(data=tibble(rad=c(355:366)*2*pi/365),aes(x=rad,ymin=min(daylength_Mohonk$DayLength)*0.9,ymax=max(daylength_Mohonk$DayLength)*1.05),color="black",fill=winter_color)+ #winter2
   geom_ribbon(data=all_mohk%>%filter(yday>=80&yday<=172),aes(x=yday*2*pi/365,ymin=y*0.9,ymax=y2*1.05),color="black",fill=spring_color)+ #spring
   geom_ribbon(data=all_mohk%>%filter(yday>=172&yday<=264),aes(x=yday*2*pi/365,ymin=y*0.9,ymax=y2*1.05),color="black",fill=summer_color)+ #summer
   geom_ribbon(data=all_mohk%>%filter(yday>=264&yday<=355),aes(x=yday*2*pi/365,ymin=y*0.9,ymax=y2*1.05),color="black",fill=autumn_color)+ #fall
@@ -248,7 +250,7 @@ autumn_color<-rgb(228,141,44,maxColorValue = 255)
   geom_ribbon(aes(x=yday*2*pi/365,ymin=y2,ymax=y2*1.08),color="black",fill="black")+
   #Rectangles for the stratification####
   geom_rect(aes(xmin=(yday-1)*2*pi/365,xmax=yday*2*pi/365,ymin=all_mohk$y2[1],ymax=all_mohk$y2[1]*1.08,fill=delta_density),color=NA)+
-  scale_fill_gradientn(limits=c(0,3.4),colors = c("blue","white","red"),breaks=c(0.2,3.1),labels=c("Mixed","Stratified"), name = "Stratification")+
+  scale_fill_gradientn(limits=c(0,3.4),colors = c("red","red","white","blue"),values=c(3.4,1,0.24,0),breaks=c(0.2,3.1),labels=c("Mixed","Stratified"), name = "Stratification")+
   #Points for ice data
   geom_point(data=all_mohk%>%filter(Ice=="ice"),aes(x=yday*2*pi/365,y=(all_mohk$y2[1]+all_mohk$y2[1]*1.08)/2),shape=21,color=rgb(215,228,255,maxColorValue = 255,alpha=200),fill=rgb(215,228,255,maxColorValue = 255,alpha=200),size=4.5)+ #put blue dots for ice days in the outer ring
 
@@ -265,18 +267,18 @@ autumn_color<-rgb(228,141,44,maxColorValue = 255)
   #Ice arrow
   geom_segment(data=tibble(x=(c(45))*2*pi/365,y=(all_mohk$y2[1]+all_mohk$y2[1]*1.08)/2)%>%mutate(xend=x,yend=y_limit_upper),aes(x=x,xend=xend,y=y,yend=yend),color="black")+  
   #school year arrow
-  geom_segment(data=tibble(x=(c(131))*2*pi/365,y=all_mohk$y[1]*0.95)%>%mutate(xend=135*2*pi/365,yend=y_limit_upper),aes(x=x,xend=xend,y=y,yend=yend),color="black")+  
+  geom_segment(data=tibble(x=(c(131))*2*pi/365,y=all_mohk$y[1]*0.95)%>%mutate(xend=133*2*pi/365,yend=y_limit_upper),aes(x=x,xend=xend,y=y,yend=yend),color="black")+  
   #day length arrow
   geom_segment(data=tibble(x=(c(24))*2*pi/365,y=daylength_Mohonk$DayLength[daylength_Mohonk$yday==24])%>%mutate(xend=x,yend=y_limit_upper),aes(x=x,xend=xend,y=y,yend=yend),color="black")+  
    
      
   #labels for the arrows
   #Ice label
-  geom_label(data=tibble(x=(c(45))*2*pi/365,y=y_limit_upper),aes(x=x,y=y),label="Ice")+ 
+  geom_label(data=tibble(x=(c(45))*2*pi/365,y=y_limit_upper),aes(x=x,y=y),label="Ice",size=9*(5/14))+ #The size= in element_text is 14/5 of the size= in geom_text  
   #School year label
-  geom_label(data=tibble(x=(c(135))*2*pi/365,y=y_limit_upper),aes(x=x,y=y),label="School\nyear")+ 
+  geom_label(data=tibble(x=(c(130))*2*pi/365,y=y_limit_upper),aes(x=x,y=y),label="University",size=9*(5/14))+ 
   #day length label
-  geom_label(data=tibble(x=(c(24))*2*pi/365,y=y_limit_upper),aes(x=x,y=y),label="Day length")+ 
+  geom_label(data=tibble(x=(c(24))*2*pi/365,y=y_limit_upper),aes(x=x,y=y),label="Day length",size=9*(5/14))+ 
    
    
   #Geometric segments for the months spindles coming out from the middle####
@@ -303,12 +305,15 @@ autumn_color<-rgb(228,141,44,maxColorValue = 255)
         axis.title.x=element_blank(),
         axis.title.y=element_blank(),
         axis.ticks.y=element_blank(),
+        legend.title=element_text(size=9), #change the legend title size
+        legend.text=element_text(size=9), #change the legend text size
         legend.position = c(0.16,0.7),
         legend.spacing.y = unit(0.2, "cm"), #decrease the space between the two legends
-        legend.margin = margin(3.5,0,0,0, unit="cm"),
+        legend.margin = margin(3.4,0,0,0, unit="cm"),
         legend.background = element_rect(color = NA, fill = NA), #make the background of the legend box blank
         legend.key.size = unit(0.6,"line"), #increase the size of the legend points
-        plot.margin = unit(c(-0.5,-0.5,-0.5,-0.2),"cm") #spread out the plot a bit to minimize the white space
+        plot.margin = unit(c(-0.5,-0.5,-0.5,-0.2),"cm"), #spread out the plot a bit to minimize the white space
+        panel.border = element_blank() #get rid of line around plot
         )+
   labs(fill="Stratification")+
   guides(color = guide_legend(order = 1,override.aes = list(size=3)), #reorder the legends so seasons goes first
@@ -351,12 +356,12 @@ rere_strat <- read_csv("01a_Raw_data/Rerewhakaaitu_buoy_wq.csv")%>%
                 mutate(delta_density=ifelse(delta_density<0,0,delta_density)) #get rid of negatives
 ggplot(data=rere_strat,aes(x=Date,y=delta_density))+geom_point()  
   
-#Create the correct day length for Mohonk####
+#Create the correct day length for Rere####
 rere_daylength<-tibble(Date=seq.POSIXt(as.POSIXct("2022-06-21 00:00:00", tz ="Pacific/Auckland"),as.POSIXct("2023-06-20 00:00:00",tz="Pacific/Auckland"), by = 'day'))%>%
   mutate(DayLength=getDayLength(Date,latitude = -38.3,longitude = 177.))%>%
   mutate(yday=yday(Date))%>%
   mutate(Value=DayLength)
-ggplot(data=daylength_rere,aes(x=yday,y=DayLength))+geom_point()
+ggplot(data=rere_daylength,aes(x=yday,y=DayLength))+geom_point()
 
 #Set up the annual data to get the template
 annual_data_rere<-tibble(yday=rere_daylength$yday,y=min(rere_daylength$DayLength),y2=max(rere_daylength$DayLength))
@@ -391,7 +396,7 @@ autumn_color<-rgb(228,141,44,maxColorValue = 255)
 (gg.clock.rere<-ggplot(data=all_rere)+
    #Put the polar coordinates on with breaks at each of the month starts####
  coord_polar(start=0*2*pi/365,clip="off")+
-   scale_x_continuous(breaks=(c(1,32,60,91,121,152,182,213,244,274,305,335))*2*pi/365)+
+   scale_x_continuous(breaks=(c(1,32,60,91,121,152,182,213,244,274,305,335))*2*pi/365,limits=c(0,2*pi),oob = scales::oob_keep)+
    #Inner white circle####
  geom_ribbon(data=all_mohk,aes(x=yday*2*pi/365,ymin=0,ymax=y),color="white",fill="white")+ #Set up inner circle
    #Weird points to establish the legend for the colors of the seasons#
@@ -399,8 +404,8 @@ autumn_color<-rgb(228,141,44,maxColorValue = 255)
    scale_color_manual(name = "Astronomical\nseasons", values = c(winter_color,spring_color,summer_color,autumn_color), labels = c("Winter", "Spring","Summer","Autumn"))+
    
    #Seasons colors for each 1/4####
-   geom_ribbon(data=tibble(rad=c(-1:80)*2*pi/365),aes(x=rad,ymin=min(mohk_daylength$Value)*0.9,ymax=max(mohk_daylength$Value)*1.05),color="black",fill=summer_color)+ #summer
-   geom_ribbon(data=tibble(rad=c(355:366)*2*pi/365),aes(x=rad,ymin=min(mohk_daylength$Value)*0.9,ymax=max(mohk_daylength$Value)*1.05),color="black",fill=summer_color)+ #summer2
+   geom_ribbon(data=tibble(rad=c(-1:80)*2*pi/365),aes(x=rad,ymin=min(daylength_Mohonk$DayLength)*0.9,ymax=max(daylength_Mohonk$DayLength)*1.05),color="black",fill=summer_color)+ #summer
+   geom_ribbon(data=tibble(rad=c(355:366)*2*pi/365),aes(x=rad,ymin=min(daylength_Mohonk$DayLength)*0.9,ymax=max(daylength_Mohonk$DayLength)*1.05),color="black",fill=summer_color)+ #summer2
    geom_ribbon(data=all_mohk%>%filter(yday>=80&yday<=172),aes(x=yday*2*pi/365,ymin=y*0.9,ymax=y2*1.05),color="black",fill=autumn_color)+ #fall
    geom_ribbon(data=all_mohk%>%filter(yday>=172&yday<=264),aes(x=yday*2*pi/365,ymin=y*0.9,ymax=y2*1.05),color="black",fill=winter_color)+ #winter
    geom_ribbon(data=all_mohk%>%filter(yday>=264&yday<=355),aes(x=yday*2*pi/365,ymin=y*0.9,ymax=y2*1.05),color="black",fill=spring_color)+ #spring
@@ -428,7 +433,7 @@ autumn_color<-rgb(228,141,44,maxColorValue = 255)
    #geom_ribbon(aes(x=yday*2*pi/365,ymin=y2,ymax=y2*1.08),color="black",fill="black")+
    #Rectangles for the stratification####
    geom_rect(aes(xmin=(yday-1)*2*pi/365,xmax=yday*2*pi/365,ymin=all_mohk$y2[1],ymax=all_mohk$y2[1]*1.08,fill=delta_density),color=NA)+
-   scale_fill_gradientn(limits=c(0,3.4),colors = c("blue","white","red"),breaks=c(0.2,3.1),labels=c("Mixed","Stratified"), name = "Stratification")+
+   scale_fill_gradientn(limits=c(0,3.4),colors = c("red","red","white","blue"),values=c(3.4,1,0.24,0),breaks=c(0.2,3.1),labels=c("Mixed","Stratified"), name = "Stratification")+
    #Points for ice data (no ice in NZ)
    #geom_point(data=all_mohk%>%filter(Ice=="ice"),aes(x=yday*2*pi/365,y=(all_mohk$y2[1]+all_mohk$y2[1]*1.08)/2),shape=21,color=rgb(215,228,255,maxColorValue = 255,alpha=200),fill=rgb(215,228,255,maxColorValue = 255,alpha=200),size=4.5)+ #put blue dots for ice days in the outer ring
    
@@ -445,7 +450,7 @@ autumn_color<-rgb(228,141,44,maxColorValue = 255)
  #Ice arrow
  #geom_segment(data=tibble(x=(c(45))*2*pi/365,y=(all_rere$y2[1]+all_rere$y2[1]*1.08)/2)%>%mutate(xend=x,yend=y_limit_upper),aes(x=x,xend=xend,y=y,yend=yend),color="black")+  
    #school year arrow
-   geom_segment(data=tibble(x=(c(131))*2*pi/365,y=all_rere$y[1]*0.95)%>%mutate(xend=135*2*pi/365,yend=y_limit_upper),aes(x=x,xend=xend,y=y,yend=yend),color="black")+  
+   geom_segment(data=tibble(x=(c(131))*2*pi/365,y=all_rere$y[1]*0.925)%>%mutate(xend=130*2*pi/365,yend=y_limit_upper),aes(x=x,xend=xend,y=y,yend=yend),color="black")+  
    #day length arrow
    geom_segment(data=tibble(x=(c(24))*2*pi/365,y=rere_daylength$DayLength[rere_daylength$yday==24])%>%mutate(xend=x,yend=y_limit_upper),aes(x=x,xend=xend,y=y,yend=yend),color="black")+  
    
@@ -454,9 +459,9 @@ autumn_color<-rgb(228,141,44,maxColorValue = 255)
    #Ice label
    #geom_label(data=tibble(x=(c(45))*2*pi/365,y=y_limit_upper),aes(x=x,y=y),label="Ice")+ 
    #School year label
-   geom_label(data=tibble(x=(c(135))*2*pi/365,y=y_limit_upper),aes(x=x,y=y),label="School\nyear")+ 
+   geom_label(data=tibble(x=(c(130))*2*pi/365,y=y_limit_upper),aes(x=x,y=y),label="University",size=9*(5/14))+ 
    #day length label
-   geom_label(data=tibble(x=(c(24))*2*pi/365,y=y_limit_upper),aes(x=x,y=y),label="Day length")+ 
+   geom_label(data=tibble(x=(c(24))*2*pi/365,y=y_limit_upper),aes(x=x,y=y),label="Day length",size=9*(5/14))+ 
    
    
    #Geometric segments for the months spindles coming out from the middle####
@@ -489,7 +494,8 @@ autumn_color<-rgb(228,141,44,maxColorValue = 255)
          legend.background = element_rect(color = NA, fill = NA), #make the background of the legend box blank
          legend.key.size = unit(0.6,"line"), #increase the size of the legend points
          plot.margin = unit(c(-0.5,-0.5,-0.5,-0.2),"cm"), #spread out the plot a bit to minimize the white space
-         plot.background = element_rect(color=NA) #get rid of line around plot
+         #plot.background = element_blank(), 
+         panel.border = element_blank() #get rid of line around plot
    )+
    labs(fill="Stratification")+
    #guides(color = guide_legend(order = 1,override.aes = list(size=3)), #reorder the legends so seasons goes first
@@ -499,4 +505,10 @@ autumn_color<-rgb(228,141,44,maxColorValue = 255)
 ) #end of the clock plot
 
 ggsave(filename="03a_Figures/SeasonsWaikato_Clock.jpg",plot=gg.clock.rere,width=3.3,height=3.3,units="in",dpi=300)
+
+
+#Make a composite figure
+gg.2panel<-wrap_plots(list(gg.clock.mohonk,gg.clock.rere),nrow=1)
+print(gg.2panel)
+ggsave(filename="03a_Figures/2panel_Clock.jpg",plot=gg.2panel,width=6.6,height=3.3,units="in",dpi=300)
 
