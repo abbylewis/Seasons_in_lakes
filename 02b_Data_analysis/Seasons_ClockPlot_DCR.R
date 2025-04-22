@@ -424,10 +424,11 @@ autumn_color<-rgb(228,141,44,maxColorValue = 255)
  geom_rect(data=tibble(xmin=0*2*pi/365,xmax=365*2*pi/365,ymin=y_limit_lower,ymax=all_mohk$y[1]*0.9),aes(xmin=xmin,xmax=xmax,ymin=ymin,ymax=ymax),fill="white",color="white")+
    
    #Rectangles for the school year####
- #fall####
- geom_rect(data=tibble(xmin=237*2*pi/365,xmax=365*2*pi/365,ymin=all_mohk$y[1]*0.9,ymax=all_mohk$y[1]*1),aes(xmin=xmin,xmax=xmax,ymin=ymin,ymax=ymax),fill=alpha("grey",0.85),color=alpha("grey",0.85))+
+    #Waiting on Whitney, for now used this: https://study-in-new-zealand.org/semester-dates/#:~:text=Semester%201%20runs%20from%20April,that%20the%20students%20should%20attend.
+ #Semester 1####
+ geom_rect(data=tibble(xmin=95*2*pi/365,xmax=211*2*pi/365,ymin=all_mohk$y[1]*0.9,ymax=all_mohk$y[1]*1),aes(xmin=xmin,xmax=xmax,ymin=ymin,ymax=ymax),fill=alpha("grey",0.85),color=alpha("grey",0.85))+
    #spring####  
- geom_rect(data=tibble(xmin=-1*2*pi/365,xmax=136*2*pi/365,ymin=all_mohk$y[1]*0.9,ymax=all_mohk$y[1]*1),aes(xmin=xmin,xmax=xmax,ymin=ymin,ymax=ymax),fill=alpha("grey",0.85),color=alpha("grey",0.85))+
+ geom_rect(data=tibble(xmin=228*2*pi/365,xmax=351*2*pi/365,ymin=all_mohk$y[1]*0.9,ymax=all_mohk$y[1]*1),aes(xmin=xmin,xmax=xmax,ymin=ymin,ymax=ymax),fill=alpha("grey",0.85),color=alpha("grey",0.85))+
    
    #Set up ribbon for ice data
    #geom_ribbon(aes(x=yday*2*pi/365,ymin=y2,ymax=y2*1.08),color="black",fill="black")+
