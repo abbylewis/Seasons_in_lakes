@@ -242,9 +242,9 @@ autumn_color<-rgb(228,141,44,maxColorValue = 255)
   
   #Rectangles for the school year####
   #fall####
-  geom_rect(data=tibble(xmin=237*2*pi/365,xmax=353*2*pi/365,ymin=all_mohk$y[1]*0.9,ymax=all_mohk$y[1]*1),aes(xmin=xmin,xmax=xmax,ymin=ymin,ymax=ymax),fill=alpha("grey",0.85),color=alpha("grey",0.85))+
+  geom_rect(data=tibble(xmin=237*2*pi/365,xmax=353*2*pi/365,ymin=all_mohk$y[1]*0.9,ymax=all_mohk$y[1]*1),aes(xmin=xmin,xmax=xmax,ymin=ymin,ymax=ymax),fill=alpha("navy",0.75),color=alpha("navy",0.75))+
   #spring####  
-  geom_rect(data=tibble(xmin=20*2*pi/365,xmax=136*2*pi/365,ymin=all_mohk$y[1]*0.9,ymax=all_mohk$y[1]*1),aes(xmin=xmin,xmax=xmax,ymin=ymin,ymax=ymax),fill=alpha("grey",0.85),color=alpha("grey",0.85))+
+  geom_rect(data=tibble(xmin=20*2*pi/365,xmax=136*2*pi/365,ymin=all_mohk$y[1]*0.9,ymax=all_mohk$y[1]*1),aes(xmin=xmin,xmax=xmax,ymin=ymin,ymax=ymax),fill=alpha("navy",0.75),color=alpha("navy",0.75))+
   
   #Set up ribbon for ice data
   geom_ribbon(aes(x=yday*2*pi/365,ymin=y2,ymax=y2*1.08),color="black",fill="black")+
@@ -276,7 +276,7 @@ autumn_color<-rgb(228,141,44,maxColorValue = 255)
   #Ice label
   geom_label(data=tibble(x=(c(45))*2*pi/365,y=y_limit_upper),aes(x=x,y=y),label="Ice",size=9*(5/14))+ #The size= in element_text is 14/5 of the size= in geom_text  
   #School year label
-  geom_label(data=tibble(x=(c(130))*2*pi/365,y=y_limit_upper),aes(x=x,y=y),label="University",size=9*(5/14))+ 
+  geom_label(data=tibble(x=(c(130))*2*pi/365,y=y_limit_upper),aes(x=x,y=y),label="Academic",size=9*(5/14))+ 
   #day length label
   geom_label(data=tibble(x=(c(24))*2*pi/365,y=y_limit_upper),aes(x=x,y=y),label="Day length",size=9*(5/14))+ 
    
@@ -426,9 +426,9 @@ autumn_color<-rgb(228,141,44,maxColorValue = 255)
    #Rectangles for the school year####
     #Waiting on Whitney, for now used this: https://study-in-new-zealand.org/semester-dates/#:~:text=Semester%201%20runs%20from%20April,that%20the%20students%20should%20attend.
  #Semester 1####
- geom_rect(data=tibble(xmin=55*2*pi/365,xmax=170*2*pi/365,ymin=all_mohk$y[1]*0.9,ymax=all_mohk$y[1]*1),aes(xmin=xmin,xmax=xmax,ymin=ymin,ymax=ymax),fill=alpha("grey",0.85),color=alpha("grey",0.85))+
+ geom_rect(data=tibble(xmin=55*2*pi/365,xmax=170*2*pi/365,ymin=all_mohk$y[1]*0.9,ymax=all_mohk$y[1]*1),aes(xmin=xmin,xmax=xmax,ymin=ymin,ymax=ymax),fill=alpha("navy",0.75),color=alpha("navy",0.75))+
    #spring####  
- geom_rect(data=tibble(xmin=188*2*pi/365,xmax=304*2*pi/365,ymin=all_mohk$y[1]*0.9,ymax=all_mohk$y[1]*1),aes(xmin=xmin,xmax=xmax,ymin=ymin,ymax=ymax),fill=alpha("grey",0.85),color=alpha("grey",0.85))+
+ geom_rect(data=tibble(xmin=188*2*pi/365,xmax=304*2*pi/365,ymin=all_mohk$y[1]*0.9,ymax=all_mohk$y[1]*1),aes(xmin=xmin,xmax=xmax,ymin=ymin,ymax=ymax),fill=alpha("navy",0.75),color=alpha("navy",0.75))+
    
    #Set up ribbon for ice data
    #geom_ribbon(aes(x=yday*2*pi/365,ymin=y2,ymax=y2*1.08),color="black",fill="black")+
@@ -460,7 +460,7 @@ autumn_color<-rgb(228,141,44,maxColorValue = 255)
    #Ice label
    #geom_label(data=tibble(x=(c(45))*2*pi/365,y=y_limit_upper),aes(x=x,y=y),label="Ice")+ 
    #School year label
-   geom_label(data=tibble(x=(c(130))*2*pi/365,y=y_limit_upper),aes(x=x,y=y),label="University",size=9*(5/14))+ 
+   geom_label(data=tibble(x=(c(130))*2*pi/365,y=y_limit_upper),aes(x=x,y=y),label="Academic",size=9*(5/14))+ 
    #day length label
    geom_label(data=tibble(x=(c(24))*2*pi/365,y=y_limit_upper),aes(x=x,y=y),label="Day length",size=9*(5/14))+ 
    
