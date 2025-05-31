@@ -35,55 +35,25 @@ NOTE: add color for mixed period
 
 ```{r}
 #Load discrete data
-#BVR
-bvr_ice <- read.csv("../01b_Processed_data/BVR_ice.csv") 
-bvr_strat <- read.csv("../01b_Processed_data/BVR_stratification_discrete.csv") 
-#General
+in_lake_csvs <- list.files(path = "../01b_Processed_data",
+                            pattern = "stratification_discrete.csv",
+                            full.names = TRUE)
+
+ice_csvs <- list.files(path = "../01b_Processed_data",
+                            pattern = "ice.csv",
+                            full.names = TRUE)
 temperate_raw <- read.csv("../01b_Processed_data/Temperate_seasons.csv")
-#Rerewhakaaitu
-rere_strat <- read.csv("../01b_Processed_data/Rerewhakaaitu_stratification_discrete.csv") 
-rere_ice <- read.csv("../01b_Processed_data/Rerewhakaaitu_ice.csv")
-#Sunapee
-sun_strat <- read.csv("../01b_Processed_data/Sunapee_stratification_discrete.csv") 
-sun_ice <- read.csv("../01b_Processed_data/Sunapee_ice.csv") 
-#Erken
-erken_strat <- read.csv("../01b_Processed_data/Erken_stratification_discrete.csv") 
-erken_ice <- read.csv("../01b_Processed_data/Erken_ice.csv") 
-#Mohonk
-mohonk_strat <- read.csv("../01b_Processed_data/Mohonk_stratification_discrete.csv") 
-mohonk_ice <- read.csv("../01b_Processed_data/Mohonk_ice.csv") 
-#Arendsee
-arendsee_strat <- read.csv("../01b_Processed_data/Arendsee_stratification_discrete.csv") 
-arendsee_ice <- read.csv("../01b_Processed_data/Arendsee_ice.csv") 
-#Midway
-midway_strat <- read.csv("../01b_Processed_data/Midway_stratification_discrete.csv") 
-midway_ice <- read.csv("../01b_Processed_data/Midway_ice.csv") 
-#Arendsee
-Ägeri_strat <- read.csv("../01b_Processed_data/Ägeri_stratification_discrete.csv") 
-Ägeri_ice <- read.csv("../01b_Processed_data/Ägeri_ice.csv") 
 
 #Format
-in_lake <- bvr_strat %>% 
-  full_join(sun_strat) %>%
-  full_join(rere_strat) %>%
-  full_join(erken_strat) %>%
-  full_join(mohonk_strat) %>%
-  full_join(arendsee_strat) %>%
-  full_join(midway_strat) %>%
-  full_join(Ägeri_strat) %>%
+in_lake <- read_csv(in_lake_csvs) %>%
   mutate(Method = "Stratification",
          x = start,
          xend = end,
          Lake = factor(Lake, levels = LAKES))
 
-ice_format <- bvr_ice %>%
-  full_join(rere_ice) %>%
-  full_join(sun_ice) %>%
-  full_join(erken_ice) %>%
-  full_join(mohonk_ice) %>%
-  full_join(arendsee_ice) %>%
-  full_join(midway_ice) %>%
-  full_join(Ägeri_ice) %>%
+ice_format <- ice_csvs %>%
+  map(read_csv, show_col_types = F) %>%
+  bind_rows() %>%
   mutate(Lake = factor(Lake, levels = LAKES))
 
 #Format
@@ -201,84 +171,32 @@ discrete_ice
 
 ```{r}
 #Load data
-#BVR
-bvr_catwalk_format <- read.csv("../01b_Processed_data/BVR_catwalk.csv")
-bvr_met_format <- read.csv("../01b_Processed_data/BVR_met.csv")
-bvr_strat <- read.csv("../01b_Processed_data/BVR_stratification_continuous.csv")
-#Rerewhakaaitu
-rere_in_lake <- read.csv("../01b_Processed_data/Rerewhakaaitu_continuous.csv")
-rere_strat <- read.csv("../01b_Processed_data/Rerewhakaaitu_stratification_continuous.csv")
-rere_met <- read.csv("../01b_Processed_data/Rerewhakaaitu_met.csv")
-#Sunapee
-sun_in_lake <- read.csv("../01b_Processed_data/Sunapee_continuous.csv")
-sun_strat <- read.csv("../01b_Processed_data/Sunapee_stratification_continuous.csv")
-sun_met <- read.csv("../01b_Processed_data/Sunapee_met.csv")
-#Erken
-erken_in_lake <- read.csv("../01b_Processed_data/Erken_continuous.csv")
-erken_strat <- read.csv("../01b_Processed_data/Erken_stratification_continuous.csv")
-erken_met <- read.csv("../01b_Processed_data/Erken_met.csv")
-#Mohonk
-mohonk_in_lake <- read.csv("../01b_Processed_data/Mohonk_continuous.csv")
-mohonk_strat <- read.csv("../01b_Processed_data/Mohonk_stratification_continuous.csv")
-#Arendsee
-arendsee_in_lake <- read.csv("../01b_Processed_data/Arendsee_continuous.csv")
-arendsee_strat <- read.csv("../01b_Processed_data/Arendsee_stratification_continuous.csv")
-arendsee_met <- read.csv("../01b_Processed_data/Arendsee_met.csv")
-#Midway
-midway_in_lake <- read.csv("../01b_Processed_data/Midway_continuous.csv")
-midway_strat <- read.csv("../01b_Processed_data/Midway_stratification_continuous.csv")
-#Ägeri
-Ägeri_in_lake <- read.csv("../01b_Processed_data/Ägeri_continuous.csv")
-Ägeri_strat <- read.csv("../01b_Processed_data/Ägeri_stratification_continuous.csv")
-Ägeri_met <- read.csv("../01b_Processed_data/Ägeri_met.csv")
+all_csvs <- list.files("../01b_Processed_data", full.names = TRUE)
+cont <- all_csvs[!grepl("season|ice|discrete|All|longoutput|data.csv", all_csvs)]
 
 #Format
 #A bit of magic to get explicit NAs
-all <- bvr_catwalk_format %>%
-  full_join(bvr_met_format) %>%
-  full_join(bvr_strat) %>%
-  full_join(rere_in_lake) %>%
-  full_join(rere_strat) %>%
-  full_join(rere_met) %>%
-  full_join(sun_in_lake) %>%
-  full_join(sun_strat) %>%
-  full_join(sun_met) %>%
-  full_join(erken_in_lake) %>%
-  full_join(erken_strat) %>%
-  full_join(erken_met) %>%
-  full_join(mohonk_in_lake) %>%
-  full_join(mohonk_strat) %>%
-  full_join(arendsee_in_lake) %>%
-  full_join(arendsee_strat) %>%
-  full_join(arendsee_met) %>%
-  full_join(midway_in_lake) %>%
-  full_join(midway_strat) %>%
-  full_join(Ägeri_in_lake) %>%
-  full_join(Ägeri_strat) %>%
-  full_join(Ägeri_met)
+all <- cont %>%
+  map(read_csv, show_col_types = FALSE) %>%
+  bind_rows()
 
 full <- all %>%
   expand(Variable, yday, Lake)
 
+levels_cont <- c("Surface_temperature", "AirTemp_C_Average", "Surface_chla", 
+                 "Surface_DO", "Bottom_DO", "Turbidity", "Shortwave", 
+                 "Diff_Dens_surf_bot")
+
+labels_cont <- c("Surface temperature", "Air temperature", 
+                 "Surface chlorophyll-a", "Surface DO", "Bottom-water DO",
+                 "Surface turbidity", "Solar radiation",
+                 "Surf-bot dens. difference")
+
 continuous_data <- all %>%
   right_join(full) %>%
   mutate(Variable = factor(Variable, 
-                           levels = c("Surface_temperature", 
-                                      "AirTemp_C_Average", 
-                                      "Surface_chla", 
-                                      "Surface_DO",
-                                      "Bottom_DO",
-                                      "Turbidity",
-                                      "Shortwave",
-                                      "Diff_Dens_surf_bot"),
-                           labels = c("Surface temperature", 
-                                      "Air temperature",
-                                      "Surface chlorophyll-a",
-                                      "Surface DO",
-                                      "Bottom-water DO",
-                                      "Surface turbidity",
-                                      "Solar radiation",
-                                      "Epi-hypo dens. difference"))) %>%
+                           levels = levels_cont,
+                           labels = labels_cont)) %>%
   filter(!is.na(Variable)) %>%
   group_by(Variable, Lake) %>%
   mutate(Value = ((Value) - min(Value, na.rm = T))/
@@ -294,22 +212,8 @@ continuous_data <- all %>%
 write_csv(all %>%
             right_join(full) %>%
             mutate(Variable = factor(Variable, 
-                                     levels = c("Surface_temperature", 
-                                                "AirTemp_C_Average", 
-                                                "Surface_chla", 
-                                                "Surface_DO",
-                                                "Bottom_DO",
-                                                "Turbidity",
-                                                "Shortwave",
-                                                "Diff_Dens_surf_bot"),
-                                     labels = c("Surface temperature", 
-                                                "Air temperature",
-                                                "Surface chlorophyll-a",
-                                                "Surface DO",
-                                                "Bottom-water DO",
-                                                "Surface turbidity",
-                                                "Solar radiation",
-                                                "Epi-hypo dens. difference"))) %>%
+                                     levels = levels_cont,
+                                     labels = labels_cont)) %>%
             filter(!is.na(Variable)), 
           "../01b_Processed_data/continuous_data.csv")
 
@@ -317,7 +221,8 @@ write_csv(all %>%
 continuous <- continuous_data %>%
   filter(!Variable %in% c("Surface turbidity","Surface DO")) %>%
   ggplot(aes(x = x, y = Value * 100, color = Variable)) +
-  scale_color_manual(values = c("#6B7CB3","#1F363D","#8DD65C", "lightblue","#FFC233", "#F05D5E")) +
+  scale_color_manual(values = c("#6B7CB3","#1F363D","#8DD65C", "lightblue",
+                                "#FFC233", "#F05D5E")) +
   geom_line(alpha = 0.2) +
   geom_smooth(se = F, method = "gam") +
   geom_vline(xintercept = c(0, 90, 183, 276, 365), color = "black", alpha = 0.2)+
@@ -327,7 +232,8 @@ continuous <- continuous_data %>%
   guides(color = guide_legend(ncol = 1)) +
   scale_x_continuous(breaks = c(0, 90, 183, 276, 365),
                  labels = c("Winter\nsolstice", "Spring\nequinox", 
-                            "Summer\nsolstice", "Autumn\nequinox", "Winter\nsolstice")) +
+                            "Summer\nsolstice", "Autumn\nequinox", 
+                            "Winter\nsolstice")) +
   facet_wrap(~Lake, ncol = 1, scales = "free_y") +
   theme(legend.position = "bottom",
         legend.title = element_blank(),
@@ -357,6 +263,7 @@ jpeg("../03a_Figures/Seasons_data_ice.jpg", width = 8.5, height = 9, units = "in
 ggarrange(discrete_ice, continuous, align = "h")
 dev.off()
 ```
+
 ```{r}
 discrete_ice2 <- discrete_strat +
   ggnewscale::new_scale_color() +

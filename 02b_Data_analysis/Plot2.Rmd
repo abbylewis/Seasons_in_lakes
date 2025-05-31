@@ -1,0 +1,348 @@
+---
+title: "Plot"
+author: "Abby Lewis"
+date: "2024-02-29"
+output: html_document
+---
+
+# Set-up
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(ggpubr)
+library(ggnewscale) # For multiple color scales on the discrete panel
+
+#The ../03a_Figures folder is not pushed to GitHub
+if(!file.exists("../03a_Figures")){dir.create("../03a_Figures")}
+
+#Southern hemisphere lakes
+sh_lakes <- c("Rerewhakaaitu")
+
+LAKES <- c("Lake Erken (2018)", #59.83917
+           "Arendsee (2020)", #52.89099
+           "Lake Ägeri (2023)", #47.1213
+           "Midway Pond (2023)", #44.9312
+           "Lake Sunapee (2008)", #43.3802
+           "Mohonk Lake (2017)", #41.76598
+           "Beaverdam Reservoir (2021)", #37.3164
+           "Lake Rerewhakaaitu (2022-2023)") #-38.2936
+```
+
+# Discrete
+
+NOTE: add color for mixed period
+
+```{r}
+#Load discrete data
+in_lake_csvs <- list.files(path = "../01b_Processed_data",
+                            pattern = "stratification_discrete.csv",
+                            full.names = TRUE)
+
+ice_csvs <- list.files(path = "../01b_Processed_data",
+                            pattern = "ice.csv",
+                            full.names = TRUE)
+temperate_raw <- read.csv("../01b_Processed_data/Temperate_seasons.csv")
+
+#Format
+in_lake <- read_csv(in_lake_csvs) %>%
+  mutate(Method = "Stratification",
+         x = start,
+         xend = end,
+         Lake = factor(Lake, levels = LAKES))
+
+ice_format <- ice_csvs %>%
+  map(read_csv, show_col_types = F) %>%
+  bind_rows() %>%
+  mutate(Lake = factor(Lake, levels = LAKES))
+
+methods <- c("Astronomical", "Months", "Stratification", "Ice")
+
+#Format
+temperate <- temperate_raw %>% filter(is.na(start)) #make empty df
+for(lake in unique(in_lake$Lake)) {
+  hemi <- ifelse(lake %in% sh_lakes, "Southern", "Northern")
+  temperate <- temperate %>%
+    full_join(temperate_raw %>% mutate(Lake = lake) %>%
+                filter(Hemisphere == hemi))
+}
+discrete <- temperate %>%
+  mutate(Lake = factor(Lake, levels = LAKES)) %>%
+  full_join(in_lake) %>%
+  full_join(ice_format)
+write_csv(discrete, "../01b_Processed_data/Discrete_seasons.csv")
+
+#Plot
+#First the temperate metrics
+discrete_temperate <- temperate %>%
+  mutate(Lake = factor(Lake, levels = LAKES)) %>%
+  filter(Method %in% c("Months", "Astronomical")) %>%
+  ggplot(aes(y = Method, 
+             yend = Method, 
+             x = start, 
+             xend = end, 
+             color = Season)) +
+  geom_segment(lwd = 3) +
+  theme_bw() +
+  ggtitle("Discrete seasonal clasifications") +
+  scale_color_manual("Temperate\nseasons",
+                     values = c("grey90", "grey77", "grey64", "grey51", 
+                                "grey", "grey", "grey", "grey", "grey"), #placeholders
+                     breaks = c("Winter", "Spring", "Summer", "Autumn")) +
+  scale_x_continuous(breaks = c(0, 90, 183, 276, 365),
+                 labels = c("Winter\nsolstice", "Spring\nequinox", 
+                            "Summer\nsolstice", "Autumn\nequinox", "Winter\nsolstice")) +
+  guides(color = guide_legend(ncol = 1, title.position="top")) +
+  facet_wrap(~Lake, ncol = 1)
+
+#Add in-lake data (with separate color legend)
+discrete_strat <- discrete_temperate +
+  ggnewscale::new_scale_color() +
+  geom_segment(data = in_lake, 
+               aes(y = Method, 
+                   yend = Method, 
+                   x = start, 
+                   xend = end, 
+                   color = Season), 
+               lwd = 3) +
+  scale_color_manual("Stratification", values = c("#FACFCF", "#F6A2A2", "#DB8080"),
+                     breaks = c("Inversely\nstratified", "Mixed", "Stratified")) +
+  guides(color = guide_legend(ncol = 1, title.position="top")) +
+  theme(legend.position = "bottom",
+        axis.title.x = element_blank(),
+        legend.title = element_text(vjust = 1),
+        panel.grid.major.x = element_blank(),
+        panel.grid.major.y = element_blank(),
+        strip.background = element_rect(fill = "white", color = "white"),
+        legend.key.height = unit(0, "mm"),
+        legend.key.spacing.y = unit(0, "mm"),
+        panel.grid.minor = element_blank()) +
+  facet_wrap(~Lake, ncol = 1)
+
+lake_relabel <- function(lakes){
+  labels <- c(
+    "Lake Erken (2018)" = "`Lake Erken (2018): 59.84 ºN, 18.63 ºE; Z`[max]~`= 21~m`", 
+    "Arendsee (2020)" = "`Arendsee (2020): 52.89 ºN, 11.47 ºE; Z`[max]~`= 50~m`",
+    "Lake Ägeri (2023)" = "`Lake Ägeri (2023): 47.12 ºN, 8.62 ºE; Z`[max]~`= 83~m`", 
+    "Midway Pond (2023)" = "`Midway Pond (2023): 44.93 ºN, 70.54 ºW; Z`[max]~`= 9~m`", 
+    "Lake Sunapee (2008)" = "`Lake Sunapee (2008): 43.38 ºN, 72.05 ºW; Z`[max]~`= 32~m`", 
+    "Mohonk Lake (2017)" = "`Mohonk Lake (2017): 41.77 ºN, 74.16 ºW; Z`[max]~`= 18~m`",
+    "Beaverdam Reservoir (2021)" = "`Beaverdam Reservoir (2021): 37.31 ºN, 80.18 ºW; Z`[max]~`= 11~m`",
+    "Lake Rerewhakaaitu (2022-2023)" = "`Lake Rerewhakaaitu (2022-2023): 38.29 ºS, 176.5 ºE; Z`[max]~`= 15~m`"
+  )
+  
+  return(unname(labels[lakes]))
+}
+
+
+discrete_ice <- discrete_strat +
+  ggnewscale::new_scale_color() +
+  geom_segment(data = ice_format,
+               aes(y = Method, 
+                   yend = Method, 
+                   x = start, 
+                   xend = end, 
+                   color = Season), 
+               lwd = 3) +
+  #geom_vline(xintercept = c(0, 90, 183, 276, 365), color = "black", alpha = 0.2)+
+  scale_color_manual("Ice", values = c("#8AB4E3", "#E5EDF7"),
+                     breaks = c("Open water", "Ice")) +
+  theme(legend.position = "bottom",
+        axis.title.x = element_blank(),
+        legend.title = element_text(vjust = 1),
+        panel.grid.major.x = element_blank(),
+        panel.grid.major.y = element_blank(),
+        legend.key.height = unit(0, "mm"),
+        strip.background = element_rect(fill = "transparent", color = "transparent"),
+        legend.key.spacing.y = unit(0, "mm"),
+        panel.grid.minor = element_blank(),
+        panel.spacing.y=unit(0, "lines"),
+        strip.text.x = element_text(hjust = 0, 
+                                    margin = margin(t = 0.5, b = 0, unit = "lines")),
+        strip.clip= "off") +
+  scale_y_discrete(limits = rev(methods))+
+  guides(color = guide_legend(ncol = 1, title.position="top")) +
+  facet_wrap(~Lake, ncol = 1, 
+             labeller = as_labeller(lake_relabel, 
+                                    default = label_parsed))
+```
+
+# Continuous
+
+```{r}
+#Load data
+all_csvs <- list.files("../01b_Processed_data", full.names = TRUE)
+cont <- all_csvs[!grepl("season|ice|discrete|All|longoutput|data.csv", all_csvs)]
+
+#Format
+#A bit of magic to get explicit NAs
+all <- cont %>%
+  map(read_csv, show_col_types = FALSE) %>%
+  bind_rows()
+
+full <- all %>%
+  expand(Variable, yday, Lake)
+
+levels_cont <- c("Surface_temperature", "AirTemp_C_Average", "Surface_chla", 
+                 "Surface_DO", "Bottom_DO", "Turbidity", "Shortwave", 
+                 "Diff_Dens_surf_bot")
+
+labels_cont <- c("Surface temperature", "Air temperature", 
+                 "Surface chlorophyll-a", "Surface DO", "Bottom-water DO",
+                 "Surface turbidity", "Solar radiation",
+                 "Surf-bot dens. difference")
+
+continuous_data <- all %>%
+  right_join(full) %>%
+  mutate(Variable = factor(Variable, 
+                           levels = levels_cont,
+                           labels = labels_cont)) %>%
+  filter(!is.na(Variable)) %>%
+  group_by(Variable, Lake) %>%
+  mutate(Value = ((Value) - min(Value, na.rm = T))/
+           (max((Value) - min(Value, na.rm = T), na.rm = T))) %>%
+  mutate(x = yday) %>%
+  mutate(var_class = ifelse(Variable %in% c("Surface chlorophyll-a", 
+                                            "Bottom-water DO",
+                                            "Surface turbidity",
+                                            "Surface DO"), 
+                            "Bio/chem", "Phys"),
+         Lake = factor(Lake, levels = LAKES))
+
+write_csv(all %>%
+            right_join(full) %>%
+            mutate(Variable = factor(Variable, 
+                                     levels = levels_cont,
+                                     labels = labels_cont)) %>%
+            filter(!is.na(Variable)), 
+          "../01b_Processed_data/continuous_data.csv")
+
+#Plot
+continuous <- continuous_data %>%
+  filter(!Variable %in% c("Surface turbidity","Surface DO")) %>%
+  ggplot(aes(x = x, y = Value * 100, color = Variable)) +
+  scale_color_manual(values = c("#6B7CB3","#1F363D","#8DD65C", "lightblue",
+                                "#FFC233", "#F05D5E")) +
+  geom_line(alpha = 0.2) +
+  geom_smooth(se = F, method = "gam") +
+  #geom_vline(xintercept = c(0, 90, 183, 276, 365), color = "black", alpha = 0.2)+
+  theme_bw() + 
+  ylab("% of range") +
+  ggtitle("Seasonally-varying parameters")  +
+  guides(color = guide_legend(ncol = 1)) +
+  scale_x_continuous(breaks = c(0, 90, 183, 276, 365),
+                 labels = c("Winter\nsolstice", "Spring\nequinox", 
+                            "Summer\nsolstice", "Autumn\nequinox", 
+                            "Winter\nsolstice")) +
+  facet_wrap(~Lake, ncol = 1, scales = "free_y") +
+  theme(legend.position = "bottom",
+        legend.title = element_blank(),
+        axis.title.x = element_blank(),
+        panel.grid.minor = element_blank(),
+        strip.background = element_rect(fill = "white", color = "white"),
+        legend.key.height = unit(3, "mm"),
+        panel.spacing.y=unit(0, "lines"),
+        strip.text.x = element_text(color = "white",
+                                    margin = margin(t = 0.5, b = 0, unit = "lines")),
+        panel.grid.major.y = element_blank(),
+        panel.grid.major.x = element_blank(),
+        plot.background = element_rect(fill = "transparent"))
+
+#View
+continuous
+```
+
+# Combine and save
+
+```{r}
+jpeg("../03a_Figures/Seasons_data.jpg", width = 9, height = 10, units = "in", res = 300)
+ggarrange(discrete_strat, continuous, align = "h")
+dev.off()
+
+jpeg("../03a_Figures/Seasons_data_ice.jpg", width = 8.5, height = 9, units = "in", res = 300)
+ggarrange(discrete_ice, continuous, align = "h")
+dev.off()
+```
+
+```{r}
+discrete_ice2 <- discrete_strat +
+  ggnewscale::new_scale_color() +
+  geom_segment(data = ice_format,
+               aes(y = Method, 
+                   yend = Method, 
+                   x = start, 
+                   xend = end, 
+                   color = Season), 
+               lwd = 4) +
+  scale_color_manual("Ice", values = c("#8AB4E3", "#E5EDF7"),
+                     breaks = c("Open water", "Ice")) +
+  theme(legend.position = "bottom",
+        axis.title.x = element_blank(),
+        legend.title = element_text(vjust = 1),
+        panel.grid.major.x = element_blank(),
+        panel.grid.major.y = element_blank(),
+        legend.key.height = unit(0, "mm"),
+        strip.background = element_rect(fill = "white", color = "white"),
+        legend.key.spacing.y = unit(0, "mm"),
+        panel.grid.minor = element_blank()) +
+  guides(color = guide_legend(ncol = 1, title.position="top")) +
+  facet_wrap(~Lake, ncol = 1) +
+  labs(subtitle = "")
+
+continuous2 <- continuous_data %>%
+  filter(var_class == "Bio/chem") %>%
+  ggplot(aes(x = x, y = Value * 100, color = Variable)) +
+  scale_color_manual(values = c("#8DD65C", "blue","#7b32c9","black")) +
+  geom_line(alpha = 0.2) +
+  geom_smooth(se = F, method = "gam") +
+  theme_bw() + 
+  ylab("% of max") +
+  #ggtitle("Seasonally-varying parameters")  +
+  guides(color = guide_legend(ncol = 1)) +
+  scale_x_continuous(breaks = c(0, 90, 183, 276, 365),
+                 labels = c("Winter\nsolstice", "Spring\nequinox", 
+                            "Summer\nsolstice", "Autumn\nequinox", "Winter\nsolstice")) +
+  facet_wrap(~Lake, ncol = 1)+ 
+  theme(legend.position = "bottom",
+        legend.title = element_blank(),
+        axis.title.x = element_blank(),
+        panel.grid.minor = element_blank(),
+        strip.background = element_rect(fill = "white", color = "white"),
+        legend.key.height = unit(3, "mm"),
+        panel.grid.major.y = element_blank(),
+        panel.grid.major.x = element_line(color = "grey80"),
+        #strip.text.x = element_blank()
+        )+
+  labs(subtitle = "Biological/chemical")
+
+continuous3 <- continuous_data %>%
+  filter(var_class == "Phys") %>%
+  ggplot(aes(x = x, y = Value * 100, color = Variable)) +
+  scale_color_manual(values = c("#6B7CB3","#1F363D", "#FFC233","#F05D5E")) +
+  geom_line(alpha = 0.2) +
+  geom_smooth(se = F, method = "gam") +
+  theme_bw() + 
+  ylab("% of max") +
+  guides(color = guide_legend(ncol = 1)) +
+  scale_x_continuous(breaks = c(0, 90, 183, 276, 365),
+                 labels = c("Winter\nsolstice", "Spring\nequinox", 
+                            "Summer\nsolstice", "Autumn\nequinox", "Winter\nsolstice")) +
+  ggtitle("Seasonally-varying parameters")  +
+  facet_wrap(~Lake, ncol = 1) +
+  theme(legend.position = "bottom",
+        legend.title = element_blank(),
+        axis.title.x = element_blank(),
+        panel.grid.minor = element_blank(),
+        strip.background = element_rect(fill = "white", color = "white"),
+        legend.key.height = unit(3, "mm"),
+        panel.grid.major.y = element_blank(),
+        panel.grid.major.x = element_line(color = "grey80"),
+        #strip.text.x = element_blank()
+        )+
+  labs(subtitle = "Physical")
+
+jpeg("../03a_Figures/Seasons_data_ice2.jpg", width = 10, height = 10, units = "in", res = 300)
+ggarrange(discrete_ice2, continuous3, continuous2, align = "h", nrow = 1, widths = c(1.2, 1,1))
+dev.off()
+```
+
