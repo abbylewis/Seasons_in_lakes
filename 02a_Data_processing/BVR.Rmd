@@ -86,7 +86,7 @@ Meteorological data
 ```{r}
 #Load data from EDI
 options(timeout=6000)
-met <- read.csv("https://pasta.lternet.edu/package/data/eml/edi/389/8/d4c74bbb3b86ea293e5c52136347fbb0")
+met <- read.csv("https://pasta.lternet.edu/package/data/eml/edi/389/9/62647ecf8525cdfc069b8aaee14c0478")
 
 #Format continuous data
 met_format <- met %>%
@@ -96,7 +96,7 @@ met_format <- met %>%
   group_by(Date) %>%
   summarize(AirTemp_C_Average = mean(AirTemp_C_Average, na.rm = T),
             Rain_Total_mm = sum(Rain_Total_mm),
-            Shortwave = mean(ShortwaveRadiationDown_Average_W_m2, na.rm = T)) %>%
+            Shortwave = mean(ShortwaveRadiationUp_Average_W_m2, na.rm = T)) %>%
   mutate(yday = yday(Date)) %>%
   pivot_longer(cols = c(AirTemp_C_Average,
                         Rain_Total_mm,
