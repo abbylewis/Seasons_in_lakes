@@ -241,6 +241,13 @@ autumn_color<-rgb(228,141,44,maxColorValue = 255)
   geom_rect(data=tibble(xmin=0*2*pi/365,xmax=365*2*pi/365,ymin=y_limit_lower,ymax=all_mohk$y[1]*0.9),aes(xmin=xmin,xmax=xmax,ymin=ymin,ymax=ymax),fill="white",color="white")+
   
   #Rectangles for the school year####
+  #Winter break####
+  geom_rect(data=tibble(xmin=353*2*pi/365,xmax=366*2*pi/365,ymin=all_mohk$y[1]*0.9,ymax=all_mohk$y[1]*1),aes(xmin=xmin,xmax=xmax,ymin=ymin,ymax=ymax),fill=alpha("white",0.75),color=alpha("white",0.75))+
+  geom_rect(data=tibble(xmin=0*2*pi/365,xmax=21*2*pi/365,ymin=all_mohk$y[1]*0.9,ymax=all_mohk$y[1]*1),aes(xmin=xmin,xmax=xmax,ymin=ymin,ymax=ymax),fill=alpha("white",0.75),color=alpha("white",0.75))+
+   #summer break####  
+ geom_rect(data=tibble(xmin=135*2*pi/365,xmax=238*2*pi/365,ymin=all_mohk$y[1]*0.9,ymax=all_mohk$y[1]*1),aes(xmin=xmin,xmax=xmax,ymin=ymin,ymax=ymax),fill=alpha("white",0.75),color=alpha("white",0.75))+
+   
+ 
   #fall####
   geom_rect(data=tibble(xmin=237*2*pi/365,xmax=353*2*pi/365,ymin=all_mohk$y[1]*0.9,ymax=all_mohk$y[1]*1),aes(xmin=xmin,xmax=xmax,ymin=ymin,ymax=ymax),fill=alpha("navy",0.75),color=alpha("navy",0.75))+
   #spring####  
@@ -425,10 +432,19 @@ autumn_color<-rgb(228,141,44,maxColorValue = 255)
    
    #Rectangles for the school year####
     #Waiting on Whitney, for now used this: https://study-in-new-zealand.org/semester-dates/#:~:text=Semester%201%20runs%20from%20April,that%20the%20students%20should%20attend.
+ #Break 1####
+ geom_rect(data=tibble(xmin=169*2*pi/365,xmax=189*2*pi/365,ymin=all_mohk$y[1]*0.9,ymax=all_mohk$y[1]*1),aes(xmin=xmin,xmax=xmax,ymin=ymin,ymax=ymax),fill=alpha("white",0.75),color=alpha("white",0.75))+
+ #Break 2####  
+ geom_rect(data=tibble(xmin=0*2*pi/365,xmax=55*2*pi/365,ymin=all_mohk$y[1]*0.9,ymax=all_mohk$y[1]*1),aes(xmin=xmin,xmax=xmax,ymin=ymin,ymax=ymax),fill=alpha("white",0.75),color=alpha("white",0.75))+
+   geom_rect(data=tibble(xmin=303*2*pi/365,xmax=366*2*pi/365,ymin=all_mohk$y[1]*0.9,ymax=all_mohk$y[1]*1),aes(xmin=xmin,xmax=xmax,ymin=ymin,ymax=ymax),fill=alpha("white",0.75),color=alpha("white",0.75))+
+   
+ 
  #Semester 1####
  geom_rect(data=tibble(xmin=55*2*pi/365,xmax=170*2*pi/365,ymin=all_mohk$y[1]*0.9,ymax=all_mohk$y[1]*1),aes(xmin=xmin,xmax=xmax,ymin=ymin,ymax=ymax),fill=alpha("navy",0.75),color=alpha("navy",0.75))+
-   #spring####  
+   #Semster 2####  
  geom_rect(data=tibble(xmin=188*2*pi/365,xmax=304*2*pi/365,ymin=all_mohk$y[1]*0.9,ymax=all_mohk$y[1]*1),aes(xmin=xmin,xmax=xmax,ymin=ymin,ymax=ymax),fill=alpha("navy",0.75),color=alpha("navy",0.75))+
+   
+   
    
    #Set up ribbon for ice data
    #geom_ribbon(aes(x=yday*2*pi/365,ymin=y2,ymax=y2*1.08),color="black",fill="black")+
