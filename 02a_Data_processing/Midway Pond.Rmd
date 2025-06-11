@@ -99,12 +99,21 @@ Meteorological data
 
 ```{r}
 # Load data
-#met <- read.csv("../01a_Raw_data/YOUR LAKE met.csv")
+met <- read.csv("../01a_Raw_data/Midway_AirTemp.csv")
 
 # Format continuous data
-#met_formatted <- met #apply necessary transformations
+met_formatted <- met %>%
+  mutate(DATE = as.Date(DATE, format = "%m/%d/%y") + days(offset),
+         Lake = LAKE,
+         Variable = "AirTemp_C_Average",
+         yday = yday(DATE),
+         Year = year(DATE)) %>%
+  filter(Year == 2023) %>%
+  rename(Value = TOBS_C) %>%
+  select(yday, Variable, Value, Lake)
+  
 
-#write.csv(met_formatted, "../01b_Processed_data/Midway_met.csv", row.names = F)
+write.csv(met_formatted, "../01b_Processed_data/Midway_met.csv", row.names = F)
 ```
 
 Ice data
