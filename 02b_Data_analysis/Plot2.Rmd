@@ -84,7 +84,7 @@ discrete_temperate <- temperate %>%
              color = Season)) +
   geom_segment(lwd = 3) +
   theme_bw() +
-  ggtitle("Discrete seasonal clasifications") +
+  ggtitle("Discrete seasonal classifications") +
   scale_color_manual("Temperate\nseasons",
                      values = c("grey90", "grey77", "grey64", "grey51", 
                                 "grey", "grey", "grey", "grey", "grey"), #placeholders
@@ -121,14 +121,14 @@ discrete_strat <- discrete_temperate +
 
 lake_relabel <- function(lakes){
   labels <- c(
-    "Lake Erken (2018)" = "`Lake Erken (2018): 59.84 ºN, 18.63 ºE; Z`[max]~`= 21~m`", 
-    "Arendsee (2020)" = "`Arendsee (2020): 52.89 ºN, 11.47 ºE; Z`[max]~`= 50~m`",
-    "Lake Ägeri (2023)" = "`Lake Ägeri (2023): 47.12 ºN, 8.62 ºE; Z`[max]~`= 83~m`", 
-    "Midway Pond (2023)" = "`Midway Pond (2023): 44.93 ºN, 70.54 ºW; Z`[max]~`= 9~m`", 
-    "Lake Sunapee (2008)" = "`Lake Sunapee (2008): 43.38 ºN, 72.05 ºW; Z`[max]~`= 32~m`", 
-    "Mohonk Lake (2017)" = "`Mohonk Lake (2017): 41.77 ºN, 74.16 ºW; Z`[max]~`= 18~m`",
-    "Beaverdam Reservoir (2021)" = "`Beaverdam Reservoir (2021): 37.31 ºN, 80.18 ºW; Z`[max]~`= 11~m`",
-    "Lake Rerewhakaaitu (2022-2023)" = "`Lake Rerewhakaaitu (2022-2023): 38.29 ºS, 176.5 ºE; Z`[max]~`= 15~m`"
+    "Lake Erken (2018)" = "`Lake Erken (2018): 59.84 ºN, 18.63 ºE; Z`[max]~`= 21 m`", 
+    "Arendsee (2020)" = "`Arendsee (2020): 52.89 ºN, 11.47 ºE; Z`[max]~`= 50 m`",
+    "Lake Ägeri (2023)" = "`Lake Ägeri (2023): 47.12 ºN, 8.62 ºE; Z`[max]~`= 83 m`", 
+    "Midway Pond (2023)" = "`Midway Pond (2023): 44.93 ºN, 70.54 ºW; Z`[max]~`= 9 m`", 
+    "Lake Sunapee (2008)" = "`Lake Sunapee (2008): 43.38 ºN, 72.05 ºW; Z`[max]~`= 32 m`", 
+    "Mohonk Lake (2017)" = "`Mohonk Lake (2017): 41.77 ºN, 74.16 ºW; Z`[max]~`= 18 m`",
+    "Beaverdam Reservoir (2021)" = "`Beaverdam Reservoir (2021): 37.31 ºN, 80.18 ºW; Z`[max]~`= 11 m`",
+    "Lake Rerewhakaaitu (2022-2023)" = "`Lake Rerewhakaaitu (2022-2023): 38.29 ºS, 176.5 ºE; Z`[max]~`= 15 m`"
   )
   
   return(unname(labels[lakes]))

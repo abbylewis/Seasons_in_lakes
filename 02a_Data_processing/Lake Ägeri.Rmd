@@ -62,7 +62,8 @@ in_lake_formatted <- in_lake_data %>%
   pivot_longer(cols = c(Surface_temperature, Surface_chla, Bottom_DO, Surface_DO), 
                names_to = "Variable", values_to = "Value") %>%
   select(yday, Variable, Value) %>%
-  mutate(Lake = LAKE)
+  mutate(Lake = LAKE) %>%
+  filter(!Variable == "Surface_chla") #Data are only from the very end of the year
 
 write.csv(in_lake_formatted, "../01b_Processed_data/Ägeri_continuous.csv", row.names = F)
 
