@@ -162,10 +162,10 @@ scalar_month_labels<-1.18
 scalar_season_labels<-1.3
 
 #Colors for seasons#####
-winter_color<-"grey95"
-spring_color<-"grey70"
-summer_color<-"grey45"
-autumn_color<-"grey20"
+winter_color<-rgb(215,228,255,maxColorValue = 255)
+spring_color<-rgb(183,234,123,maxColorValue = 255)
+summer_color<-rgb(250,251,114,maxColorValue = 255)
+autumn_color<-rgb(228,141,44,maxColorValue = 255)
 
 #plot the seasons as a clock####
 (gg.clock.mohonk<-ggplot(data=all_mohk)+
@@ -182,14 +182,14 @@ autumn_color<-"grey20"
     scale_fill_manual(name = "Astronomical seasons", values = c(winter_color,spring_color,summer_color,autumn_color), labels = c("Winter", "Spring","Summer","Autumn"))+
     guides(fill = guide_legend(title.position="top", 
                                  title.hjust = 0.5, ncol=2,
-                                 override.aes = list(shape = 21, color = "black")))+
+                                 override.aes = list(shape = 21, color = "black", size = 2)))+
     
    #Seasons colors for each 1/4####
- geom_ribbon(data=tibble(rad=c(-1:80)*2*pi/365),aes(x=rad,ymin=2,ymax=3),color="black",fill=winter_color)+ #winter
-   geom_ribbon(data=tibble(rad=c(355:366)*2*pi/365),aes(x=rad,ymin=2,ymax=3),color="black",fill=winter_color)+ #winter2
-   geom_ribbon(data=all_mohk%>%filter(yday>=80&yday<=172),aes(x=yday*2*pi/365,ymin=2,ymax=3),color="black",fill=spring_color)+ #spring
-   geom_ribbon(data=all_mohk%>%filter(yday>=172&yday<=264),aes(x=yday*2*pi/365,ymin=2,ymax=3),color="black",fill=summer_color)+ #summer
-   geom_ribbon(data=all_mohk%>%filter(yday>=264&yday<=355),aes(x=yday*2*pi/365,ymin=2,ymax=3),color="black",fill=autumn_color)+ #fall
+ geom_ribbon(data=tibble(rad=c(-1:80)*2*pi/365),aes(x=rad,ymin=1,ymax=2),color="black",fill=winter_color)+ #winter
+   geom_ribbon(data=tibble(rad=c(355:366)*2*pi/365),aes(x=rad,ymin=1,ymax=2),color="black",fill=winter_color)+ #winter2
+   geom_ribbon(data=all_mohk%>%filter(yday>=80&yday<=172),aes(x=yday*2*pi/365,ymin=1,ymax=2),color="black",fill=spring_color)+ #spring
+   geom_ribbon(data=all_mohk%>%filter(yday>=172&yday<=264),aes(x=yday*2*pi/365,ymin=1,ymax=2),color="black",fill=summer_color)+ #summer
+   geom_ribbon(data=all_mohk%>%filter(yday>=264&yday<=355),aes(x=yday*2*pi/365,ymin=1,ymax=2),color="black",fill=autumn_color)+ #fall
    geom_segment(data=tibble(x=(c(355, 80, 172, 264))*2*pi/365,y=4)%>%mutate(xend=x,y=y_limit_lower,yend=4),aes(x=x,xend=xend,y=y,yend=yend),color="black")+  
    
    #Rectangles for the center####
@@ -198,17 +198,17 @@ autumn_color<-"grey20"
    #Rectangle for the daylength as the inner circle####
  ggnewscale::new_scale_color()+
     ggnewscale::new_scale_fill()+
-   geom_rect(aes(xmin=(yday-1)*2*pi/365,xmax=yday*2*pi/365,ymin=1,ymax=2,fill=day_length, color = day_length),show.legend = FALSE)+ 
+   geom_rect(aes(xmin=(yday-1)*2*pi/365,xmax=yday*2*pi/365,ymin=2,ymax=3,fill=day_length, color = day_length),show.legend = FALSE)+ 
    scale_fill_gradientn(limits=c(9,16),
-                        colors = c(tinter::darken("#FFC233",.8),
-                                   "#FFC233",
-                                   tinter::lighten("#FFC233",.8)),
+                        colors = c(tinter::darken("#FFC233",.6),
+                                   tinter::lighten("#FFC233",.8),
+                                   tinter::lighten("#FFC233",.1)),
                         breaks=c(9,12,15),labels=c(9,12,15), name = "Day\nlength (hr)",
                         guide = "none")+
    scale_color_gradientn(limits=c(9,16),
-                         colors = c(tinter::darken("#FFC233",.8),
-                                    "#FFC233",
-                                    tinter::lighten("#FFC233",.8)),
+                         colors = c(tinter::darken("#FFC233",.6),
+                                    tinter::lighten("#FFC233",.8),
+                                    tinter::lighten("#FFC233",.1)),
                          breaks=c(9,12,15),labels=c(9,12,15), name = "Day\nlength (hr)",
                          guide = "none")+
    geom_line(aes(x=yday*2*pi/365,y=1),color="black",size=0.2)+
@@ -221,21 +221,16 @@ autumn_color<-"grey20"
    
    #Rectangles for the stratification####
  geom_rect(aes(xmin=(yday-1)*2*pi/365,xmax=yday*2*pi/365,ymin=3,ymax=4,fill=delta_density, color=delta_density))+
-   scale_fill_gradientn(limits=c(0,3.4),
-                        colors = c(tinter::lighten("#DB8080",.8),
-                                   "#DB8080",
-                                   tinter::darken("#DB8080",.8)),
-                        breaks=c(0.2,3.1),
-                        labels=c("Mixed","Stratified"), 
-                        name = "Stratification")+
-   scale_color_gradientn(limits=c(0,3.4),
-                         colors = c(tinter::lighten("#DB8080",.8),
-                                    "#DB8080",
-                                    tinter::darken("#DB8080",.8)),
-                         breaks=c(0.2,3.1),
-                         labels=c("Mixed","Stratified"), 
-                         name = "Stratification",
-                         guide = "none")+
+    scale_fill_gradientn(limits=c(0,3.4),
+                         colors = c("#DB8080","#DB8080","white","#7CA2CB"),
+                         values=scales::rescale(c(3.4, 1, 0.24, 0)),
+                         breaks=c(0.24,3.4),labels=c("Mixed","Stratified"), 
+                         name = "Stratification")+
+    scale_color_gradientn(limits=c(0,3.4),colors = c("#DB8080","#DB8080","white","#7CA2CB"),
+                          values=scales::rescale(c(3.4, 1, 0.24, 0)),
+                          breaks=c(0.24,3.4),labels=c("Mixed","Stratified"), 
+                          name = "Stratification",
+                          guide = "none")+
    guides(fill = guide_colorbar(title.position="top", title.hjust = 0.5))+
    
    #circles overtop
@@ -246,7 +241,7 @@ autumn_color<-"grey20"
    
    #Ice
    geom_point(data=all_mohk%>%filter(Ice=="ice"),aes(x=yday*2*pi/365,y=(3+4)/2),shape=21,color="#8AB4E3",fill="#8AB4E3",size=4)+ #put blue dots for ice days in the outer ring
-   geom_point(data=all_mohk%>%filter(Ice=="ice"),aes(x=yday*2*pi/365,y=(3+4)/2),shape=21,color="#E5EDF7",fill="#E5EDF7",size=3)+ #put blue dots for ice days in the outer ring
+   geom_point(data=all_mohk%>%filter(Ice=="ice"),aes(x=yday*2*pi/365,y=(3+4)/2),shape=21,color="white",fill="white",size=3)+ #put blue dots for ice days in the outer ring
    
    #Geometric segments for the months spindles coming out from the middle####
  geom_segment(data=tibble(x=(c(1,32,60,91,121,152,182,213,244,274,305,335))*2*pi/365,y=4)%>%mutate(xend=x,y=y_limit_lower,yend=4),aes(x=x,xend=xend,y=y,yend=yend),color="white", alpha = 0.3)+  
@@ -259,7 +254,7 @@ autumn_color<-"grey20"
  geom_segment(data=tibble(x=(c(45))*2*pi/365,y=3.5)%>%mutate(xend=x,yend=y_limit_upper),aes(x=x,xend=xend,y=y,yend=yend),color="black")+  
     
     #Daylength arrow
-    geom_segment(data=tibble(x=(c(131))*2*pi/365,y=1.5)%>%mutate(xend=x,yend=y_limit_upper),aes(x=x,xend=xend,y=y,yend=yend),color="black")+  
+    geom_segment(data=tibble(x=(c(131))*2*pi/365,y=2.5)%>%mutate(xend=x,yend=y_limit_upper),aes(x=x,xend=xend,y=y,yend=yend),color="black")+  
     
     #Ice label
     geom_label(data=tibble(x=(c(45))*2*pi/365,y=y_limit_upper),aes(x=x,y=y),label="Ice",size=9*(5/14))+ #The size= in element_text is 14/5 of the size= in geom_text  
@@ -362,11 +357,11 @@ all_rere<-all_rere%>%
                       guide = "none")+
    
    #Seasons colors for each 1/4####
-   geom_ribbon(data=tibble(rad=c(-1:80)*2*pi/365),aes(x=rad,ymin=2,ymax=3),color="black",fill=summer_color)+ #summer
-   geom_ribbon(data=tibble(rad=c(355:366)*2*pi/365),aes(x=rad,ymin=2,ymax=3),color="black",fill=summer_color)+ #summer2
-   geom_ribbon(data=all_mohk%>%filter(yday>=80&yday<=172),aes(x=yday*2*pi/365,ymin=2,ymax=3),color="black",fill=autumn_color)+ #fall
-   geom_ribbon(data=all_mohk%>%filter(yday>=172&yday<=264),aes(x=yday*2*pi/365,ymin=2,ymax=3),color="black",fill=winter_color)+ #winter
-   geom_ribbon(data=all_mohk%>%filter(yday>=264&yday<=355),aes(x=yday*2*pi/365,ymin=2,ymax=3),color="black",fill=spring_color)+ #spring
+   geom_ribbon(data=tibble(rad=c(-1:80)*2*pi/365),aes(x=rad,ymin=1,ymax=2),color="black",fill=summer_color)+ #summer
+   geom_ribbon(data=tibble(rad=c(355:366)*2*pi/365),aes(x=rad,ymin=1,ymax=2),color="black",fill=summer_color)+ #summer2
+   geom_ribbon(data=all_mohk%>%filter(yday>=80&yday<=172),aes(x=yday*2*pi/365,ymin=1,ymax=2),color="black",fill=autumn_color)+ #fall
+   geom_ribbon(data=all_mohk%>%filter(yday>=172&yday<=264),aes(x=yday*2*pi/365,ymin=1,ymax=2),color="black",fill=winter_color)+ #winter
+   geom_ribbon(data=all_mohk%>%filter(yday>=264&yday<=355),aes(x=yday*2*pi/365,ymin=1,ymax=2),color="black",fill=spring_color)+ #spring
    geom_segment(data=tibble(x=(c(355, 80, 172, 264))*2*pi/365,y=4)%>%mutate(xend=x,y=y_limit_lower,yend=4),aes(x=x,xend=xend,y=y,yend=yend),color="black")+  
    
    #Rectangles for the center####
@@ -379,36 +374,32 @@ all_rere<-all_rere%>%
  ggnewscale::new_scale_fill()+
    ggnewscale::new_scale_color()+
    geom_rect(aes(xmin=(yday-1)*2*pi/365,xmax=yday*2*pi/365,ymin=3,ymax=4,fill=delta_density, color = delta_density))+
-   scale_fill_gradientn(limits=c(0,3.4),
-                        colors = c(tinter::lighten("#DB8080",.8),
-                                   "#DB8080",
-                                   tinter::darken("#DB8080",.8)),
-                        breaks=c(0.2,3.1),
-                        labels=c("Mixed","Stratified"), 
-                        name = "Stratification", 
-                        guide = "none")+
-   scale_color_gradientn(limits=c(0,3.4),
-                        colors = c(tinter::lighten("#DB8080",.8),
-                                   "#DB8080",
-                                   tinter::darken("#DB8080",.8)),
-                        breaks=c(0.2,3.1),
-                        labels=c("Mixed","Stratified"), 
-                        name = "Stratification",
-                        guide = "none")+
+    scale_fill_gradientn(limits=c(0,3.4),
+                         colors = c("#DB8080","#DB8080","white","#7CA2CB"),
+                         values=scales::rescale(c(3.4, 1, 0.24, 0)),
+                         breaks=c(0.24,3.4),labels=c("Mixed","Stratified"), 
+                         name = "Stratification",
+                         guide = "none")+
+    scale_color_gradientn(limits=c(0,3.4),colors = c("#DB8080","#DB8080","white","#7CA2CB"),
+                          values=scales::rescale(c(3.4, 1, 0.24, 0)),
+                          breaks=c(0.24,3.4),labels=c("Mixed","Stratified"), 
+                          name = "Stratification",
+                          guide = "none")+
    
    #Rectangle for the daylength as the inner circle####
  ggnewscale::new_scale_color()+
    ggnewscale::new_scale_fill()+
-   geom_rect(aes(xmin=(yday-1)*2*pi/365,xmax=yday*2*pi/365,ymin=1,ymax=2,fill=day_length, color = day_length),show.legend = TRUE)+ 
+   geom_rect(aes(xmin=(yday-1)*2*pi/365,xmax=yday*2*pi/365,ymin=2,ymax=3,fill=day_length, color = day_length),show.legend = TRUE)+ 
    scale_fill_gradientn(limits=c(9,16),
-                        colors = c(tinter::darken("#FFC233",.8),
-                                   "#FFC233",
-                                   tinter::lighten("#FFC233",.8)),
-                        breaks=c(9,12,15),labels=c(9,12,15), name = "Day length (hr)")+
+                        colors = c(tinter::darken("#FFC233",.6),
+                                   tinter::lighten("#FFC233",.8),
+                                   tinter::lighten("#FFC233",.1)),
+                        breaks=c(9,12,15),
+                        labels=c(9,12,15), name = "Day length (hr)")+
    scale_color_gradientn(limits=c(9,16),
-                         colors = c(tinter::darken("#FFC233",.8),
-                                    "#FFC233",
-                                    tinter::lighten("#FFC233",.8)),
+                         colors = c(tinter::darken("#FFC233",.6),
+                                    tinter::lighten("#FFC233",.8),
+                                    tinter::lighten("#FFC233",.1)),
                          breaks=c(9,12,15),labels=c(9,12,15), name = "Day length (hr)",
                          guide = "none")+
    guides(fill = guide_colorbar(title.position="top", title.hjust = 0.5))+
