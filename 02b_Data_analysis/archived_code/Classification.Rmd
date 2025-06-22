@@ -1,0 +1,121 @@
+---
+title: "Classification"
+author: "Abby Lewis"
+date: "2024-09-02"
+output: html_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(factoextra)
+
+#Load data
+all_continuous <- read_csv("../01b_Processed_data/all_continuous.csv") %>%
+  filter(Variable %in% c("Surface temperature", "Surface chlorophyll-a", "Bottom-water DO", "Air temperature", "Solar radiation", "Epi-hypo dens. difference"))
+all_discrete <- read_csv("../01b_Processed_data/all_discrete.csv")
+```
+
+```{r}
+comb <- all_continuous %>%
+  left_join(all_discrete, relationship = "many-to-many") %>%
+  filter(yday >= start, yday <= end) 
+
+#Run PCA for each lake
+plots <- list()
+for(i in 1:length(unique(comb$Lake))){
+  lake_name <- unique(comb$Lake)[i]
+  #Select this lake
+  lake_data <- all_continuous %>%
+    filter(Lake == lake_name) %>%
+    group_by(Variable) %>%
+    filter(sum(!is.na(Value)) > 200) %>%
+    pivot_wider(names_from = Variable, values_from = Value) %>%
+    na.omit()
+  #Remove day of year
+  for_pca <- lake_data %>%
+    select(-c(yday, Lake)) %>%
+    scale()
+  #Run PCA
+  res.pca <- prcomp(for_pca, scale = TRUE)
+  #Plot
+  days <- lake_data$yday
+  plot <- fviz_pca_biplot(res.pca,
+               col.ind = days, # color by groups
+               col.var = "black",
+               legend.title = "Day of year",
+               gradient.cols = c("grey98", "grey70", "grey98"),
+               repel = T,
+               label = "var",
+               labelsize = 3,
+               title = lake_name) +
+    theme(legend.position = "bottom",
+          legend.direction = "vertical")
+  
+  #By astronomical season
+  astro <- lake_data %>%
+    left_join(all_discrete %>%
+                filter(Method == "Astronomical",
+                       Lake == lake_name) %>%
+                left_join(data.frame(yday = 1:365, Method = "Astronomical")) %>%
+                filter(yday >= start, yday < end))
+  
+  astro_plot <- fviz_pca_ind(res.pca,
+               col.ind = astro$Season, # color by groups
+               col.var = "black",
+               mean.point = FALSE,
+               legend.title = "Astronomical Season",
+               addEllipses = F,
+               label = "var",
+               title = "") +
+    theme(legend.position = "bottom",
+          legend.direction = "vertical")
+  
+  #By months
+  month <- lake_data %>%
+    left_join(all_discrete %>%
+                filter(Method == "Months",
+                       Lake == lake_name) %>%
+                left_join(data.frame(yday = 1:365, Method = "Months")) %>%
+                filter(yday >= start, yday < end))
+  
+  month_plot <- fviz_pca_ind(res.pca,
+               col.ind = month$Season, # color by groups
+               col.var = "black",
+               mean.point = FALSE,
+               legend.title = "Season (Months)",
+               addEllipses = F,
+               label = "var",
+               title = "") +
+    theme(legend.position = "bottom",
+          legend.direction = "vertical")
+  
+  #K-means
+  fit <- kmeans(for_pca, 4)
+  # get cluster means
+  aggregate(for_pca, by=list(fit$cluster), FUN=mean)
+  
+  optim_plot <- fviz_pca_ind(res.pca,
+               col.ind = as.factor(fit$cluster), # color by groups
+               col.var = "black",
+               mean.point = FALSE,
+               legend.title = "Optimized grouping",
+               addEllipses = F,
+               label = "var",
+               title = "") +
+    theme(legend.position = "bottom",
+          legend.direction = "vertical")
+  
+  final <- ggpubr::ggarrange(plot, astro_plot, month_plot, optim_plot, nrow = 1, align = "hv")
+  jpeg(paste0("../03a_Figures/PCA-", lake_name, "-optim.jpeg"), width = 8, height = 4, units = "in", res = 300)
+  print(final)
+  dev.off()
+  
+  final <- ggpubr::ggarrange(plot, astro_plot, month_plot, nrow = 1, align = "hv")
+  jpeg(paste0("../03a_Figures/PCA-", lake_name, ".jpeg"), width = 6, height = 4, units = "in", res = 300)
+  print(final)
+  dev.off()
+}
+```
+

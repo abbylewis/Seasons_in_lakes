@@ -79,7 +79,7 @@ strat_export_cont <- in_lake_data %>%
   mutate(Lake = LAKE)
 
 strat_export_discrete <- strat_export_cont %>%
-  mutate(Strat = ifelse(Value > 0.05, "Stratified", "Mixed")) %>%
+  mutate(Strat = ifelse(Value > 0.1, "Stratified", "Mixed")) %>%
   filter(!is.na(Value)) %>%
   ungroup() %>%
   filter(Strat != lag(Strat)) %>%

@@ -65,7 +65,7 @@ strat_metrics_long <- catwalk_strat %>%
 strat_export <- catwalk_strat %>%
   mutate(yday = yday(Date)) %>%
   mutate(Variable = "Diff_Dens_surf_bot",
-         Strat = ifelse(Diff_Dens_surf_bot > 0.05, "Stratified", "Mixed"),
+         Strat = ifelse(Diff_Dens_surf_bot > 0.1, "Stratified", "Mixed"),
          Strat = ifelse(Strat == "Stratified" & Inverse, "Inversely\nstratified", Strat)) %>%
   filter(!is.na(Strat),
          !Strat == lag(Strat)) %>%

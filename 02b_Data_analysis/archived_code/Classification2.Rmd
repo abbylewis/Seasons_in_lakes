@@ -1,0 +1,182 @@
+---
+title: "Classification"
+author: "Abby Lewis"
+date: "2024-09-02"
+output: html_document
+---
+
+
+Run Classification.Rmd with only lakes where we have 365 days of data, and only the variables in common across all lakes
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(factoextra)
+
+#Load data
+all_continuous <- read_csv("../01b_Processed_data/all_continuous.csv") %>%
+  filter(Variable %in% c("Surface temperature", "Surface chlorophyll-a", "Bottom-water DO", "Air temperature", "Solar radiation", "Epi-hypo dens. difference"))
+all_discrete <- read_csv("../01b_Processed_data/all_discrete.csv")
+```
+
+Function to optimize
+
+```{r}
+find_best_seasons <- function(lake_data, n_clusters = 4){
+  #Remove day of year
+  for_pca <- lake_data %>%
+    select(-c(yday, Lake)) %>%
+    scale() %>%
+    as.tibble()
+  for_pca$yday <- lake_data$yday
+  
+  calc_SS <- function(df) sum(as.matrix(dist(df)^2)) / (2 * nrow(df))
+  
+  scores <- rep(0, 366/4)
+  breaks <- seq(0, 366, length.out = 5)
+  for_pca$group <- cut(for_pca$yday, breaks, labels = FALSE)
+  scores[1] <- for_pca %>%
+    group_by(group) %>%
+    nest() %>%
+    mutate(within_SS = map_dbl(data, ~calc_SS(.x))) %>%
+    pull(within_SS) %>%
+    sum()
+  for(i in 1:(366/4)){
+    breaks <- seq(0, 366, length.out = 5)
+    breaks <- breaks+i
+    breaks <- c(0, breaks, 366)
+    breaks <- breaks[breaks<=366]
+    for_pca$group <- cut(for_pca$yday, breaks, labels = FALSE)
+    for_pca$group[for_pca$group > 4] <- 1
+    scores[i] <- for_pca %>%
+      group_by(group) %>%
+      nest() %>%
+      mutate(within_SS = map_dbl(data, ~calc_SS(.x))) %>%
+      pull(within_SS) %>%
+      sum()
+  }
+  
+  best <- which.min(scores)
+  
+  breaks <- seq(0, 366, length.out = 5)
+  breaks <- breaks+best
+  breaks <- c(0, breaks, 366)
+  breaks <- breaks[breaks<=366]
+  for_pca$group <- cut(for_pca$yday, breaks, labels = FALSE)
+  for_pca$group[for_pca$group > 4] <- 1
+  
+  message(best)
+  return(for_pca$group)
+}
+```
+
+
+```{r}
+comb <- all_continuous %>%
+  group_by(Lake, Variable) %>%
+  filter(!is.na(Value)) %>%
+  mutate(n_day = n_distinct(yday)) %>%
+  filter(n_day > 350) %>%
+  group_by(Variable) %>%
+  filter(n_distinct(Lake) > 3) %>%
+  ungroup() %>%
+  mutate(n_var = n_distinct(Variable)) %>%
+  group_by(Lake) %>%
+  filter(n_distinct(Variable) == unique(n_var)) %>%
+  left_join(all_discrete, relationship = "many-to-many") %>%
+  filter(yday >= start, yday <= end)
+
+vars_select <- unique(comb$Variable)
+
+#Run PCA for each lake
+plots <- list()
+for(i in 1:length(unique(comb$Lake))){
+  lake_name <- unique(comb$Lake)[i]
+  #Select this lake
+  lake_data <- all_continuous %>%
+    filter(Lake == lake_name,
+           Variable %in% vars_select) %>%
+    pivot_wider(names_from = Variable, values_from = Value) %>%
+    na.omit()
+  #Remove day of year
+  for_pca <- lake_data %>%
+    select(-c(yday, Lake)) %>%
+    scale()
+  #Run PCA
+  res.pca <- prcomp(for_pca, scale = TRUE)
+  #Plot
+  days <- lake_data$yday
+  plot <- fviz_pca_biplot(res.pca,
+               col.ind = days, # color by groups
+               col.var = "black",
+               legend.title = "Day of year",
+               gradient.cols = c("grey98", "grey70", "grey98"),
+               repel = T,
+               label = "var",
+               labelsize = 3,
+               title = lake_name) +
+    theme(legend.position = "bottom",
+          legend.direction = "vertical")
+  
+  #By astronomical season
+  astro <- lake_data %>%
+    left_join(all_discrete %>%
+                filter(Method == "Astronomical",
+                       Lake == lake_name) %>%
+                left_join(data.frame(yday = 1:365, Method = "Astronomical")) %>%
+                filter(yday >= start, yday < end))
+  
+  astro_plot <- fviz_pca_ind(res.pca,
+               col.ind = astro$Season, # color by groups
+               col.var = "black",
+               mean.point = FALSE,
+               legend.title = "Astronomical Season",
+               addEllipses = F,
+               label = "var",
+               title = "") +
+    theme(legend.position = "bottom",
+          legend.direction = "vertical")
+  
+  #By months
+  month <- lake_data %>%
+    left_join(all_discrete %>%
+                filter(Method == "Months",
+                       Lake == lake_name) %>%
+                left_join(data.frame(yday = 1:365, Method = "Months")) %>%
+                filter(yday >= start, yday < end))
+  
+  month_plot <- fviz_pca_ind(res.pca,
+               col.ind = month$Season, # color by groups
+               col.var = "black",
+               mean.point = FALSE,
+               legend.title = "Season (Months)",
+               addEllipses = F,
+               label = "var",
+               title = "") +
+    theme(legend.position = "bottom",
+          legend.direction = "vertical")
+  
+  # get cluster means
+  optim_plot <- fviz_pca_ind(res.pca,
+               col.ind = as.factor(find_best_seasons(lake_data)), # color by groups
+               col.var = "black",
+               mean.point = FALSE,
+               legend.title = "Optimized grouping",
+               addEllipses = F,
+               label = "var",
+               title = "") +
+    theme(legend.position = "bottom",
+          legend.direction = "vertical")
+  
+  final <- ggpubr::ggarrange(plot, astro_plot, month_plot, optim_plot, nrow = 1, align = "hv")
+  jpeg(paste0("../03a_Figures/selected/PCA-", lake_name, "-optim.jpeg"), width = 8, height = 4, units = "in", res = 300)
+  print(final)
+  dev.off()
+  
+  final <- ggpubr::ggarrange(plot, astro_plot, month_plot, nrow = 1, align = "hv")
+  jpeg(paste0("../03a_Figures/selected/PCA-", lake_name, ".jpeg"), width = 6, height = 4, units = "in", res = 300)
+  print(final)
+  dev.off()
+}
+```
+

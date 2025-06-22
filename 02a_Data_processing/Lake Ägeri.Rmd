@@ -81,7 +81,7 @@ strat_sum <- in_lake_data %>%
                           T, F))
 
 strat_export_discrete <- strat_sum %>%
-  mutate(Strat = ifelse(Diff_Dens_surf_bot > 0.05, "Stratified", "Mixed"),
+  mutate(Strat = ifelse(Diff_Dens_surf_bot > 0.1, "Stratified", "Mixed"),
          Strat = ifelse(Inverse & Strat == "Stratified", "Inversely\nstratified", Strat)) %>%
   filter(!is.na(Strat)) %>%
   ungroup() %>%

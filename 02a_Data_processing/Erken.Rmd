@@ -81,7 +81,7 @@ strat_sum <- temp %>%
             Diff_Dens_surf_bot = water.density(WTemp14_50_Avg) - water.density(WTemp1_00_Avg)) 
 
 strat_export_discrete <- strat_sum %>%
-  mutate(Strat = ifelse(Diff_Dens_surf_bot > 0.05, "Stratified", "Mixed"),
+  mutate(Strat = ifelse(Diff_Dens_surf_bot > 0.1, "Stratified", "Mixed"),
          Strat = ifelse(Strat == "Stratified" & WTemp1_00_Avg < WTemp14_50_Avg,
                         "Inversely\nstratified", Strat)) %>%
   filter(!is.na(Strat)) %>%
