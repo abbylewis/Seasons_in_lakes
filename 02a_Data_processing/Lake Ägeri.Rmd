@@ -1,11 +1,9 @@
 ---
-title: "Template"
+title: "Lake Ägeri"
 author: "Abby Lewis"
 date: "2024-03-11"
 output: html_document
 ---
-
-# Lake Ägeri
 
 https://www.datalakes-eawag.ch/datadetail/1077
 

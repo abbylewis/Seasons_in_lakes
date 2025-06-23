@@ -1,0 +1,11 @@
+keyword	keywordThesaurus
+limnology	Cuahsi
+water quality	Cuahsi
+"""Lake, Reservoir, Impoundment"""	Cuahsi
+water temperature	LTER
+dissolved oxygen	LTER
+chlorophyll-a	LTER
+lakes	LTER
+seasonality	LTER
+air temperature	LTER
+solar radiation	LTER

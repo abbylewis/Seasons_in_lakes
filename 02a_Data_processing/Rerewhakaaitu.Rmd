@@ -1,11 +1,9 @@
 ---
-title: "Template"
+title: "Rerewhakaaitu"
 author: "Abby Lewis"
 date: "2024-03-11"
 output: html_document
 ---
-
-# Rerewhakaaitu
 
 For continuous data, the output format has three columns (with one year of data):
 
@@ -33,48 +31,38 @@ In-lake data (temperature, chlorophyll-a, stratification)
 
 ```{r}
 # Load data
-in_lake_raw <- read.csv("../01a_Raw_data/Rerewhakaaitu_buoy_wq.csv") %>%
-  mutate(day = as.Date(day) + offset,
-         doy = yday(day))
+in_lake_raw <- read_csv("https://pasta-s.lternet.edu/package/data/eml/edi/1312/2/f8e0e7b22826772424f156b9565d1498") %>%
+  filter(Lake == "Lake Rerewhakaaitu") %>%
+  mutate(day = as.Date(Date) + offset,
+         yday = yday(day))
 in_lake_data <- in_lake_raw %>%
-  rename(Value = avg_value,
-         Variable = variable,
-         yday = doy) %>%
   filter(year(day) == 2023,
          !is.na(yday)) 
 
 # Format continuous data
-in_lake_bottom <- in_lake_data %>%
-  filter(Variable == "DOconc") %>%
-  group_by(yday, Variable) %>%
-  summarize(Value = mean(Value[depth_rdn = which.max(depth_rnd)], na.rm = T)) %>%
-  select(Variable, Value, yday) %>%
-  mutate(Variable = "Bottom_DO",
-         Lake = LAKE)
-
-in_lake_surface <- in_lake_data %>%
-  filter(depth_rnd == 1) %>%
-  select(Variable, Value, yday) %>%
-  mutate(Variable = ifelse(Variable == "TmpWtr", "Surface_temperature", Variable),
-         Variable = ifelse(Variable == "FlChlr", "Surface_chla", Variable),
-         Variable = ifelse(Variable == "TurbRT", "Turbidity", Variable),
-         Variable = ifelse(Variable == "DOpsat", "Surface_DO", Variable)) %>%
-  mutate(Lake = LAKE)
-
-in_lake_formatted <- in_lake_surface %>%
-  full_join(in_lake_bottom)
+in_lake_formatted <- in_lake_data %>%
+  select(-Chla_ugL) %>%
+  pivot_longer(c("WaterTemperature_C", "DO_mgL", "Chla_fluorescence"),
+               values_to = "Value") %>%
+  mutate(Variable = paste(Layer, name),
+         Variable = case_match(Variable,
+                               "Surface WaterTemperature_C"~"Surface_temperature",
+                               "Surface DO_mgL"~"Surface_DO",
+                               "Bottom WaterTemperature_C"~"Bottom_temperature",
+                               "Bottom DO_mgL"~"Bottom_DO",
+                               "Surface Chla_fluorescence"~"Surface_chla")) %>%
+  filter(!is.na(Variable)) %>%
+  mutate(Lake = LAKE) %>%
+  select(Variable, Value, yday, Lake)
 
 write.csv(in_lake_formatted, "../01b_Processed_data/Rerewhakaaitu_continuous.csv", row.names = F)
 
 # Stratification metric calcs (both discrete and continuous)
 strat_export_cont <- in_lake_data %>%
-  filter(Variable == "TmpWtr") %>%
-  pivot_wider(names_from = depth_rnd, values_from = Value, names_prefix = "Temp_") %>%
+  select(yday, WaterTemperature_C, Layer) %>%
+  pivot_wider(names_from = Layer, values_from = WaterTemperature_C) %>%
   group_by(yday) %>%
-  summarize(Diff_Dens_surf_bot = water.density(Temp_12) - water.density(Temp_1),
-            Diff_Dens_surf_bot = ifelse(is.na(Diff_Dens_surf_bot),
-                                        water.density(Temp_11) - water.density(Temp_1),
-                                        Diff_Dens_surf_bot)) %>%
+  summarize(Diff_Dens_surf_bot = water.density(Bottom) - water.density(Surface)) %>%
   pivot_longer(-1, names_to = "Variable", values_to = "Value") %>%
   mutate(Lake = LAKE)
 
@@ -83,7 +71,7 @@ strat_export_discrete <- strat_export_cont %>%
   filter(!is.na(Value)) %>%
   ungroup() %>%
   filter(Strat != lag(Strat)) %>%
-  full_join(data.frame(Variable = "Diff_Dens_surf_9", yday = 1, Strat = "Mixed")) %>%
+  full_join(data.frame(Variable = "Diff_Dens_surf_bot", yday = 1, Strat = "Mixed")) %>%
   arrange(yday) %>%
   mutate(end = lead(yday, default = 365)) %>%
   rename(start = yday, Season = Strat) %>%
@@ -102,21 +90,19 @@ Meteorological data
 
 ```{r}
 # Load data
-met <- read.csv("../01a_Raw_data/Rerewhakaaitu_meteorology.csv")
+met <- read_csv("https://pasta-s.lternet.edu/package/data/eml/edi/1312/2/e312838eff13f56594021498f35c04cd")
 
 # Format continuous data
 met_formatted <- met %>%
-  mutate(Date = as.Date(DateTime) + offset,
-         doy = yday(Date))%>%
+  filter(Lake == "Lake Rerewhakaaitu") %>%
+  mutate(Date = as.Date(Date) + offset,
+         doy = yday(Date)) %>%
   filter(year(Date) == 2023) %>%
-  mutate(variable = ifelse(variable == "TmpAir", "AirTemp_C_Average", variable),
-         variable = ifelse(variable == "RadClr", "Shortwave", variable)) %>%
-  filter(variable %in% c("AirTemp_C_Average", "Shortwave")) %>%
-  rename(Variable = variable) %>%
-  group_by(Date, Variable) %>%
-  summarize(Value = mean(value, na.rm = T), .groups = "drop") %>%
+  rename(AirTemp_C_Average = AirTemp_C,
+         Shortwave = ShortwaveRadiationClear_Wm2) %>%
+  pivot_longer(c(AirTemp_C_Average, Shortwave), names_to = "Variable", values_to = "Value") %>%
   mutate(yday = yday(Date)) %>%
-  select(-Date) %>%
+  select(Variable, Value, yday) %>%
   mutate(Lake = LAKE)
 
 write.csv(met_formatted, "../01b_Processed_data/Rerewhakaaitu_met.csv", row.names = F)

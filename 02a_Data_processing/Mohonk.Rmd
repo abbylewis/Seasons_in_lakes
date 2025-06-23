@@ -1,11 +1,9 @@
 ---
-title: "Template"
+title: "Mohonk"
 author: "Abby Lewis"
 date: "2024-03-11"
 output: html_document
 ---
-
-# Mohonk
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)

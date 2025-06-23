@@ -1,0 +1,7 @@
+givenName	middleInitial	surName	organizationName	electronicMailAddress	userId	role	projectTitle	fundingAgency	fundingNumber
+Abigail	S. L.	Lewis	Smithsonian Environmental Research Center	abigail.sl.lewis@gmail.com	0000-0001-9933-4542	creator			
+Abigail	S. L.	Lewis	Smithsonian Environmental Research Center	abigail.sl.lewis@gmail.com	0000-0001-9933-4542	contact			
+Abigail	S. L.	Lewis	Smithsonian Environmental Research Center	abigail.sl.lewis@gmail.com	0000-0001-9933-4542	PI	Smithsonian Climate Change Fellowship	Smithsonian Institution	
+Rachel		Hovel	University of Maine-Farmington	rachel.hovel@maine.edu	0000-0002-3452-9485	creator			
+Whitney	M.	Woelmer	University of Waikato	wwoelmer@waikato.ac.nz	0000-0001-5147-3877	creator			
+									

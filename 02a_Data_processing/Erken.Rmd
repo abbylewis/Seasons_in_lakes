@@ -1,11 +1,9 @@
 ---
-title: "Template"
+title: "Erken"
 author: "Abby Lewis"
 date: "2024-03-11"
 output: html_document
 ---
-
-# Erken
 
 https://meta.fieldsites.se/objects/55l-RxzRQE4YQt7IRY6zN1pa
 https://www.hydroshare.org/resource/2dead0d54fe74ee7943e89ae4159aab1/ 

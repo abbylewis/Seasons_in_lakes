@@ -5,8 +5,6 @@ date: "2024-03-11"
 output: html_document
 ---
 
-# Lake Arendsee
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)

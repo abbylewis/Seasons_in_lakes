@@ -1,11 +1,9 @@
 ---
-title: "Template"
+title: "Sunapee"
 author: "Abby Lewis"
 date: "2024-03-11"
 output: html_document
 ---
-
-# Sunapee
 
 Data on EDI here:
 https://portal.edirepository.org/nis/metadataviewer?packageid=edi.234.5

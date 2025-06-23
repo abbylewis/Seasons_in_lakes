@@ -1,0 +1,5 @@
+attributeName	attributeDefinition	class	unit	dateTimeFormatString	missingValueCode	missingValueCodeExplanation
+Lake	Lake name	categorical				
+Date	Measurement date	Date		YYYY-MM-DD		
+AirTemp_C	Air temperature	numeric	celsius		NA	no measurement
+ShortwaveRadiationClear_Wm2	Clear-sky shortwave radiation	numeric	wattPerMeterSquared		NA	no measurement

@@ -5,8 +5,6 @@ date: "2024-03-11"
 output: html_document
 ---
 
-# Midway Pond
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
@@ -21,37 +19,20 @@ In-lake data (temperature, chlorophyll-a, stratification)
 
 ```{r}
 # Load data
-in_lake_data_temp <- read.csv("../01a_Raw_data/MidwayTempAll.csv") %>%
-  mutate(Date = as.Date(`Date.Time..EST.EDT.`, format = "%m/%d/%Y %H:%M:%S")) %>%
-  select(-`Date.Time..EST.EDT.`) %>%
-  pivot_longer(cols = -Date, names_to = "Depth_m", values_to = "Temp_C") %>%
-  mutate(Depth_m = as.numeric(str_extract(Depth_m, "[0-9]+"))) %>%
-  group_by(Date, Depth_m) %>%
-  summarise(Temp_C = mean(Temp_C, na.rm = T))
-
-in_lake_data_surf <- read.csv("../01a_Raw_data/Midway_chl_dom_all.csv") %>%
-  mutate(Date = as.Date(date, format = "%Y-%m-%d %H:%M:%S")) %>%
-  select(-date, -unixT) %>%
-  group_by(Date) %>%
-  summarize(across(everything(), \(x) mean(x, na.rm = TRUE)))
-
-in_lake_data_do <- read.csv("../01a_Raw_data/Midway_DO_all.csv") %>%
-  mutate(Date = as.Date(date, format = "%Y-%m-%d %H:%M:%S")) %>%
-  select(-date, -unixT) %>%
-  group_by(Date) %>%
-  summarize(across(everything(), \(x) mean(x, na.rm = TRUE)))
-
-# Format continuous data
-in_lake_formatted <- in_lake_data_surf %>%
-  full_join(in_lake_data_do) %>%
-  mutate(Date = Date + offset) %>%
+in_lake_formatted <- read_csv("https://pasta-s.lternet.edu/package/data/eml/edi/1312/2/f8e0e7b22826772424f156b9565d1498") %>%
+  filter(Lake == "Midway Pond") %>%
+  mutate(Date = as.Date(Date) + offset) %>%
   filter(year(Date) == 2023) %>%
-  rename(Surface_temperature = surfT_C,
-         Surface_chla = CHL_ppb,
-         Surface_DO = surfDO_mgL,
-         Bottom_DO = benthDO_mgL) %>%
+  select(-Chla_fluorescence) %>%
+  pivot_wider(names_from = Layer, values_from = c(WaterTemperature_C, DO_mgL, Chla_ugL)) %>%
+  rename(Surface_temperature = WaterTemperature_C_Surface,
+         Bottom_temperature = WaterTemperature_C_Bottom,
+         Surface_chla = Chla_ugL_Surface,
+         Surface_DO = DO_mgL_Surface,
+         Bottom_DO = DO_mgL_Bottom) %>%
   mutate(yday = yday(Date)) %>%
-  pivot_longer(cols = c(Surface_temperature, Surface_chla, Bottom_DO, Surface_DO), 
+  pivot_longer(cols = c(Surface_temperature, Surface_chla, Bottom_DO, 
+                        Surface_DO, Bottom_temperature), 
                names_to = "Variable", values_to = "Value") %>%
   select(yday, Variable, Value) %>%
   mutate(Lake = LAKE)
@@ -59,14 +40,12 @@ in_lake_formatted <- in_lake_data_surf %>%
 write.csv(in_lake_formatted, "../01b_Processed_data/Midway_continuous.csv", row.names = F)
 
 # Stratification metric calcs (both discrete and continuous)
-strat_sum <- in_lake_data_do %>%
-  mutate(Date = Date + offset,
-         Year = year(Date)) %>%
-  filter(Year == 2023) %>%
-  mutate(yday = yday(Date)) %>%
-  mutate(Diff_Dens_surf_bot = water.density(benthT_C) - 
-           water.density(surfT_C),
-         Inverse = ifelse(benthT_C > surfT_C,
+strat_sum <- in_lake_data %>%
+  filter(Variable %in% c("Surface_temperature", "Bottom_temperature")) %>%
+  pivot_wider(names_from = "Variable", values_from = "Value") %>%
+  mutate(Diff_Dens_surf_bot = water.density(Bottom_temperature) - 
+           water.density(Surface_temperature),
+         Inverse = ifelse(Bottom_temperature > Surface_temperature,
                           T, F))
 
 strat_export_discrete <- strat_sum %>%
@@ -99,18 +78,19 @@ Meteorological data
 
 ```{r}
 # Load data
-met <- read.csv("../01a_Raw_data/Midway_AirTemp.csv")
+met <- read_csv("https://pasta-s.lternet.edu/package/data/eml/edi/1312/2/e312838eff13f56594021498f35c04cd")
 
 # Format continuous data
 met_formatted <- met %>%
-  mutate(DATE = as.Date(DATE, format = "%m/%d/%y") + days(offset),
-         Lake = LAKE,
-         Variable = "AirTemp_C_Average",
-         yday = yday(DATE),
-         Year = year(DATE)) %>%
-  filter(Year == 2023) %>%
-  rename(Value = TOBS_C) %>%
-  select(yday, Variable, Value, Lake)
+  filter(Lake == "Midway Pond") %>%
+  mutate(Date = as.Date(Date) + offset,
+         doy = yday(Date)) %>%
+  filter(year(Date) == 2023) %>%
+  rename(AirTemp_C_Average = AirTemp_C) %>%
+  pivot_longer(c(AirTemp_C_Average), names_to = "Variable", values_to = "Value") %>%
+  mutate(yday = yday(Date)) %>%
+  select(yday, Variable, Value) %>%
+  mutate(Lake = LAKE)
   
 
 write.csv(met_formatted, "../01b_Processed_data/Midway_met.csv", row.names = F)
