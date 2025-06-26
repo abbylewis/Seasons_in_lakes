@@ -1,0 +1,8 @@
+attributeName	attributeDefinition	class	unit	dateTimeFormatString	missingValueCode	missingValueCodeExplanation
+Lake	Lake name	categorical				
+Date	Sample date	Date		YYYY-MM-DD		
+Depth_m	Depth of measurement	numeric	meter			
+WaterTemperature_C	Water temperature	numeric	celsius		NA	no measurement
+DO_mgL	Dissolved oxygen concentration	numeric	milligramsPerLiter		NA	no measurement
+Chla_ugL	Chlorophyll-a concentration	numeric	microgramsPerLiter		NA	no measurement
+Chla_RFU	Chlorophyll-a concentration	numeric	dimensionless		NA	no measurement

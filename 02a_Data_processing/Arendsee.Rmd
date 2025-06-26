@@ -12,7 +12,8 @@ library(lubridate)
 library(rLakeAnalyzer)
 
 #Offset so all yday values are from the winter solstice
-offset = as.Date("2020-01-01") - as.Date("2019-12-21")
+solstice <- as.Date("2019-12-21")
+offset = as.Date("2020-01-01") - solstice
 LAKE = "Arendsee (2020)"
 ```
 
@@ -20,57 +21,44 @@ In-lake data (temperature, chlorophyll-a, stratification)
 
 ```{r}
 # Load data
-in_lake_data_chla <- read.csv("../01a_Raw_data/Arendsee_Profiler_ChlA.csv") %>%
-  mutate(var = "Chla_ugL")
-in_lake_data_do <- read.csv("../01a_Raw_data/AS_DO_chain.dat") %>%
-  mutate(var = "DO_mgL")
-in_lake_data_temp <- read.csv("../01a_Raw_data/Arendsee_Profiler_T.csv") %>%
-  mutate(var = "Temp_C")
+in_lake_data <- read_csv("https://pasta-s.lternet.edu/package/data/eml/edi/1312/7/f8e0e7b22826772424f156b9565d1498") %>%
+  filter(Lake == "Arendsee") %>%
+  mutate(day = as.Date(Date) + offset,
+         yday = yday(day)) %>%
+  filter(year(day) == 2020,
+         !is.na(yday))
 
 # Format continuous data
-in_lake_formatted <- in_lake_data_chla %>%
-  full_join(in_lake_data_do) %>%
-  full_join(in_lake_data_temp) %>%
-  pivot_longer(cols = X1:X47, 
-               names_to = "Depth_m", values_to = "Value") %>%
-  mutate(Depth_m = as.numeric(str_extract(Depth_m, "[0-9]+")),
-         Date = as.Date(time) + offset,
-         Year = year(Date)) %>%
-  filter(Year == 2020,
-         Depth_m %in% c(1,47)) %>%
-  pivot_wider(names_from = c(var, Depth_m), values_from = Value) %>%
-  group_by(Date) %>%
-  summarize(Surface_temperature = mean(Temp_C_1, na.rm = T),
-            Surface_chla = mean(Chla_ugL_1, na.rm = T),
-            Surface_DO = mean(DO_mgL_1, na.rm = T),
-            Bottom_DO = mean(DO_mgL_47, na.rm = T)) %>%
-  mutate(yday = yday(Date)) %>%
-  pivot_longer(cols = c(Surface_temperature, Surface_chla, Bottom_DO, Surface_DO), 
-               names_to = "Variable", values_to = "Value") %>%
-  select(yday, Variable, Value) %>%
-  mutate(Lake = LAKE)
+in_lake_formatted <- in_lake_data %>%
+  select(-c(Chla_RFU, Ice_binary)) %>%
+  pivot_longer(c("WaterTemperature_C", "DO_mgL", "Chla_ugL"),
+               values_to = "Value") %>%
+  group_by(name, Date) %>%
+  mutate(Layer = case_when(Depth_m == 1~"Surface",
+                           Depth_m == 47~"Bottom")) %>%
+  filter(!is.na(Layer)) %>%
+  ungroup() %>%
+  mutate(Variable = paste(Layer, name),
+         Variable = case_match(Variable,
+                               "Surface WaterTemperature_C"~"Surface_temperature",
+                               "Surface DO_mgL"~"Surface_DO",
+                               "Bottom WaterTemperature_C"~"Bottom_temperature",
+                               "Bottom DO_mgL"~"Bottom_DO",
+                               "Surface Chla_ugL"~"Surface_chla")) %>%
+  filter(!is.na(Variable)) %>%
+  mutate(Lake = LAKE) %>%
+  select(Variable, Value, yday, Lake)
 
 write.csv(in_lake_formatted, "../01b_Processed_data/Arendsee_continuous.csv", row.names = F)
 
 # Stratification metric calcs (both discrete and continuous)
-strat_sum <- in_lake_data_temp %>%
-  pivot_longer(cols = X1:X47, 
-               names_to = "Depth_m", values_to = "Value") %>%
-  mutate(Depth_m = as.numeric(str_extract(Depth_m, "[0-9]+")),
-         Date = as.Date(time) + offset,
-         Year = year(Date)) %>%
-  filter(Year == 2020,
-         Depth_m %in% c(1,47)) %>%
-  pivot_wider(names_from = c(var, Depth_m), values_from = Value) %>%
-  mutate(yday = yday(Date)) %>%
-  group_by(yday) %>%
-  summarize(Surface_temperature = mean(Temp_C_1, na.rm = T),
-            Bottom_temperature = mean(Temp_C_47, na.rm = T),
-            Diff_Dens_surf_bot = water.density(Bottom_temperature) - 
-              water.density(Surface_temperature),
-            Inverse = ifelse(Bottom_temperature > Surface_temperature,
-                             T, F))
-nrow(strat_sum)
+strat_sum <- in_lake_formatted %>%
+  filter(Variable %in% c("Surface_temperature", "Bottom_temperature")) %>%
+  pivot_wider(names_from = "Variable", values_from = "Value") %>%
+  mutate(Diff_Dens_surf_bot = water.density(Bottom_temperature) - 
+           water.density(Surface_temperature),
+         Inverse = ifelse(Bottom_temperature > Surface_temperature,
+                          T, F))
 
 strat_export_discrete <- strat_sum %>%
   mutate(Strat = ifelse(Diff_Dens_surf_bot > 0.1, "Stratified", "Mixed"),
@@ -78,7 +66,7 @@ strat_export_discrete <- strat_sum %>%
   filter(!is.na(Strat)) %>%
   ungroup() %>%
   filter(Strat != lag(Strat)) %>%
-  full_join(data.frame(Variable = "Diff_Dens_surf_9", yday = 1, Strat = "Mixed")) %>%
+  full_join(data.frame(Variable = "Diff_Dens_surf_bot", yday = 1, Strat = "Mixed")) %>%
   arrange(yday) %>%
   mutate(end = lead(yday, default = 365)) %>%
   rename(start = yday, Season = Strat) %>%
@@ -102,23 +90,20 @@ Meteorological data
 
 ```{r}
 # Load data
-met <- read.csv("../01a_Raw_data/Arendsee_Met.csv")
+met <- read_csv("https://pasta-s.lternet.edu/package/data/eml/edi/1312/7/e312838eff13f56594021498f35c04cd")
 
 # Format continuous data
 met_formatted <- met %>%
-  mutate(Date = as.Date(time) + offset,
-         Year = year(Date)) %>%
-  filter(Year == 2020) %>%
-  group_by(Date) %>%
-  summarize(AirTemp_C_Average = mean(AirT...C., na.rm = T),
-            Shortwave = mean(Solar..W.m2., na.rm = T)) %>%
+  filter(Lake == "Arendsee") %>%
+  mutate(Date = as.Date(Date) + offset,
+         doy = yday(Date)) %>%
+  filter(year(Date) == 2020) %>%
+  rename(AirTemp_C_Average = AirTemp_C,
+         Shortwave = ShortwaveRadiation_Wm2) %>%
+  pivot_longer(c(AirTemp_C_Average, Shortwave), names_to = "Variable", values_to = "Value") %>%
   mutate(yday = yday(Date)) %>%
-  pivot_longer(cols = c(AirTemp_C_Average,
-                        Shortwave), 
-               names_to = "Variable", values_to = "Value")  %>%
-  mutate(Lake = LAKE) %>%
-  select(-Date)
-nrow(met_formatted)
+  select(Variable, Value, yday) %>%
+  mutate(Lake = LAKE)
 
 write.csv(met_formatted, "../01b_Processed_data/Arendsee_met.csv", row.names = F)
 ```
@@ -127,11 +112,34 @@ Ice data
 
 ```{r}
 #Load data
-ice <- data.frame(Lake = c(LAKE),
-                  Season = c("Open water"),
-                  Method = c("Ice"),
-                  start = c(0),
-                  end = c(365))
+ice <- read.csv("https://pasta-s.lternet.edu/package/data/eml/edi/1312/7/f8e0e7b22826772424f156b9565d1498") 
 
-write.csv(ice, "../01b_Processed_data/Arendsee_ice.csv", row.names = F)
+ice_formatted <- ice %>%
+  filter(Lake == "Arendsee",
+         !is.na(Ice_binary)) %>%
+  group_by(Lake, Date) %>%
+  summarize(Ice_binary = ifelse(sum(Ice_binary) >= 1, 1, 0)) %>%
+  group_by(Lake) %>%
+  arrange(Lake, Date) %>%
+  mutate(start = ifelse(Date == first(Date) |
+                          !Ice_binary == lag(Ice_binary),
+                        Date, NA),
+         ) %>%
+  filter(!is.na(start) | Date == last(Date)) %>%
+  mutate(end = lead(Date),
+         start = as.numeric(difftime(as.Date(start), 
+                                     as.Date(first(Date)), 
+                                     units="days")),
+         end = as.numeric(difftime(as.Date(end), 
+                                   as.Date(first(Date)), 
+                                   units="days")),
+         Season = case_match(Ice_binary,
+                             1~"Ice",
+                             0~"Open water"), 
+         Method = "Ice",
+         Lake = LAKE) %>%
+  filter(!is.na(start)) %>%
+  select(Lake, Season, Method, start, end)
+
+write.csv(ice_formatted, "../01b_Processed_data/Arendsee_ice.csv", row.names = F)
 ```

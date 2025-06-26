@@ -1,3 +1,3 @@
-"Lake","Season","Method","start","end"
-"Lake Sunapee (2008)","Ice","Ice",0,126
-"Lake Sunapee (2008)","Open water","Ice",126,365
+"Lake","Season","Method","start","end","Solstice"
+"Lake Sunapee (2008)","Ice","Ice",0,126,2007-12-21
+"Lake Sunapee (2008)","Open water","Ice",126,365,2007-12-21

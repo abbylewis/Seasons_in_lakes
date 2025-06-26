@@ -1,8 +1,8 @@
-"start","end","Season","Lake","Method"
-21,23,"Ice","Beaverdam Reservoir (2021)","Ice"
-41,42,"Ice","Beaverdam Reservoir (2021)","Ice"
-55,58,"Ice","Beaverdam Reservoir (2021)","Ice"
-0,21,"Open water","Beaverdam Reservoir (2021)","Ice"
-23,41,"Open water","Beaverdam Reservoir (2021)","Ice"
-42,55,"Open water","Beaverdam Reservoir (2021)","Ice"
-58,365,"Open water","Beaverdam Reservoir (2021)","Ice"
+"start","end","Season","Lake","Method","Solstice"
+21,23,"Ice","Beaverdam Reservoir (2021)","Ice",2020-12-21
+41,42,"Ice","Beaverdam Reservoir (2021)","Ice",2020-12-21
+55,58,"Ice","Beaverdam Reservoir (2021)","Ice",2020-12-21
+0,21,"Open water","Beaverdam Reservoir (2021)","Ice",2020-12-21
+23,41,"Open water","Beaverdam Reservoir (2021)","Ice",2020-12-21
+42,55,"Open water","Beaverdam Reservoir (2021)","Ice",2020-12-21
+58,365,"Open water","Beaverdam Reservoir (2021)","Ice",2020-12-21

@@ -11,7 +11,8 @@ library(tidyverse)
 library(rLakeAnalyzer)
 
 #Offset so all yday values are from the winter solstice
-offset = as.Date("2017-01-01") - as.Date("2016-12-21")
+solstice <- as.Date("2016-12-21")
+offset = as.Date("2017-01-01") - solstice
 LAKE = "Mohonk Lake (2017)"
 ```
 
@@ -75,14 +76,35 @@ write.csv(strat_export_cont,
 Ice data
 
 ```{r}
-in_lake_data
+#Load data
+ice <- read.csv("https://pasta-s.lternet.edu/package/data/eml/edi/1312/6/f8e0e7b22826772424f156b9565d1498") 
 
-#Manual to deal with NAs
-ice <- data.frame(Lake = c(LAKE, LAKE),
-                  Season = c("Ice","Open water"),
-                  Method = c("Ice","Ice"),
-                  start = c(0, 109),
-                  end = c(108, 365))
+ice_formatted <- ice %>%
+  filter(Lake == "Mohonk Lake",
+         !is.na(Ice_binary)) %>%
+  group_by(Lake, Date) %>%
+  summarize(Ice_binary = ifelse(sum(Ice_binary) >= 1, 1, 0)) %>%
+  group_by(Lake) %>%
+  arrange(Lake, Date) %>%
+  mutate(start = ifelse(Date == first(Date) |
+                          !Ice_binary == lag(Ice_binary),
+                        Date, NA),
+         ) %>%
+  filter(!is.na(start) | Date == last(Date)) %>%
+  mutate(end = lead(Date),
+         start = as.numeric(difftime(as.Date(start), 
+                                     as.Date(first(Date)), 
+                                     units="days")),
+         end = as.numeric(difftime(as.Date(end), 
+                                   as.Date(first(Date)), 
+                                   units="days")),
+         Season = case_match(Ice_binary,
+                             1~"Ice",
+                             0~"Open water"), 
+         Method = "Ice",
+         Lake = LAKE) %>%
+  filter(!is.na(start)) %>%
+  select(Lake, Season, Method, start, end)
 
-write.csv(ice, "../01b_Processed_data/Mohonk_ice.csv", row.names = F)
+write.csv(ice_formatted, "../01b_Processed_data/Mohonk_ice.csv", row.names = F)
 ```

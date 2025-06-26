@@ -1,0 +1,337 @@
+---
+title: "Midway Pond"
+author: "Abby Lewis"
+date: "2024-03-11"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(rLakeAnalyzer)
+```
+
+# Midway Pond
+
+```{r}
+LAKE = "Midway Pond"
+
+# Load data
+in_lake_data_surf <- read.csv("../01a_Raw_data/Midway_chl_dom_all.csv") %>%
+  mutate(Date = as.Date(date, format = "%Y-%m-%d %H:%M:%S")) %>%
+  select(-date, -unixT) %>%
+  group_by(Date) %>%
+  summarize(across(everything(), \(x) mean(x, na.rm = TRUE)))
+
+in_lake_data_do <- read.csv("../01a_Raw_data/Midway_DO_all.csv") %>%
+  mutate(Date = as.Date(date, format = "%Y-%m-%d %H:%M:%S")) %>%
+  select(-date, -unixT) %>%
+  group_by(Date) %>%
+  summarize(across(everything(), \(x) mean(x, na.rm = TRUE)))
+
+# Format continuous data
+in_lake_formatted_mid <- in_lake_data_surf %>%
+  full_join(in_lake_data_do) %>%
+  filter(!is.na(Date)) %>%
+  select(Date, surfT_C, CHL_ppb, surfDO_mgL, benthDO_mgL, benthT_C) %>%
+  rename(WaterTemperature_C = surfT_C,
+         Chla_ugL = CHL_ppb,
+         DO_mgL = surfDO_mgL,
+         DO_mgL_bot = benthDO_mgL,
+         WaterTemperature_C_bot = benthT_C) %>%
+  pivot_longer(cols = c(WaterTemperature_C, Chla_ugL, DO_mgL, 
+                        DO_mgL_bot, WaterTemperature_C_bot), 
+               names_to = "Variable", values_to = "Value") %>%
+  mutate(Lake = LAKE,
+         Depth_m = ifelse(grepl("_bot", Variable),
+                        8.5,
+                        1),
+         Variable = sub("_bot", "", Variable)) %>%
+  pivot_wider(names_from = Variable, values_from = Value)
+
+# Add met data
+met <- read.csv("../01a_Raw_data/Midway_AirTemp.csv")
+
+met_formatted_mid <- met %>%
+  mutate(Date = as.Date(DATE, format = "%m/%d/%y"),
+         Lake = LAKE) %>%
+  rename(AirTemp_C = TOBS_C) %>%
+  select(Date, AirTemp_C, Lake)
+
+#Ice
+solstice <- as.Date("2022-12-21")
+ice_mi <- data.frame(Lake = c(LAKE, LAKE, LAKE),
+                  Season = c("Ice","Open water", "Ice"),
+                  Method = c("Ice","Ice", "Ice"),
+                  start = c(0, 
+                            yday(as.Date("2023-04-30") + offset), 
+                            yday(as.Date("2023-11-14") + offset)),
+                  end = c(yday(as.Date("2023-04-30") + offset),
+                          yday(as.Date("2023-11-14") + offset), 
+                          365),
+                  Solstice = solstice)
+```
+
+# Rerewhakaaitu
+
+```{r}
+LAKE = "Lake Rerewhakaaitu" 
+
+# Load data
+in_lake_raw <- read.csv("../01a_Raw_data/Rerewhakaaitu_buoy_wq.csv") %>%
+  mutate(Date = as.Date(day))
+
+# Format continuous data
+in_lake_formatted_rere <- in_lake_raw %>%
+  rename(Value = avg_value,
+         Variable = variable,
+         Depth_m = depth_rnd) %>%
+  filter(Variable %in% c("DOconc", "TmpWtr", "FlChlr")) %>%
+  mutate(Variable = case_match(Variable,
+                               "TmpWtr"~"WaterTemperature_C", 
+                               "FlChlr"~"Chla_RFU",
+                               "DOconc"~"DO_mgL")) %>%
+  group_by(Date, Variable, Depth_m) %>%
+  summarize(Value = mean(Value, na.rm = T)) %>%
+  pivot_wider(names_from = Variable, values_from = Value) %>%
+  mutate(Lake = LAKE)
+
+# Load data
+met <- read.csv("../01a_Raw_data/Rerewhakaaitu_meteorology.csv")
+
+# Format continuous data
+met_formatted_rere <- met %>%
+  mutate(Date = as.Date(DateTime))%>%
+  mutate(variable = ifelse(variable == "TmpAir", "AirTemp_C", variable),
+         variable = ifelse(variable == "RadClr", "ShortwaveRadiationClear_Wm2", variable)) %>%
+  filter(variable %in% c("AirTemp_C", "ShortwaveRadiationClear_Wm2")) %>%
+  group_by(Date, variable) %>%
+  summarize(value = mean(value, na.rm = T), .groups = "drop") %>%
+  pivot_wider(names_from = variable, values_from = value) %>%
+  mutate(Lake = LAKE)
+
+#No ice
+solstice <- as.Date("2022-06-21")
+ice_re <- data.frame(Lake = LAKE,
+                  Season = "Open water",
+                  Method = "Ice",
+                  start = 0,
+                  end = 365) %>%
+  mutate(Solstice = solstice)
+```
+
+# Mohonk
+
+```{r}
+LAKE = "Mohonk Lake"
+
+all_data <- read.csv("../01a_Raw_data/Mohonk2017-Seasons-PhysicalData.csv") %>%
+  mutate(Date = as.Date(DateTime)) %>%
+  group_by(Date) %>%
+  summarize(across(where(is.numeric), ~mean(., na.rm = T)))
+
+# Format continuous data
+in_lake_formatted_mo <- all_data %>%
+  select(-c(AirTemp_2m_degC, solar_insolation_avg_Wpm2, Ice)) %>%
+  pivot_longer(cols = contains("Temp_"), values_to = "WaterTemperature_C") %>%
+  mutate(Depth_m = as.numeric(str_extract(name, "[0-9]+"))) %>%
+  select(-name) %>%
+  mutate(Lake = LAKE)
+
+met_formatted_mo <- all_data %>%
+  select(c(AirTemp_2m_degC, solar_insolation_avg_Wpm2, Date)) %>%
+  rename(AirTemp_C = AirTemp_2m_degC,
+         ShortwaveRadiation_Wm2 = solar_insolation_avg_Wpm2) %>%
+  mutate(Lake = LAKE)
+
+#Ice
+solstice <- as.Date("2016-12-21")
+ice_mo <- data.frame(Lake = c(LAKE, LAKE),
+                  Season = c("Ice","Open water"),
+                  Method = c("Ice","Ice"),
+                  start = c(0, 109),
+                  end = c(108, 365)) %>%
+  mutate(Solstice = solstice)
+```
+
+# Erken
+
+```{r}
+LAKE = "Lake Erken"
+
+# Load data
+temp <- read.csv("../01a_Raw_data/2017-2018_ErkenWaterTempProfile.dat", skip = 1)
+do <- read.table("../01a_Raw_data/2018_Erken_ODO_mg_l.dat", skip = 4)
+do_depths <- seq(1, 17.5, by = 0.5)
+colnames(do) <- c("Date", "Time", paste0("DO_", do_depths))
+chla <- read.table("../01a_Raw_data/2018_Erken_Chl.dat", skip = 4)
+colnames(chla) <- c("Date", "Time", paste0("Chla_", do_depths))
+#2017 data also available (may to sep)
+
+# Format continuous data
+do_format <- do %>%
+  mutate(Date = as.Date(Date)) %>%
+  select(c(Date, contains("DO_"))) %>%
+  pivot_longer(-Date, values_to = "DO_mgL") %>%
+  mutate(Depth_m = sub("DO_", "", name),
+         Depth_m = as.numeric(Depth_m)) %>%
+  group_by(Date, Depth_m) %>%
+  summarise(DO_mgL = mean(DO_mgL, na.rm = T)) 
+
+temp_format <- temp %>%
+  mutate(Date = as.Date(TMSTAMP)) %>%
+  select(c(Date, contains("WTemp"))) %>%
+  pivot_longer(-Date, values_to = "WaterTemperature_C") %>%
+  mutate(Depth_m = str_extract(name, "[0-9]_[0-9]+"),
+         Depth_m = as.numeric(sub("_", ".", Depth_m))) %>%
+  group_by(Date, Depth_m) %>%
+  summarise(WaterTemperature_C = mean(WaterTemperature_C, na.rm = T)) 
+
+chla_format <- chla %>%
+  mutate(Date = as.Date(Date)) %>%
+  select(c(Date, contains("Chla_"))) %>%
+  pivot_longer(-Date, values_to = "Chla_ugL") %>%
+  mutate(Depth_m = sub("Chla_", "", name),
+         Depth_m = as.numeric(Depth_m)) %>%
+  group_by(Date, Depth_m) %>%
+  summarise(Chla_ugL = mean(Chla_ugL, na.rm = T)) 
+  
+in_lake_formatted_erk <- temp_format %>%
+  full_join(do_format) %>%
+  full_join(chla_format) %>%
+  mutate(Lake = LAKE)
+
+#Load met
+met <- read.csv("../01a_Raw_data/ErkenMalmaIslanMetData_2015-2018.csv", skip = 3)
+
+# Format continuous data
+met_formatted_erk <- met %>%
+  mutate(Date = as.Date(TMSTAMP)) %>%
+  group_by(Date) %>%
+  summarize(AirTemp_C = mean(Air_Temp_AS_Avg, na.rm = T),
+            ShortwaveRadiation_Wm2 = mean(SW_Rad_Avg, na.rm = T)) %>%
+  mutate(Lake = LAKE)
+
+#Ice
+#Load data
+ice <- read.csv("../01a_Raw_data/SITES_ICE_ERK_MAI_1941-2022_L2_annual.csv", skip = 27)
+solstice <- as.Date("2017-12-21")
+
+inspect <- ice %>%
+  mutate(TIME_ICE_ON = as.Date(TIME_ICE_ON) + offset,
+         TIME_ICE_OFF = as.Date(TIME_ICE_OFF) + offset, 
+         start = yday(TIME_ICE_ON),
+         end = yday(TIME_ICE_OFF)) %>%
+  filter(TIMESTAMP %in% c(2018))
+
+ice_er <- data.frame(start = c(0, inspect$start, inspect$end),
+                           end = c(inspect$start, inspect$end, 365),
+                           Season = c("Open water", "Ice", "Open water")) %>%
+  mutate(Lake = LAKE,
+         Solstice = solstice,
+         Method = "Ice") 
+```
+
+# Arendsee
+
+```{r}
+LAKE = "Arendsee"
+
+# Load data
+in_lake_data_chla <- read.csv("../01a_Raw_data/Arendsee_Profiler_ChlA.csv") %>%
+  mutate(var = "Chla_ugL")
+in_lake_data_do <- read.csv("../01a_Raw_data/AS_DO_chain.dat") %>%
+  mutate(var = "DO_mgL")
+in_lake_data_temp <- read.csv("../01a_Raw_data/Arendsee_Profiler_T.csv") %>%
+  mutate(var = "Temp_C")
+
+# Format continuous data
+in_lake_formatted_ar <- in_lake_data_chla %>%
+  full_join(in_lake_data_do) %>%
+  full_join(in_lake_data_temp) %>%
+  pivot_longer(cols = X1:X47, 
+               names_to = "Depth_m", values_to = "Value") %>%
+  mutate(Depth_m = as.numeric(str_extract(Depth_m, "[0-9]+")),
+         Date = as.Date(time)) %>%
+  pivot_wider(names_from = c(var), values_from = Value) %>%
+  group_by(Date, Depth_m) %>%
+  summarize(WaterTemperature_C = mean(Temp_C, na.rm = T),
+            Chla_ugL = mean(Chla_ugL, na.rm = T),
+            DO_mgL = mean(DO_mgL, na.rm = T)) %>%
+  mutate(Lake = LAKE)
+
+# Load data
+met <- read.csv("../01a_Raw_data/Arendsee_Met.csv")
+
+# Format continuous data
+met_formatted_ar <- met %>%
+  mutate(Date = as.Date(time)) %>%
+  group_by(Date) %>%
+  summarize(AirTemp_C = mean(AirT...C., na.rm = T),
+            ShortwaveRadiation_Wm2 = mean(Solar..W.m2., na.rm = T)) %>%
+  mutate(Lake = LAKE)
+
+#Ice
+solstice <- as.Date("2019-12-21")
+ice_ar <- data.frame(Lake = c(LAKE),
+                  Season = c("Open water"),
+                  Method = c("Ice"),
+                  start = c(0),
+                  end = c(365)) %>%
+  mutate(Solstice = solstice)
+```
+
+# Combine
+
+```{r}
+#Met
+met_all <- met_formatted_mid %>%
+  bind_rows(met_formatted_rere) %>%
+  bind_rows(met_formatted_mo) %>%
+  bind_rows(met_formatted_erk) %>%
+  bind_rows(met_formatted_ar) %>%
+  select(Lake, Date, 
+         AirTemp_C, ShortwaveRadiation_Wm2, ShortwaveRadiationClear_Wm2) %>%
+  mutate(across(-Date, ~ifelse(is.nan(.x), NA, .x)))
+
+write_excel_csv(met_all, "Met_all.csv")
+
+#Ice
+ice_all <- ice_mi %>%
+  bind_rows(ice_re) %>%
+  bind_rows(ice_mo) %>%
+  bind_rows(ice_er) %>%
+  bind_rows(ice_ar)
+
+format_ice <- function(start, end, Season, Lake, solstice){
+  out <- data.frame(Date = as.Date(solstice + start):as.Date(solstice + end),
+             Ice = ifelse(Season == "Open water", 0, 1),
+             Lake = Lake) %>%
+    mutate(Date = as.Date(Date))
+  
+  return(out)
+}
+
+ice_edi <- ice_all %>%
+  mutate(row = row_number()) %>%
+  group_by(row) %>%
+  reframe(format_ice(start, end, Season, Lake, Solstice)) %>%
+  group_by(Date, Lake) %>%
+  summarize(Ice_binary = ifelse(sum(Ice) >= 1, 1, 0))
+
+#In lake
+in_lake_all <- in_lake_formatted_mid %>%
+  bind_rows(in_lake_formatted_rere) %>%
+  bind_rows(in_lake_formatted_mo) %>%
+  bind_rows(in_lake_formatted_erk) %>%
+  bind_rows(in_lake_formatted_ar) %>%
+  select(Lake, Date, Depth_m, WaterTemperature_C, DO_mgL, Chla_ugL, Chla_RFU) %>%
+  full_join(ice_edi) %>%
+  mutate(across(-Date, ~ifelse(is.nan(.x), NA, .x)))
+
+write_excel_csv(in_lake_all, "Lake_data_allLakes.csv")
+
+min(c(in_lake_all$Date, met_all$Date))
+max(c(in_lake_all$Date, met_all$Date))
+```
+

@@ -10,7 +10,8 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(rLakeAnalyzer)
 
-offset = as.Date("2021-01-01") - as.Date("2020-12-21")
+solstice <- as.Date("2020-12-21")
+offset = as.Date("2021-01-01") - solstice
 LAKE = "Beaverdam Reservoir (2021)" 
 ```
 
@@ -152,7 +153,8 @@ ice_format3 <- ice_format %>%
          Method = "Ice")
 
 ice_format_export = ice_format2 %>%
-  full_join(ice_format3)
+  full_join(ice_format3) %>%
+  mutate(Solstice = solstice)
 
 write.csv(ice_format_export, "../01b_Processed_data/BVR_ice.csv", row.names = F)
 ```

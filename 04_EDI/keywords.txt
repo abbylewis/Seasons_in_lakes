@@ -9,3 +9,4 @@ lakes	LTER
 seasonality	LTER
 air temperature	LTER
 solar radiation	LTER
+ice	LTER

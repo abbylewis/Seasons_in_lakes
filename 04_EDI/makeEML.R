@@ -102,10 +102,10 @@ make_eml(
   path = ".",
   data.path = ".",
   eml.path = ".",
-  dataset.title = "Seasonality of in-lake and meteorological data from Midway Pond (USA) and Lake Rerewhakaaitu (NZ), including daily measurements of water temperature, chlorophyll-a, dissolved oxygen, air temperature, and solar radiation",
+  dataset.title = "Seasonality of in-lake and meteorological data from six lakes, including daily measurements of water temperature, chlorophyll-a, dissolved oxygen, air temperature, and solar radiation",
   temporal.coverage = c("2021-02-03", "2024-06-11"),
   maintenance.description = 'completed',
-  data.table = c("Lake_data.csv",
+  data.table = c("Lake_data_all.csv",
                  "Met.csv"),
   data.table.name = c("In-lake data",
                       "Meteorological data"),
@@ -113,7 +113,7 @@ make_eml(
                              "Meterological data from both lakes"),
   user.id = 'alewis',
   user.domain = 'EDI',
-  package.id = 'edi.1312.2')
+  package.id = 'edi.1312.4')
 
 ## Step 8: Check your data product! ####
 # Return to the EDI staging environment (https://portal-s.edirepository.org/nis/home.jsp),
@@ -151,7 +151,7 @@ make_eml(
   path = ".",
   data.path = ".",
   eml.path = ".",
-  dataset.title = "Seasonality of in-lake and meteorological data from Midway Pond (USA) and Lake Rerewhakaaitu (NZ), including daily measurements of water temperature, chlorophyll-a, dissolved oxygen, air temperature, and solar radiation",
+  dataset.title = "Seasonality of in-lake and meteorological data from Midway Pond and Lake Rerewhakaaitu, including daily measurements of water temperature, chlorophyll-a, dissolved oxygen, air temperature, and solar radiation",
   temporal.coverage = c("2021-02-03", "2024-06-11"),
   maintenance.description = 'completed',
   data.table = c("Lake_data.csv",
@@ -162,7 +162,7 @@ make_eml(
                              "Meterological data from both lakes"),
   user.id = 'alewis',
   user.domain = 'EDI',
-  package.id = 'edi.1312.2')
+  package.id = 'edi.1312.3')
 
 # Once your xml file with your PUBLISHED package.id is Done, return to the 
 # EDI Production environment (https://portal.edirepository.org/nis/home.jsp)

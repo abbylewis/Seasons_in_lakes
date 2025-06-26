@@ -16,7 +16,8 @@ library(rLakeAnalyzer)
 library(ncdf4)
 
 #Offset so all yday values are from the winter solstice
-offset = as.Date("2023-01-01") - as.Date("2022-12-21")
+solstice <- as.Date("2022-12-21")
+offset = as.Date("2023-01-01") - solstice
 LAKE = "Lake Ägeri (2023)"
 ```
 
@@ -153,7 +154,8 @@ ice <- data.frame(Lake = c(LAKE),
                   Season = c("Open water"),
                   Method = c("Ice"),
                   start = c(0),
-                  end = c(365))
+                  end = c(365)) %>%
+  mutate(Solstice = solstice)
 
 write.csv(ice, "../01b_Processed_data/Ägeri_ice.csv", row.names = F)
 ```

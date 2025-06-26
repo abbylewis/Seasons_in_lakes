@@ -1,0 +1,413 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<eml:eml xmlns:eml="https://eml.ecoinformatics.org/eml-2.2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:stmml="http://www.xml-cml.org/schema/stmml-1.2" packageId="edi.1312.4" xsi:schemaLocation="https://eml.ecoinformatics.org/eml-2.2.0/eml.xsd https://eml.ecoinformatics.org/eml-2.2.0/eml.xsd" system="edi">
+  <access authSystem="https://pasta.edirepository.org/authentication" order="allowFirst" scope="document">
+    <allow>
+      <principal>uid=alewis,o=EDI,dc=edirepository,dc=org</principal>
+      <permission>all</permission>
+    </allow>
+    <allow>
+      <principal>public</principal>
+      <permission>read</permission>
+    </allow>
+  </access>
+  <dataset>
+    <title>Seasonality of in-lake and meteorological data from Midway Pond and Lake Rerewhakaaitu, including daily measurements of water temperature, chlorophyll-a, dissolved oxygen, air temperature, and solar radiation</title>
+    <creator>
+      <individualName>
+        <givenName>Abigail</givenName>
+        <givenName>S. L.</givenName>
+        <surName>Lewis</surName>
+      </individualName>
+      <organizationName>Smithsonian Environmental Research Center</organizationName>
+      <electronicMailAddress>abigail.sl.lewis@gmail.com</electronicMailAddress>
+      <userId directory="https://orcid.org">https://orcid.org/0000-0001-9933-4542</userId>
+    </creator>
+    <creator>
+      <individualName>
+        <givenName>Rachel</givenName>
+        <surName>Hovel</surName>
+      </individualName>
+      <organizationName>University of Maine-Farmington</organizationName>
+      <electronicMailAddress>rachel.hovel@maine.edu</electronicMailAddress>
+      <userId directory="https://orcid.org">https://orcid.org/0000-0002-3452-9485</userId>
+    </creator>
+    <creator>
+      <individualName>
+        <givenName>Whitney</givenName>
+        <givenName>M.</givenName>
+        <surName>Woelmer</surName>
+      </individualName>
+      <organizationName>University of Waikato</organizationName>
+      <electronicMailAddress>wwoelmer@waikato.ac.nz</electronicMailAddress>
+      <userId directory="https://orcid.org">https://orcid.org/0000-0001-5147-3877</userId>
+    </creator>
+    <pubDate>2025-06-24</pubDate>
+    <abstract>
+      <para>This data product supports the manuscript "How should we analyze seasons and seasonality in lakes?" (Lewis et al. 2025; in review). The data published here (Lake Rerewhakaaitu and Midway Pond) were analyzed in combination with previously-published data from six other lakes to understand how seasonality varies among lakes and variables. Specifically, this data publication includes daily mean water temperature (surface and bottom), chlorophyll-a, dissolved oxygen (surface and bottom), air temperature, and solar radiation. Data availability and collection methods differ between lakes, as described in the Methods.</para>
+    </abstract>
+    <keywordSet>
+      <keyword>limnology</keyword>
+      <keyword>water quality</keyword>
+      <keyword>Lake, Reservoir, Impoundment</keyword>
+      <keywordThesaurus>Cuahsi</keywordThesaurus>
+    </keywordSet>
+    <keywordSet>
+      <keyword>water temperature</keyword>
+      <keyword>dissolved oxygen</keyword>
+      <keyword>chlorophyll-a</keyword>
+      <keyword>lakes</keyword>
+      <keyword>seasonality</keyword>
+      <keyword>air temperature</keyword>
+      <keyword>solar radiation</keyword>
+      <keywordThesaurus>LTER</keywordThesaurus>
+    </keywordSet>
+    <intellectualRights>
+      <para>This information is released under the Creative Commons license - Attribution - CC BY (https://creativecommons.org/licenses/by/4.0/). The consumer of these data ("Data User" herein) is required to cite it appropriately in any publication that results from its use. The Data User should realize that these data may be actively used by others for ongoing research and that coordination may be necessary to prevent duplicate publication. The Data User is urged to contact the authors of these data if any questions about methodology or results occur. Where appropriate, the Data User is encouraged to consider collaboration or co-authorship with the authors. The Data User should realize that misinterpretation of data may occur if used out of context of the original study. While substantial efforts are made to ensure the accuracy of data and associated documentation, complete accuracy of data sets cannot be guaranteed. All data are made available "as is." The Data User should be aware, however, that data are updated periodically and it is the responsibility of the Data User to check for new versions of the data. The data authors and the repository where these data were obtained shall not be liable for damages resulting from any use or misinterpretation of the data. Thank you.
+</para>
+    </intellectualRights>
+    <coverage>
+      <geographicCoverage>
+        <geographicDescription>Lake Rerewhakaaitu</geographicDescription>
+        <boundingCoordinates>
+          <westBoundingCoordinate>176.526016</westBoundingCoordinate>
+          <eastBoundingCoordinate>176.5022</eastBoundingCoordinate>
+          <northBoundingCoordinate>-38.27759451</northBoundingCoordinate>
+          <southBoundingCoordinate>-38.31012121</southBoundingCoordinate>
+        </boundingCoordinates>
+      </geographicCoverage>
+      <geographicCoverage>
+        <geographicDescription>Midway Pond</geographicDescription>
+        <boundingCoordinates>
+          <westBoundingCoordinate>-70.54375675</westBoundingCoordinate>
+          <eastBoundingCoordinate>-70.54079319</eastBoundingCoordinate>
+          <northBoundingCoordinate>44.9326615</northBoundingCoordinate>
+          <southBoundingCoordinate>44.93024641</southBoundingCoordinate>
+        </boundingCoordinates>
+      </geographicCoverage>
+      <temporalCoverage>
+        <rangeOfDates>
+          <beginDate>
+            <calendarDate>2021-02-03</calendarDate>
+          </beginDate>
+          <endDate>
+            <calendarDate>2024-06-11</calendarDate>
+          </endDate>
+        </rangeOfDates>
+      </temporalCoverage>
+    </coverage>
+    <maintenance>
+      <description>completed</description>
+    </maintenance>
+    <contact>
+      <individualName>
+        <givenName>Abigail</givenName>
+        <givenName>S. L.</givenName>
+        <surName>Lewis</surName>
+      </individualName>
+      <organizationName>Smithsonian Environmental Research Center</organizationName>
+      <electronicMailAddress>abigail.sl.lewis@gmail.com</electronicMailAddress>
+      <userId directory="https://orcid.org">https://orcid.org/0000-0001-9933-4542</userId>
+    </contact>
+    <methods>
+      <methodStep>
+        <description>
+          <para>We compiled in-lake and meteorological data from Lake Rerewhakaaitu (Aotearoa/New Zealand) and Midway Pond (United States of America). Data include water temperature, chlorophyll-a, and dissolved oxygen at multiple depths, as well as air temperature and solar radiation. All data are summarized to a daily mean at each lake/depth. Data collection methods are described in detail below. </para>
+          <para>Lake Rerewhakaaitu</para>
+          <para>Lake Rerewhakaaitu (38.29°S, 176.5°E, Zmax = 15.8 m; Surface Area = 580) is a shallow, mesotrophic lake located in the Bay of Plenty Region of Aotearoa/New Zealand. Lake Rerewhakaaitu is a volcanically-formed, polymictic lake. A high-frequency profiling buoy was deployed at Lake Rerewhakaaitu in February 2021, which collects water quality profiles from the surface to ~12 m eight times per day. Water temperature, dissolved oxygen, and chlorophyll-a fluorescence are measured using Aqualabo Ponsel Digisens pHEH, OptoD, and Turner Designs C7F-C, respectively. A Lufft WS700 Smart Weather meteorological station was also deployed on the profiling buoy with measurements taken every five minutes. We gratefully acknowledge the support of the Bay of Plenty Regional Council in providing access to these data.</para>
+          <para>Midway Pond</para>
+          <para>Midway Pond (44.931°N, -70.541°W; Zmax = 9 m; Surface area = 3.35 ha) is an oligotrophic, dimictic, glacially-formed lake with no inlets or outlets, located in the northern Appalachian Mountains, Maine, USA (Nelson et al., 2021). Since November 2022, in situ sensors have been deployed on a subsurface buoy line located at the deepest point in the lake. Temperature and dissolved oxygen were measured every 30 minutes at two locations: 0.5 m above the benthos and at 1 m below the surface (MiniDOT dissolved oxygen meter; Precision Measurement Engineering, Vista, CA). Likewise, chlorophyll was measured at 30 minute intervals, located 1 m below the surface (Cyclops-7F CHL sensor, Turner Designs, San Jose, CA). Mean daily air temperature was sourced at the nearest National Weather Service station (Rangely airport), located 10 km from Midway Pond. </para>
+          <para>REFERENCES</para>
+          <para>Nelson, S. J., Hovel, R. A., Daly, J., Gavin, A., Dykema, S., &amp; McDowell, W. H. (2021). Northeastern mountain ponds as sentinels of change: Current and emerging research and monitoring in the context of shifting chemistry and climate interactions. Atmospheric Environment, 264, 118694. https://doi.org/10.1016/j.atmosenv.2021.118694</para>
+        </description>
+      </methodStep>
+    </methods>
+    <project>
+      <title>Smithsonian Climate Change Fellowship</title>
+      <personnel>
+        <individualName>
+          <givenName>Abigail</givenName>
+          <givenName>S. L.</givenName>
+          <surName>Lewis</surName>
+        </individualName>
+        <organizationName>Smithsonian Environmental Research Center</organizationName>
+        <electronicMailAddress>abigail.sl.lewis@gmail.com</electronicMailAddress>
+        <userId directory="https://orcid.org">https://orcid.org/0000-0001-9933-4542</userId>
+        <role>Principal Investigator</role>
+      </personnel>
+      <funding>Smithsonian Institution</funding>
+    </project>
+    <dataTable>
+      <entityName>In-lake data</entityName>
+      <entityDescription>In-lake sensor data from both lakes</entityDescription>
+      <physical>
+        <objectName>Lake_data_all.csv</objectName>
+        <size unit="bytes">1018332</size>
+        <authentication method="MD5">e2abc079dfcc322482566704978d37ea</authentication>
+        <dataFormat>
+          <textFormat>
+            <numHeaderLines>1</numHeaderLines>
+            <recordDelimiter>\n</recordDelimiter>
+            <attributeOrientation>column</attributeOrientation>
+            <simpleDelimited>
+              <fieldDelimiter>,</fieldDelimiter>
+            </simpleDelimited>
+          </textFormat>
+        </dataFormat>
+      </physical>
+      <attributeList>
+        <attribute>
+          <attributeName>Lake</attributeName>
+          <attributeDefinition>Lake name</attributeDefinition>
+          <storageType>string</storageType>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <enumeratedDomain>
+                  <codeDefinition>
+                    <code>Lake Rerewhakaaitu</code>
+                    <definition>Lake Rerewhakaaitu</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>Midway Pond</code>
+                    <definition>Midway Pond</definition>
+                  </codeDefinition>
+                </enumeratedDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>Date</attributeName>
+          <attributeDefinition>Sample date</attributeDefinition>
+          <storageType>date</storageType>
+          <measurementScale>
+            <dateTime>
+              <formatString>YYYY-MM-DD</formatString>
+              <dateTimeDomain/>
+            </dateTime>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>Depth_m</attributeName>
+          <attributeDefinition>Depth of measurement</attributeDefinition>
+          <storageType>float</storageType>
+          <measurementScale>
+            <ratio>
+              <unit>
+                <standardUnit>meter</standardUnit>
+              </unit>
+              <numericDomain>
+                <numberType>real</numberType>
+                <bounds>
+                  <minimum exclusive="false">0.5</minimum>
+                  <maximum exclusive="false">12</maximum>
+                </bounds>
+              </numericDomain>
+            </ratio>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>WaterTemperature_C</attributeName>
+          <attributeDefinition>Water temperature</attributeDefinition>
+          <storageType>float</storageType>
+          <measurementScale>
+            <ratio>
+              <unit>
+                <standardUnit>celsius</standardUnit>
+              </unit>
+              <numericDomain>
+                <numberType>real</numberType>
+                <bounds>
+                  <minimum exclusive="false">2.10509090909091</minimum>
+                  <maximum exclusive="false">25.1398698064516</maximum>
+                </bounds>
+              </numericDomain>
+            </ratio>
+          </measurementScale>
+          <missingValueCode>
+            <code>NA</code>
+            <codeExplanation>no measurement</codeExplanation>
+          </missingValueCode>
+        </attribute>
+        <attribute>
+          <attributeName>DO_mgL</attributeName>
+          <attributeDefinition>Dissolved oxygen concentration</attributeDefinition>
+          <storageType>float</storageType>
+          <measurementScale>
+            <ratio>
+              <unit>
+                <standardUnit>milligramsPerLiter</standardUnit>
+              </unit>
+              <numericDomain>
+                <numberType>real</numberType>
+                <bounds>
+                  <minimum exclusive="false">0.176415560232602</minimum>
+                  <maximum exclusive="false">15.6487711360521</maximum>
+                </bounds>
+              </numericDomain>
+            </ratio>
+          </measurementScale>
+          <missingValueCode>
+            <code>NA</code>
+            <codeExplanation>no measurement</codeExplanation>
+          </missingValueCode>
+        </attribute>
+        <attribute>
+          <attributeName>Chla_ugL</attributeName>
+          <attributeDefinition>Chlorophyll-a concentration</attributeDefinition>
+          <storageType>float</storageType>
+          <measurementScale>
+            <ratio>
+              <unit>
+                <standardUnit>microgramsPerLiter</standardUnit>
+              </unit>
+              <numericDomain>
+                <numberType>real</numberType>
+                <bounds>
+                  <minimum exclusive="false">14.3413135416667</minimum>
+                  <maximum exclusive="false">347.624096458333</maximum>
+                </bounds>
+              </numericDomain>
+            </ratio>
+          </measurementScale>
+          <missingValueCode>
+            <code>NA</code>
+            <codeExplanation>no measurement</codeExplanation>
+          </missingValueCode>
+        </attribute>
+        <attribute>
+          <attributeName>Chla_RFU</attributeName>
+          <attributeDefinition>Chlorophyll-a concentration</attributeDefinition>
+          <storageType>float</storageType>
+          <measurementScale>
+            <ratio>
+              <unit>
+                <standardUnit>dimensionless</standardUnit>
+              </unit>
+              <numericDomain>
+                <numberType>real</numberType>
+                <bounds>
+                  <minimum exclusive="false">0.581262</minimum>
+                  <maximum exclusive="false">21.277227875</maximum>
+                </bounds>
+              </numericDomain>
+            </ratio>
+          </measurementScale>
+          <missingValueCode>
+            <code>NA</code>
+            <codeExplanation>no measurement</codeExplanation>
+          </missingValueCode>
+        </attribute>
+      </attributeList>
+      <numberOfRecords>12789</numberOfRecords>
+    </dataTable>
+    <dataTable>
+      <entityName>Meteorological data</entityName>
+      <entityDescription>Meterological data from both lakes</entityDescription>
+      <physical>
+        <objectName>Met.csv</objectName>
+        <size unit="bytes">58743</size>
+        <authentication method="MD5">5ca35d207c15a4f5644afbc3314afc8c</authentication>
+        <dataFormat>
+          <textFormat>
+            <numHeaderLines>1</numHeaderLines>
+            <recordDelimiter>\n</recordDelimiter>
+            <attributeOrientation>column</attributeOrientation>
+            <simpleDelimited>
+              <fieldDelimiter>,</fieldDelimiter>
+            </simpleDelimited>
+          </textFormat>
+        </dataFormat>
+      </physical>
+      <attributeList>
+        <attribute>
+          <attributeName>Lake</attributeName>
+          <attributeDefinition>Lake name</attributeDefinition>
+          <storageType>string</storageType>
+          <measurementScale>
+            <nominal>
+              <nonNumericDomain>
+                <enumeratedDomain>
+                  <codeDefinition>
+                    <code>Lake Rerewhakaaitu</code>
+                    <definition>Lake Rerewhakaaitu</definition>
+                  </codeDefinition>
+                  <codeDefinition>
+                    <code>Midway Pond</code>
+                    <definition>Midway Pond</definition>
+                  </codeDefinition>
+                </enumeratedDomain>
+              </nonNumericDomain>
+            </nominal>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>Date</attributeName>
+          <attributeDefinition>Measurement date</attributeDefinition>
+          <storageType>date</storageType>
+          <measurementScale>
+            <dateTime>
+              <formatString>YYYY-MM-DD</formatString>
+              <dateTimeDomain/>
+            </dateTime>
+          </measurementScale>
+        </attribute>
+        <attribute>
+          <attributeName>AirTemp_C</attributeName>
+          <attributeDefinition>Air temperature</attributeDefinition>
+          <storageType>float</storageType>
+          <measurementScale>
+            <ratio>
+              <unit>
+                <standardUnit>celsius</standardUnit>
+              </unit>
+              <numericDomain>
+                <numberType>real</numberType>
+                <bounds>
+                  <minimum exclusive="false">-30.6</minimum>
+                  <maximum exclusive="false">25</maximum>
+                </bounds>
+              </numericDomain>
+            </ratio>
+          </measurementScale>
+          <missingValueCode>
+            <code>NA</code>
+            <codeExplanation>no measurement</codeExplanation>
+          </missingValueCode>
+        </attribute>
+        <attribute>
+          <attributeName>ShortwaveRadiationClear_Wm2</attributeName>
+          <attributeDefinition>Clear-sky shortwave radiation</attributeDefinition>
+          <storageType>float</storageType>
+          <measurementScale>
+            <ratio>
+              <unit>
+                <standardUnit>wattPerMeterSquared</standardUnit>
+              </unit>
+              <numericDomain>
+                <numberType>real</numberType>
+                <bounds>
+                  <minimum exclusive="false">0</minimum>
+                  <maximum exclusive="false">521.530276167565</maximum>
+                </bounds>
+              </numericDomain>
+            </ratio>
+          </measurementScale>
+          <missingValueCode>
+            <code>NA</code>
+            <codeExplanation>no measurement</codeExplanation>
+          </missingValueCode>
+        </attribute>
+      </attributeList>
+      <numberOfRecords>1280</numberOfRecords>
+    </dataTable>
+  </dataset>
+  <additionalMetadata>
+    <metadata>
+      <emlEditor>
+        <app>EMLassemblyline</app>
+        <release>3.5.8</release>
+      </emlEditor>
+    </metadata>
+  </additionalMetadata>
+</eml:eml>

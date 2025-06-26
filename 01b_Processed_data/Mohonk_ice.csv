@@ -1,3 +1,3 @@
-"Lake","Season","Method","start","end"
-"Mohonk Lake (2017)","Ice","Ice",0,108
-"Mohonk Lake (2017)","Open water","Ice",109,365
+"Lake","Season","Method","start","end","Solstice"
+"Mohonk Lake (2017)","Ice","Ice",0,108,2016-12-21
+"Mohonk Lake (2017)","Open water","Ice",109,365,2016-12-21

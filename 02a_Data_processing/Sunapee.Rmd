@@ -15,7 +15,8 @@ library(tidyverse)
 library(rLakeAnalyzer)
 
 #Offset so all yday values are from the winter solstice
-offset = as.Date("2008-01-01") - as.Date("2007-12-21")
+solstice <- as.Date("2007-12-21")
+offset = as.Date("2008-01-01") - solstice
 LAKE = "Lake Sunapee (2008)"
 ```
 
@@ -124,7 +125,8 @@ ice <- data.frame(Lake = c(LAKE, LAKE),
                   Season = c("Ice","Open water"),
                   Method = c("Ice","Ice"),
                   start = c(0, yday(as.Date("2008-04-24") + offset)),
-                  end = c(yday(as.Date("2008-04-24") + offset), 365))
+                  end = c(yday(as.Date("2008-04-24") + offset), 365)) %>%
+  mutate(Solstice = solstice)
 
 write.csv(ice, "../01b_Processed_data/Sunapee_ice.csv", row.names = F)
 ```

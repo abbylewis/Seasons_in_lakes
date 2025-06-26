@@ -1,0 +1,17 @@
+We compiled daily mean water temperature (surface and bottom), chlorophyll-a (surface), dissolved oxygen (surface and bottom), air temperature, and solar radiation from Lake Rerewhakaaitu (Aotearoa/New Zealand) and Midway Pond (United States of America). Data collection methods at each lake are described in detail below. 
+
+Lake Rerewhakaaitu
+
+Lake Rerewhakaaitu (38.29°S, 176.5°E, Zmax = 15.8 m; Surface Area = 580) is a shallow, mesotrophic lake located in the Bay of Plenty Region of Aotearoa/New Zealand. Lake Rerewhakaaitu is a volcanically-formed, polymictic lake. A high-frequency profiling buoy was deployed at Lake Rerewhakaaitu in February 2021, which collects water quality profiles from the surface to ~12 m eight times per day. Water temperature, dissolved oxygen, and chlorophyll-a fluorescence are measured using Aqualabo Ponsel Digisens pHEH, OptoD, and Turner Designs C7F-C, respectively. A Lufft WS700 Smart Weather meteorological station was also deployed on the profiling buoy with measurements taken every five minutes. We gratefully acknowledge the support of the Bay of Plenty Regional Council in providing access to these data.
+
+Midway Pond
+
+Midway Pond (44.931°N, -70.541°W; Zmax = 9 m; Surface area = 3.35 ha) is an oligotrophic, dimictic, glacially-formed lake with no inlets or outlets, located in the northern Appalachian Mountains, Maine, USA (Nelson et al., 2021). Since November 2022, in situ sensors have been deployed on a subsurface buoy line located at the deepest point in the lake. Temperature and dissolved oxygen were measured every 30 minutes at two locations: 0.5 m above the benthos and at 1 m below the surface (MiniDOT dissolved oxygen meter; Precision Measurement Engineering, Vista, CA). Likewise, chlorophyll was measured at 30 minute intervals, located 1 m below the surface (Cyclops-7F CHL sensor, Turner Designs, San Jose, CA). Mean daily air temperature was sourced at the nearest National Weather Service station (Rangely airport), located 10 km from Midway Pond. 
+
+Surface and bottom classification
+
+At both lakes, we classified data from 1 m below the surface of the lake as "surface" data. At Midway Pond, we classified data from 0.5 m above the benthos as "bottom". At Lake Rerewhakaaitu, we identified the deepest reading on each date (8m - 12m) and classified this measurement as "bottom". Only measurements identified as surface or bottom are published in this data product.
+
+REFERENCES
+
+Nelson, S. J., Hovel, R. A., Daly, J., Gavin, A., Dykema, S., & McDowell, W. H. (2021). Northeastern mountain ponds as sentinels of change: Current and emerging research and monitoring in the context of shifting chemistry and climate interactions. Atmospheric Environment, 264, 118694. https://doi.org/10.1016/j.atmosenv.2021.118694

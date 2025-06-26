@@ -3,5 +3,7 @@ Abigail	S. L.	Lewis	Smithsonian Environmental Research Center	abigail.sl.lewis@g
 Abigail	S. L.	Lewis	Smithsonian Environmental Research Center	abigail.sl.lewis@gmail.com	0000-0001-9933-4542	contact			
 Abigail	S. L.	Lewis	Smithsonian Environmental Research Center	abigail.sl.lewis@gmail.com	0000-0001-9933-4542	PI	Smithsonian Climate Change Fellowship	Smithsonian Institution	
 Rachel		Hovel	University of Maine-Farmington	rachel.hovel@maine.edu	0000-0002-3452-9485	creator			
+David	C.	Richardson	State University of New York at New Paltz	richardsond@newpaltz.edu		creator			
+Robert		Schwefel	Leibniz Institute of Freshwater Ecology and Inland Fisheries (IGB)	robert.schwefel@igb-berlin.de		creator			
+Gesa	A.	Weyhenmeyer	Uppsala University	gesa.weyhenmeyer@ebc.uu.se		creator			
 Whitney	M.	Woelmer	University of Waikato	wwoelmer@waikato.ac.nz	0000-0001-5147-3877	creator			
-									

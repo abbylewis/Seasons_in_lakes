@@ -1,0 +1,128 @@
+---
+title: "Midway Pond"
+author: "Abby Lewis"
+date: "2024-03-11"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(rLakeAnalyzer)
+```
+
+# Midway Pond
+
+```{r}
+LAKE = "Midway Pond"
+
+# Load data
+in_lake_data_surf <- read.csv("../01a_Raw_data/Midway_chl_dom_all.csv") %>%
+  mutate(Date = as.Date(date, format = "%Y-%m-%d %H:%M:%S")) %>%
+  select(-date, -unixT) %>%
+  group_by(Date) %>%
+  summarize(across(everything(), \(x) mean(x, na.rm = TRUE)))
+
+in_lake_data_do <- read.csv("../01a_Raw_data/Midway_DO_all.csv") %>%
+  mutate(Date = as.Date(date, format = "%Y-%m-%d %H:%M:%S")) %>%
+  select(-date, -unixT) %>%
+  group_by(Date) %>%
+  summarize(across(everything(), \(x) mean(x, na.rm = TRUE)))
+
+# Format continuous data
+in_lake_formatted_mid <- in_lake_data_surf %>%
+  full_join(in_lake_data_do) %>%
+  filter(!is.na(Date)) %>%
+  rename(WaterTemperature_C = surfT_C,
+         Chla_ugL = CHL_ppb,
+         DO_mgL = surfDO_mgL,
+         DO_mgL_bot = benthDO_mgL,
+         WaterTemperature_C_bot = benthT_C) %>%
+  pivot_longer(cols = c(WaterTemperature_C, 
+                        Chla_ugL, 
+                        DO_mgL, 
+                        DO_mgL_bot, 
+                        WaterTemperature_C_bot), 
+               names_to = "Variable", values_to = "Value") %>%
+  mutate(Lake = LAKE,
+         Depth_m = ifelse(grepl("_bot", Variable),
+                        8.5,
+                        1),
+         Variable = sub("_bot", "", Variable)) %>%
+  select(Date, Variable, Value, Depth_m, Lake)
+
+# Add met data
+met <- read.csv("../01a_Raw_data/Midway_AirTemp.csv")
+
+met_formatted_mid <- met %>%
+  mutate(Date = as.Date(DATE, format = "%m/%d/%y"),
+         Lake = LAKE,
+         Variable = "AirTemp_C") %>%
+  rename(Value = TOBS_C) %>%
+  select(Date, Variable, Value, Lake)
+
+#Ice
+#Ice-out was 2023-04-30. Ice on was 2023-11-14
+```
+
+# Rerewhakaaitu
+
+```{r}
+LAKE = "Lake Rerewhakaaitu" 
+
+# Load data
+in_lake_raw <- read.csv("../01a_Raw_data/Rerewhakaaitu_buoy_wq.csv") %>%
+  mutate(Date = as.Date(day))
+
+# Format continuous data
+in_lake_formatted_rere <- in_lake_raw %>%
+  rename(Value = avg_value,
+         Variable = variable,
+         Depth_m = depth_rnd) %>%
+  filter(Variable %in% c("DOconc", "TmpWtr", "FlChlr")) %>%
+  mutate(Variable = case_match(Variable,
+                               "TmpWtr"~"WaterTemperature_C", 
+                               "FlChlr"~"Chla_RFU",
+                               "DOconc"~"DO_mgL")) %>%
+  group_by(Date, Variable, Depth_m) %>%
+  summarize(Value = mean(Value, na.rm = T)) %>%
+  group_by(Date, Variable) %>%
+  mutate(Lake = LAKE)
+
+# Load data
+met <- read.csv("../01a_Raw_data/Rerewhakaaitu_meteorology.csv")
+
+# Format continuous data
+met_formatted_rere <- met %>%
+  mutate(Date = as.Date(DateTime))%>%
+  mutate(variable = ifelse(variable == "TmpAir", "AirTemp_C", variable),
+         variable = ifelse(variable == "RadClr", "ShortwaveRadiationClear_Wm2", variable)) %>%
+  filter(variable %in% c("AirTemp_C", "ShortwaveRadiationClear_Wm2")) %>%
+  rename(Variable = variable) %>%
+  group_by(Date, Variable) %>%
+  summarize(Value = mean(value, na.rm = T), .groups = "drop") %>%
+  mutate(Lake = LAKE)
+
+#No ice
+```
+
+# Combine
+```{r}
+in_lake_all <- in_lake_formatted_mid %>%
+  bind_rows(in_lake_formatted_rere) %>%
+  pivot_wider(names_from = Variable, values_from = Value) %>%
+  select(Lake, Date, Depth_m, WaterTemperature_C, DO_mgL, Chla_ugL, Chla_RFU)
+
+write_csv(in_lake_all, "Lake_data_all.csv")
+
+met_all <- met_formatted_mid %>%
+  bind_rows(met_formatted_rere) %>%
+  pivot_wider(names_from = Variable, values_from = Value) %>%
+  select(Lake, Date, AirTemp_C, ShortwaveRadiationClear_Wm2)
+
+write_csv(met_all, "Met.csv")
+
+min(c(in_lake_all$Date, met_all$Date))
+max(c(in_lake_all$Date, met_all$Date))
+```
+

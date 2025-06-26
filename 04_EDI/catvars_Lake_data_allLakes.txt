@@ -1,0 +1,8 @@
+attributeName	code	definition
+Lake	Arendsee	Arendsee
+Lake	Lake Erken	Lake Erken
+Lake	Lake Rerewhakaaitu	Lake Rerewhakaaitu
+Lake	Midway Pond	Midway Pond
+Lake	Mohonk Lake	Mohonk Lake
+Ice_binary	1	Ice cover
+Ice_binary	0	Open water

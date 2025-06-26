@@ -81,7 +81,8 @@ in_lake_data <- in_lake_raw %>%
 in_lake_bottom <- in_lake_data %>%
   filter(Variable %in% c("DOconc", "TmpWtr")) %>%
   group_by(Date, Variable) %>%
-  summarize(Value = mean(Value[depth_rdn = which.max(depth_rnd)], na.rm = T)) %>%
+  summarize(Value = mean(Value[depth_rdn = max(depth_rnd, na.rm = T)], na.rm = T),
+            Depth = max(depth_rnd, na.rm = T)) %>%
   select(Variable, Value, Date) %>%
   mutate(Variable = case_match(Variable,
                                "DOconc"~"DO_mgL",
