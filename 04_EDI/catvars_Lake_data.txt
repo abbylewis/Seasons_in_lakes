@@ -1,5 +1,0 @@
-attributeName	code	definition
-Lake	Lake Rerewhakaaitu	Lake Rerewhakaaitu
-Lake	Midway Pond	Midway Pond
-Layer	Bottom	Measurement from lake bottom
-Layer	Surface	Measurement from lake surface

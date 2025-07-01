@@ -4,7 +4,7 @@ Code repository for a collaborative analysis of multiple metrics of seasonality 
 
 ## Repository structure
 
--   `01a_Raw_data`: Raw data files, not yet formatted for this analysis. This is not currently used because we pull FCR data directly from EDI
+-   `01a_Raw_data`: Raw data files, not yet formatted for this analysis
 
 -   `01b_Processed_data`: Processed data (e.g., daily means, calculated Schmidt stability)
 
@@ -16,13 +16,6 @@ Code repository for a collaborative analysis of multiple metrics of seasonality 
 
 -   `03b_Illustrator_files`: Illustrator files for conceptual figure generation
 
-## To contribute to this analysis
+## Contact
 
-We would love to have figures generated for as many lakes as possible! If you are interested in contributing, the workflow I would suggest is:
-
-1.  Clone this repo.
-2.  Add raw data files to `01a_Raw_data`
-3.  Copy the `Template.Rmd` script in `02a_Data processing` and rename to match you lake. Use this script to format your raw data (one year) for the figure. Processed data files should then be output to `01b_Processed_data.`
-4.  Create a pull request to contribute your changes
-
-I (Abby) am very happy to help with all steps of this workflow! Please just let me know how I can help. Thanks!
+Abigail Lewis (abigail.sl.lewis\@gmail.com)

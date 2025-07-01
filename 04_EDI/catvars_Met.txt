@@ -1,3 +1,0 @@
-attributeName	code	definition
-Lake	Lake Rerewhakaaitu	Lake Rerewhakaaitu
-Lake	Midway Pond	Midway Pond
