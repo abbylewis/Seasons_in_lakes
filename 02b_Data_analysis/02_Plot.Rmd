@@ -231,9 +231,6 @@ continuous <- continuous_data %>%
         panel.grid.major.y = element_blank(),
         panel.grid.major.x = element_blank(),
         plot.background = element_rect(fill = "transparent"))
-
-#View
-continuous
 ```
 
 # Combine and save

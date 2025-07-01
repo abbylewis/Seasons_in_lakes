@@ -90,7 +90,9 @@ Stratification,Stratified,NA,325,326,Beaverdam Reservoir (2021),325,326,NA
 Stratification,Mixed,NA,326,333,Beaverdam Reservoir (2021),326,333,NA
 Stratification,Stratified,NA,333,334,Beaverdam Reservoir (2021),333,334,NA
 Stratification,Mixed,NA,334,365,Beaverdam Reservoir (2021),334,365,NA
-Stratification,Mixed,NA,1,365,Lake Erken (2018),1,365,NA
+Stratification,Mixed,NA,1,137,Lake Erken (2018),1,137,NA
+Stratification,Stratified,NA,137,266,Lake Erken (2018),137,266,NA
+Stratification,Mixed,NA,266,365,Lake Erken (2018),266,365,NA
 Stratification,Mixed,NA,1,140,Midway Pond (2023),1,140,NA
 Stratification,Stratified,NA,140,301,Midway Pond (2023),140,301,NA
 Stratification,Mixed,NA,301,312,Midway Pond (2023),301,312,NA
@@ -167,10 +169,12 @@ Ice,Open water,NA,0,21,Beaverdam Reservoir (2021),NA,NA,2020-12-21
 Ice,Open water,NA,23,41,Beaverdam Reservoir (2021),NA,NA,2020-12-21
 Ice,Open water,NA,42,55,Beaverdam Reservoir (2021),NA,NA,2020-12-21
 Ice,Open water,NA,58,365,Beaverdam Reservoir (2021),NA,NA,2020-12-21
-Ice,Open water,NA,0,203,Lake Erken (2018),NA,NA,NA
-Ice,Ice,NA,203,305,Lake Erken (2018),NA,NA,NA
-Ice,Open water,NA,305,365,Lake Erken (2018),NA,NA,NA
-Ice,Ice,NA,0,365,Midway Pond (2023),NA,NA,NA
+Ice,Open water,NA,0,9,Lake Erken (2018),NA,NA,NA
+Ice,Ice,NA,9,111,Lake Erken (2018),NA,NA,NA
+Ice,Open water,NA,111,365,Lake Erken (2018),NA,NA,NA
+Ice,Ice,NA,0,121,Midway Pond (2023),NA,NA,NA
+Ice,Open water,NA,121,318,Midway Pond (2023),NA,NA,NA
+Ice,Ice,NA,318,365,Midway Pond (2023),NA,NA,NA
 Ice,Ice,NA,0,108,Mohonk Lake (2017),NA,NA,2016-12-21
 Ice,Open water,NA,109,365,Mohonk Lake (2017),NA,NA,2016-12-21
 Ice,Open water,NA,0,365,Lake Rerewhakaaitu (2022-2023),NA,NA,NA

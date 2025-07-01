@@ -1,2 +1,4 @@
 "Lake","Season","Method","start","end"
-"Midway Pond (2023)","Ice","Ice",0,365
+"Midway Pond (2023)","Ice","Ice",0,121
+"Midway Pond (2023)","Open water","Ice",121,318
+"Midway Pond (2023)","Ice","Ice",318,365

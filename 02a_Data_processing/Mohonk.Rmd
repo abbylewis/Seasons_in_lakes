@@ -77,7 +77,7 @@ Ice data
 
 ```{r}
 #Load data
-ice <- read.csv("https://pasta-s.lternet.edu/package/data/eml/edi/1312/7/f8e0e7b22826772424f156b9565d1498") 
+ice <- read.csv("https://pasta-s.lternet.edu/package/data/eml/edi/1312/8/f8e0e7b22826772424f156b9565d1498") 
 
 ice_formatted <- ice %>%
   filter(Lake == "Mohonk Lake",

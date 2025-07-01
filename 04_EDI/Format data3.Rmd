@@ -182,7 +182,7 @@ temp_format <- temp %>%
   mutate(Date = as.Date(TMSTAMP)) %>%
   select(c(Date, contains("WTemp"))) %>%
   pivot_longer(-Date, values_to = "WaterTemperature_C") %>%
-  mutate(Depth_m = str_extract(name, "[0-9]_[0-9]+"),
+  mutate(Depth_m = str_extract(name, "[0-9]+_[0-9]+"),
          Depth_m = as.numeric(sub("_", ".", Depth_m))) %>%
   group_by(Date, Depth_m) %>%
   summarise(WaterTemperature_C = mean(WaterTemperature_C, na.rm = T)) 
