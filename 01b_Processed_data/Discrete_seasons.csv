@@ -98,12 +98,7 @@ Stratification,Stratified,NA,140,301,Midway Pond (2023),140,301,NA
 Stratification,Mixed,NA,301,312,Midway Pond (2023),301,312,NA
 Stratification,Stratified,NA,312,313,Midway Pond (2023),312,313,NA
 Stratification,Mixed,NA,313,365,Midway Pond (2023),313,365,NA
-Stratification,Mixed,NA,1,59,Mohonk Lake (2017),1,59,NA
-Stratification,"Inversely
-stratified",NA,59,62,Mohonk Lake (2017),59,62,NA
-Stratification,Mixed,NA,62,85,Mohonk Lake (2017),62,85,NA
-Stratification,"Inversely
-stratified",NA,85,125,Mohonk Lake (2017),85,125,NA
+Stratification,Mixed,NA,1,125,Mohonk Lake (2017),1,125,NA
 Stratification,Stratified,NA,125,323,Mohonk Lake (2017),125,323,NA
 Stratification,Mixed,NA,323,365,Mohonk Lake (2017),323,365,NA
 Stratification,Mixed,NA,1,93,Lake Rerewhakaaitu (2022-2023),1,93,NA
@@ -175,8 +170,8 @@ Ice,Open water,NA,111,365,Lake Erken (2018),NA,NA,NA
 Ice,Ice,NA,0,121,Midway Pond (2023),NA,NA,NA
 Ice,Open water,NA,121,318,Midway Pond (2023),NA,NA,NA
 Ice,Ice,NA,318,365,Midway Pond (2023),NA,NA,NA
-Ice,Ice,NA,0,108,Mohonk Lake (2017),NA,NA,2016-12-21
-Ice,Open water,NA,109,365,Mohonk Lake (2017),NA,NA,2016-12-21
+Ice,Ice,NA,0,109,Mohonk Lake (2017),NA,NA,NA
+Ice,Open water,NA,109,365,Mohonk Lake (2017),NA,NA,NA
 Ice,Open water,NA,0,365,Lake Rerewhakaaitu (2022-2023),NA,NA,NA
 Ice,Ice,NA,0,126,Lake Sunapee (2008),NA,NA,2007-12-21
 Ice,Open water,NA,126,365,Lake Sunapee (2008),NA,NA,2007-12-21

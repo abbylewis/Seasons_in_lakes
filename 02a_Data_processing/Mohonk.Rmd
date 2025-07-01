@@ -20,31 +20,45 @@ All data in one file
 
 ```{r}
 # Load data
-in_lake_data <- read.csv("../01a_Raw_data/Mohonk2017-Seasons-PhysicalData.csv") %>%
-  mutate(Date = as.Date(DateTime) + offset,
-         yday = yday(Date)) %>%
-  filter(year(Date) == 2017) %>%
-  group_by(yday) %>%
-  summarize(across(where(is.numeric), ~mean(., na.rm = T)))
+in_lake_data <- read_csv("https://pasta-s.lternet.edu/package/data/eml/edi/1312/9/f8e0e7b22826772424f156b9565d1498") %>%
+  filter(Lake == "Mohonk Lake") %>%
+  mutate(day = as.Date(Date) + offset,
+         yday = yday(day)) %>%
+  filter(year(day) == 2017,
+         !is.na(yday))
 
 # Format continuous data
 in_lake_formatted <- in_lake_data %>%
-  rename(Surface_temperature = Temp_0m,
-         AirTemp_C_Average = AirTemp_2m_degC,
-         Shortwave = solar_insolation_avg_Wpm2) %>%
-  pivot_longer(cols = c(Surface_temperature, AirTemp_C_Average, Shortwave), 
-               names_to = "Variable", values_to = "Value") %>%
-  select(yday, Variable, Value) %>%
-  mutate(Lake = LAKE)
+  select(-c(DO_mgL, Chla_ugL, Chla_RFU, Ice_binary)) %>%
+  pivot_longer(c("WaterTemperature_C"),
+               values_to = "Value") %>%
+  group_by(name, Date) %>%
+  filter(!is.na(Value)) %>%
+  mutate(Layer = case_when(Depth_m == 1~"Surface",
+                           Depth_m == 9~"Bottom")) %>%
+  filter(!is.na(Layer)) %>%
+  ungroup() %>%
+  mutate(Variable = paste(Layer, name),
+         Variable = case_match(Variable,
+                               "Surface WaterTemperature_C"~"Surface_temperature",
+                               "Surface DO_mgL"~"Surface_DO",
+                               "Bottom WaterTemperature_C"~"Bottom_temperature",
+                               "Bottom DO_mgL"~"Bottom_DO",
+                               "Surface Chla_ugL"~"Surface_chla")) %>%
+  filter(!is.na(Variable)) %>%
+  mutate(Lake = LAKE) %>%
+  select(Variable, Value, yday, Lake)
 
 write.csv(in_lake_formatted, "../01b_Processed_data/Mohonk_continuous.csv", row.names = F)
 
 # Stratification metric calcs (both discrete and continuous)
-strat_sum <- in_lake_data %>%
-  group_by(yday) %>%
-  summarize(Diff_Dens_surf_bot = water.density(Temp_9m) - water.density(Temp_0m),
-            Inverse = ifelse(Temp_9m > Temp_0m,
-                             T, F))
+strat_sum <- in_lake_formatted %>%
+  filter(Variable %in% c("Surface_temperature", "Bottom_temperature")) %>%
+  pivot_wider(names_from = "Variable", values_from = "Value") %>%
+  mutate(Diff_Dens_surf_bot = water.density(Bottom_temperature) - 
+           water.density(Surface_temperature),
+         Inverse = ifelse(Bottom_temperature > Surface_temperature,
+                          T, F))
 
 strat_export_discrete <- strat_sum %>%
   mutate(Strat = ifelse(Diff_Dens_surf_bot > 0.1, "Stratified", "Mixed"),
@@ -52,7 +66,7 @@ strat_export_discrete <- strat_sum %>%
   filter(!is.na(Strat)) %>%
   ungroup() %>%
   filter(Strat != lag(Strat)) %>%
-  full_join(data.frame(Variable = "Diff_Dens_surf_9", yday = 1, Strat = "Mixed")) %>%
+  full_join(data.frame(Variable = "Diff_Dens_surf_bot", yday = 1, Strat = "Mixed")) %>%
   arrange(yday) %>%
   mutate(end = lead(yday, default = 365)) %>%
   rename(start = yday, Season = Strat) %>%
@@ -64,13 +78,34 @@ strat_export_cont <- strat_sum %>%
   pivot_longer(Diff_Dens_surf_bot, names_to = "Variable", values_to = "Value") %>%
   mutate(Lake = LAKE)
 
-
 write.csv(strat_export_discrete, 
           "../01b_Processed_data/Mohonk_stratification_discrete.csv", 
           row.names = F)
 write.csv(strat_export_cont, 
           "../01b_Processed_data/Mohonk_stratification_continuous.csv", 
           row.names = F)
+```
+
+Meteorological data
+
+```{r}
+# Load data
+met <- read_csv("https://pasta-s.lternet.edu/package/data/eml/edi/1312/9/e312838eff13f56594021498f35c04cd")
+
+# Format continuous data
+met_formatted <- met %>%
+  filter(Lake == "Mohonk Lake") %>%
+  mutate(Date = as.Date(Date) + offset,
+         doy = yday(Date)) %>%
+  filter(year(Date) == 2017) %>%
+  rename(AirTemp_C_Average = AirTemp_C,
+         Shortwave = ShortwaveRadiation_Wm2) %>%
+  pivot_longer(c(AirTemp_C_Average, Shortwave), names_to = "Variable", values_to = "Value") %>%
+  mutate(yday = yday(Date)) %>%
+  select(Variable, Value, yday) %>%
+  mutate(Lake = LAKE)
+
+write.csv(met_formatted, "../01b_Processed_data/Mohonk_met.csv", row.names = F)
 ```
 
 Ice data
