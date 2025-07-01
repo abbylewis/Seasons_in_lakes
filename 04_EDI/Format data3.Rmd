@@ -64,10 +64,10 @@ ice_mi <- data.frame(Lake = c(LAKE, LAKE, LAKE),
                   Season = c("Ice","Open water", "Ice"),
                   Method = c("Ice","Ice", "Ice"),
                   start = c(0, 
-                            yday(as.Date("2023-04-30") + offset), 
-                            yday(as.Date("2023-11-14") + offset)),
-                  end = c(yday(as.Date("2023-04-30") + offset),
-                          yday(as.Date("2023-11-14") + offset), 
+                            yday(as.Date("2023-04-30")), 
+                            yday(as.Date("2023-11-14"))),
+                  end = c(yday(as.Date("2023-04-30")),
+                          yday(as.Date("2023-11-14")), 
                           365),
                   Solstice = solstice)
 ```
@@ -218,8 +218,8 @@ ice <- read.csv("../01a_Raw_data/SITES_ICE_ERK_MAI_1941-2022_L2_annual.csv", ski
 solstice <- as.Date("2017-12-21")
 
 inspect <- ice %>%
-  mutate(TIME_ICE_ON = as.Date(TIME_ICE_ON) + offset,
-         TIME_ICE_OFF = as.Date(TIME_ICE_OFF) + offset, 
+  mutate(TIME_ICE_ON = as.Date(TIME_ICE_ON),
+         TIME_ICE_OFF = as.Date(TIME_ICE_OFF), 
          start = yday(TIME_ICE_ON),
          end = yday(TIME_ICE_OFF)) %>%
   filter(TIMESTAMP %in% c(2018))

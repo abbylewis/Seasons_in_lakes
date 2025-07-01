@@ -113,36 +113,11 @@ for_plot <- continuous %>%
             pct_dif = dif / abs((month_mean + astro_mean)/2) * 100) %>%
   mutate(label = substr(Lake, 1,2))
 
-jpeg("../03a_Figures/All_vars_color.jpg", width = 6, height = 5, units = "in", res = 300)
-for_plot %>%
-  mutate(label = substr(Lake, 1,2)) %>%
-  ggplot(aes(x = Season, y = pct_dif)) +
-  ylab("Percent difference in mean value\nbetween monthly and astronomical definitions")+
-  geom_boxplot(color = "grey80", outlier.shape = NA)+
-  geom_jitter(aes(fill = abs(lats), shape = sig), width = 0.2, 
-              color = "black", stroke = 0.2, size = 1.5) +
-  geom_hline(yintercept = 0)+
-  facet_wrap(~Variable, scales = "free", ncol = 3)+
-  theme_bw(base_size = 9)+
-  scale_shape_manual(name = "Significance of difference\nbetween definitions\nat each lake",
-                     values = c(21,24))+
-  scale_fill_distiller(palette = "Spectral", name = "Absolute latitude")+
-  theme(axis.text.x = element_text(angle = 20, hjust = 1),
-        panel.grid.major.x = element_blank(),
-        legend.title.position = "top",
-        legend.position = c(.67,.08),
-        legend.spacing.y = unit(0.1, "cm"),
-        legend.direction = "horizontal",
-        legend.box = "horizontal",
-        legend.title = element_text(hjust = 0.5),
-        axis.title.x = element_blank())
-dev.off()
-
 jpeg("../03a_Figures/All_vars_color_abs.jpg", width = 6, height = 5, units = "in", res = 300)
 for_plot %>%
   mutate(label = substr(Lake, 1,2)) %>%
   ggplot(aes(x = Season, y = dif)) +
-  ylab("Difference in mean value\nbetween monthly and astronomical definitions")+
+  ylab("Difference in mean value between\nmonthly and astronomical definitions")+
   geom_boxplot(color = "grey80", outlier.shape = NA)+
   geom_jitter(aes(fill = abs(lats), shape = sig), width = 0.2, 
               color = "black", stroke = 0.2, size = 1.5) +
@@ -273,7 +248,7 @@ for_plot %>%
                                   "Stratification~vs.~Astronomical",
                                   "Ice~vs.~Astronomical"))) %>%
   ggplot(aes(x = Season, y = dif)) +
-  ylab("Difference in mean value\nbetween monthly and astronomical definitions")+
+  ylab("Difference in mean value between\nmonthly and astronomical definitions")+
   geom_boxplot(color = "grey80", outlier.shape = NA)+
   geom_jitter(aes(fill = abs(lats), shape = sig), width = 0.2, 
               color = "black", stroke = 0.2, size = 1.5) +

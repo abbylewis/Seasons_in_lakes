@@ -1,182 +1,178 @@
-Method,Season,Hemisphere,start,end,Lake,x,xend
-Months,Winter,Northern,346,365,Lake Ägeri (2023),NA,NA
-Astronomical,Autumn,Northern,276,365,Lake Ägeri (2023),NA,NA
-Months,Spring,Northern,71,163,Lake Ägeri (2023),NA,NA
-Months,Summer,Northern,163,255,Lake Ägeri (2023),NA,NA
-Months,Autumn,Northern,255,346,Lake Ägeri (2023),NA,NA
-Months,Winter,Northern,1,71,Lake Ägeri (2023),NA,NA
-Astronomical,Spring,Northern,90,183,Lake Ägeri (2023),NA,NA
-Astronomical,Summer,Northern,183,276,Lake Ägeri (2023),NA,NA
-Astronomical,Winter,Northern,1,90,Lake Ägeri (2023),NA,NA
-Months,Winter,Northern,346,365,Arendsee (2020),NA,NA
-Astronomical,Autumn,Northern,276,365,Arendsee (2020),NA,NA
-Months,Spring,Northern,71,163,Arendsee (2020),NA,NA
-Months,Summer,Northern,163,255,Arendsee (2020),NA,NA
-Months,Autumn,Northern,255,346,Arendsee (2020),NA,NA
-Months,Winter,Northern,1,71,Arendsee (2020),NA,NA
-Astronomical,Spring,Northern,90,183,Arendsee (2020),NA,NA
-Astronomical,Summer,Northern,183,276,Arendsee (2020),NA,NA
-Astronomical,Winter,Northern,1,90,Arendsee (2020),NA,NA
-Months,Winter,Northern,346,365,Beaverdam Reservoir (2021),NA,NA
-Astronomical,Autumn,Northern,276,365,Beaverdam Reservoir (2021),NA,NA
-Months,Spring,Northern,71,163,Beaverdam Reservoir (2021),NA,NA
-Months,Summer,Northern,163,255,Beaverdam Reservoir (2021),NA,NA
-Months,Autumn,Northern,255,346,Beaverdam Reservoir (2021),NA,NA
-Months,Winter,Northern,1,71,Beaverdam Reservoir (2021),NA,NA
-Astronomical,Spring,Northern,90,183,Beaverdam Reservoir (2021),NA,NA
-Astronomical,Summer,Northern,183,276,Beaverdam Reservoir (2021),NA,NA
-Astronomical,Winter,Northern,1,90,Beaverdam Reservoir (2021),NA,NA
-Months,Winter,Northern,346,365,Lake Erken (2018),NA,NA
-Astronomical,Autumn,Northern,276,365,Lake Erken (2018),NA,NA
-Months,Spring,Northern,71,163,Lake Erken (2018),NA,NA
-Months,Summer,Northern,163,255,Lake Erken (2018),NA,NA
-Months,Autumn,Northern,255,346,Lake Erken (2018),NA,NA
-Months,Winter,Northern,1,71,Lake Erken (2018),NA,NA
-Astronomical,Spring,Northern,90,183,Lake Erken (2018),NA,NA
-Astronomical,Summer,Northern,183,276,Lake Erken (2018),NA,NA
-Astronomical,Winter,Northern,1,90,Lake Erken (2018),NA,NA
-Months,Winter,Northern,346,365,Midway Pond (2023),NA,NA
-Astronomical,Autumn,Northern,276,365,Midway Pond (2023),NA,NA
-Months,Spring,Northern,71,163,Midway Pond (2023),NA,NA
-Months,Summer,Northern,163,255,Midway Pond (2023),NA,NA
-Months,Autumn,Northern,255,346,Midway Pond (2023),NA,NA
-Months,Winter,Northern,1,71,Midway Pond (2023),NA,NA
-Astronomical,Spring,Northern,90,183,Midway Pond (2023),NA,NA
-Astronomical,Summer,Northern,183,276,Midway Pond (2023),NA,NA
-Astronomical,Winter,Northern,1,90,Midway Pond (2023),NA,NA
-Months,Winter,Northern,346,365,Mohonk Lake (2017),NA,NA
-Astronomical,Autumn,Northern,276,365,Mohonk Lake (2017),NA,NA
-Months,Spring,Northern,71,163,Mohonk Lake (2017),NA,NA
-Months,Summer,Northern,163,255,Mohonk Lake (2017),NA,NA
-Months,Autumn,Northern,255,346,Mohonk Lake (2017),NA,NA
-Months,Winter,Northern,1,71,Mohonk Lake (2017),NA,NA
-Astronomical,Spring,Northern,90,183,Mohonk Lake (2017),NA,NA
-Astronomical,Summer,Northern,183,276,Mohonk Lake (2017),NA,NA
-Astronomical,Winter,Northern,1,90,Mohonk Lake (2017),NA,NA
-Months,Winter,Northern,346,365,Lake Rerewhakaaitu (2022-2023),NA,NA
-Astronomical,Autumn,Northern,276,365,Lake Rerewhakaaitu (2022-2023),NA,NA
-Months,Spring,Northern,71,163,Lake Rerewhakaaitu (2022-2023),NA,NA
-Months,Summer,Northern,163,255,Lake Rerewhakaaitu (2022-2023),NA,NA
-Months,Autumn,Northern,255,346,Lake Rerewhakaaitu (2022-2023),NA,NA
-Months,Winter,Northern,1,71,Lake Rerewhakaaitu (2022-2023),NA,NA
-Astronomical,Spring,Northern,90,183,Lake Rerewhakaaitu (2022-2023),NA,NA
-Astronomical,Summer,Northern,183,276,Lake Rerewhakaaitu (2022-2023),NA,NA
-Astronomical,Winter,Northern,1,90,Lake Rerewhakaaitu (2022-2023),NA,NA
-Months,Winter,Northern,346,365,Lake Sunapee (2008),NA,NA
-Astronomical,Autumn,Northern,276,365,Lake Sunapee (2008),NA,NA
-Months,Spring,Northern,71,163,Lake Sunapee (2008),NA,NA
-Months,Summer,Northern,163,255,Lake Sunapee (2008),NA,NA
-Months,Autumn,Northern,255,346,Lake Sunapee (2008),NA,NA
-Months,Winter,Northern,1,71,Lake Sunapee (2008),NA,NA
-Astronomical,Spring,Northern,90,183,Lake Sunapee (2008),NA,NA
-Astronomical,Summer,Northern,183,276,Lake Sunapee (2008),NA,NA
-Astronomical,Winter,Northern,1,90,Lake Sunapee (2008),NA,NA
-Stratification,Mixed,NA,1,120,Lake Ägeri (2023),1,120
-Stratification,Stratified,NA,120,343,Lake Ägeri (2023),120,343
-Stratification,Mixed,NA,343,365,Lake Ägeri (2023),343,365
-Stratification,Mixed,NA,1,110,Arendsee (2020),1,110
-Stratification,Stratified,NA,110,116,Arendsee (2020),110,116
-Stratification,Mixed,NA,116,118,Arendsee (2020),116,118
-Stratification,Stratified,NA,118,349,Arendsee (2020),118,349
-Stratification,Mixed,NA,349,365,Arendsee (2020),349,365
-Stratification,Mixed,NA,1,81,Beaverdam Reservoir (2021),1,81
-Stratification,Stratified,NA,81,85,Beaverdam Reservoir (2021),81,85
-Stratification,Mixed,NA,85,89,Beaverdam Reservoir (2021),85,89
-Stratification,Stratified,NA,89,321,Beaverdam Reservoir (2021),89,321
-Stratification,Mixed,NA,321,322,Beaverdam Reservoir (2021),321,322
-Stratification,Stratified,NA,322,323,Beaverdam Reservoir (2021),322,323
-Stratification,Mixed,NA,323,325,Beaverdam Reservoir (2021),323,325
-Stratification,Stratified,NA,325,326,Beaverdam Reservoir (2021),325,326
-Stratification,Mixed,NA,326,333,Beaverdam Reservoir (2021),326,333
-Stratification,Stratified,NA,333,334,Beaverdam Reservoir (2021),333,334
-Stratification,Mixed,NA,334,365,Beaverdam Reservoir (2021),334,365
-Stratification,Mixed,NA,1,137,Lake Erken (2018),1,137
-Stratification,Stratified,NA,137,266,Lake Erken (2018),137,266
-Stratification,Mixed,NA,266,365,Lake Erken (2018),266,365
-Stratification,Mixed,NA,1,140,Midway Pond (2023),1,140
-Stratification,Stratified,NA,140,301,Midway Pond (2023),140,301
-Stratification,Mixed,NA,301,312,Midway Pond (2023),301,312
-Stratification,Stratified,NA,312,313,Midway Pond (2023),312,313
-Stratification,Mixed,NA,313,365,Midway Pond (2023),313,365
-Stratification,Mixed,NA,1,59,Mohonk Lake (2017),1,59
+Method,Season,Hemisphere,start,end,Lake,x,xend,Solstice
+Months,Winter,Northern,346,365,Lake Ägeri (2023),NA,NA,NA
+Astronomical,Autumn,Northern,276,365,Lake Ägeri (2023),NA,NA,NA
+Months,Spring,Northern,71,163,Lake Ägeri (2023),NA,NA,NA
+Months,Summer,Northern,163,255,Lake Ägeri (2023),NA,NA,NA
+Months,Autumn,Northern,255,346,Lake Ägeri (2023),NA,NA,NA
+Months,Winter,Northern,1,71,Lake Ägeri (2023),NA,NA,NA
+Astronomical,Spring,Northern,90,183,Lake Ägeri (2023),NA,NA,NA
+Astronomical,Summer,Northern,183,276,Lake Ägeri (2023),NA,NA,NA
+Astronomical,Winter,Northern,1,90,Lake Ägeri (2023),NA,NA,NA
+Months,Winter,Northern,346,365,Arendsee (2020),NA,NA,NA
+Astronomical,Autumn,Northern,276,365,Arendsee (2020),NA,NA,NA
+Months,Spring,Northern,71,163,Arendsee (2020),NA,NA,NA
+Months,Summer,Northern,163,255,Arendsee (2020),NA,NA,NA
+Months,Autumn,Northern,255,346,Arendsee (2020),NA,NA,NA
+Months,Winter,Northern,1,71,Arendsee (2020),NA,NA,NA
+Astronomical,Spring,Northern,90,183,Arendsee (2020),NA,NA,NA
+Astronomical,Summer,Northern,183,276,Arendsee (2020),NA,NA,NA
+Astronomical,Winter,Northern,1,90,Arendsee (2020),NA,NA,NA
+Months,Winter,Northern,346,365,Beaverdam Reservoir (2021),NA,NA,NA
+Astronomical,Autumn,Northern,276,365,Beaverdam Reservoir (2021),NA,NA,NA
+Months,Spring,Northern,71,163,Beaverdam Reservoir (2021),NA,NA,NA
+Months,Summer,Northern,163,255,Beaverdam Reservoir (2021),NA,NA,NA
+Months,Autumn,Northern,255,346,Beaverdam Reservoir (2021),NA,NA,NA
+Months,Winter,Northern,1,71,Beaverdam Reservoir (2021),NA,NA,NA
+Astronomical,Spring,Northern,90,183,Beaverdam Reservoir (2021),NA,NA,NA
+Astronomical,Summer,Northern,183,276,Beaverdam Reservoir (2021),NA,NA,NA
+Astronomical,Winter,Northern,1,90,Beaverdam Reservoir (2021),NA,NA,NA
+Months,Winter,Northern,346,365,Lake Erken (2018),NA,NA,NA
+Astronomical,Autumn,Northern,276,365,Lake Erken (2018),NA,NA,NA
+Months,Spring,Northern,71,163,Lake Erken (2018),NA,NA,NA
+Months,Summer,Northern,163,255,Lake Erken (2018),NA,NA,NA
+Months,Autumn,Northern,255,346,Lake Erken (2018),NA,NA,NA
+Months,Winter,Northern,1,71,Lake Erken (2018),NA,NA,NA
+Astronomical,Spring,Northern,90,183,Lake Erken (2018),NA,NA,NA
+Astronomical,Summer,Northern,183,276,Lake Erken (2018),NA,NA,NA
+Astronomical,Winter,Northern,1,90,Lake Erken (2018),NA,NA,NA
+Months,Winter,Northern,346,365,Midway Pond (2023),NA,NA,NA
+Astronomical,Autumn,Northern,276,365,Midway Pond (2023),NA,NA,NA
+Months,Spring,Northern,71,163,Midway Pond (2023),NA,NA,NA
+Months,Summer,Northern,163,255,Midway Pond (2023),NA,NA,NA
+Months,Autumn,Northern,255,346,Midway Pond (2023),NA,NA,NA
+Months,Winter,Northern,1,71,Midway Pond (2023),NA,NA,NA
+Astronomical,Spring,Northern,90,183,Midway Pond (2023),NA,NA,NA
+Astronomical,Summer,Northern,183,276,Midway Pond (2023),NA,NA,NA
+Astronomical,Winter,Northern,1,90,Midway Pond (2023),NA,NA,NA
+Months,Winter,Northern,346,365,Mohonk Lake (2017),NA,NA,NA
+Astronomical,Autumn,Northern,276,365,Mohonk Lake (2017),NA,NA,NA
+Months,Spring,Northern,71,163,Mohonk Lake (2017),NA,NA,NA
+Months,Summer,Northern,163,255,Mohonk Lake (2017),NA,NA,NA
+Months,Autumn,Northern,255,346,Mohonk Lake (2017),NA,NA,NA
+Months,Winter,Northern,1,71,Mohonk Lake (2017),NA,NA,NA
+Astronomical,Spring,Northern,90,183,Mohonk Lake (2017),NA,NA,NA
+Astronomical,Summer,Northern,183,276,Mohonk Lake (2017),NA,NA,NA
+Astronomical,Winter,Northern,1,90,Mohonk Lake (2017),NA,NA,NA
+Months,Winter,Northern,346,365,Lake Rerewhakaaitu (2022-2023),NA,NA,NA
+Astronomical,Autumn,Northern,276,365,Lake Rerewhakaaitu (2022-2023),NA,NA,NA
+Months,Spring,Northern,71,163,Lake Rerewhakaaitu (2022-2023),NA,NA,NA
+Months,Summer,Northern,163,255,Lake Rerewhakaaitu (2022-2023),NA,NA,NA
+Months,Autumn,Northern,255,346,Lake Rerewhakaaitu (2022-2023),NA,NA,NA
+Months,Winter,Northern,1,71,Lake Rerewhakaaitu (2022-2023),NA,NA,NA
+Astronomical,Spring,Northern,90,183,Lake Rerewhakaaitu (2022-2023),NA,NA,NA
+Astronomical,Summer,Northern,183,276,Lake Rerewhakaaitu (2022-2023),NA,NA,NA
+Astronomical,Winter,Northern,1,90,Lake Rerewhakaaitu (2022-2023),NA,NA,NA
+Months,Winter,Northern,346,365,Lake Sunapee (2008),NA,NA,NA
+Astronomical,Autumn,Northern,276,365,Lake Sunapee (2008),NA,NA,NA
+Months,Spring,Northern,71,163,Lake Sunapee (2008),NA,NA,NA
+Months,Summer,Northern,163,255,Lake Sunapee (2008),NA,NA,NA
+Months,Autumn,Northern,255,346,Lake Sunapee (2008),NA,NA,NA
+Months,Winter,Northern,1,71,Lake Sunapee (2008),NA,NA,NA
+Astronomical,Spring,Northern,90,183,Lake Sunapee (2008),NA,NA,NA
+Astronomical,Summer,Northern,183,276,Lake Sunapee (2008),NA,NA,NA
+Astronomical,Winter,Northern,1,90,Lake Sunapee (2008),NA,NA,NA
+Stratification,Mixed,NA,1,120,Lake Ägeri (2023),1,120,NA
+Stratification,Stratified,NA,120,343,Lake Ägeri (2023),120,343,NA
+Stratification,Mixed,NA,343,365,Lake Ägeri (2023),343,365,NA
+Stratification,Mixed,NA,1,110,Arendsee (2020),1,110,NA
+Stratification,Stratified,NA,110,116,Arendsee (2020),110,116,NA
+Stratification,Mixed,NA,116,118,Arendsee (2020),116,118,NA
+Stratification,Stratified,NA,118,349,Arendsee (2020),118,349,NA
+Stratification,Mixed,NA,349,365,Arendsee (2020),349,365,NA
+Stratification,Mixed,NA,1,81,Beaverdam Reservoir (2021),1,81,NA
+Stratification,Stratified,NA,81,85,Beaverdam Reservoir (2021),81,85,NA
+Stratification,Mixed,NA,85,89,Beaverdam Reservoir (2021),85,89,NA
+Stratification,Stratified,NA,89,321,Beaverdam Reservoir (2021),89,321,NA
+Stratification,Mixed,NA,321,322,Beaverdam Reservoir (2021),321,322,NA
+Stratification,Stratified,NA,322,323,Beaverdam Reservoir (2021),322,323,NA
+Stratification,Mixed,NA,323,325,Beaverdam Reservoir (2021),323,325,NA
+Stratification,Stratified,NA,325,326,Beaverdam Reservoir (2021),325,326,NA
+Stratification,Mixed,NA,326,333,Beaverdam Reservoir (2021),326,333,NA
+Stratification,Stratified,NA,333,334,Beaverdam Reservoir (2021),333,334,NA
+Stratification,Mixed,NA,334,365,Beaverdam Reservoir (2021),334,365,NA
+Stratification,Mixed,NA,1,365,Lake Erken (2018),1,365,NA
+Stratification,Mixed,NA,1,140,Midway Pond (2023),1,140,NA
+Stratification,Stratified,NA,140,301,Midway Pond (2023),140,301,NA
+Stratification,Mixed,NA,301,312,Midway Pond (2023),301,312,NA
+Stratification,Stratified,NA,312,313,Midway Pond (2023),312,313,NA
+Stratification,Mixed,NA,313,365,Midway Pond (2023),313,365,NA
+Stratification,Mixed,NA,1,59,Mohonk Lake (2017),1,59,NA
 Stratification,"Inversely
-stratified",NA,59,62,Mohonk Lake (2017),59,62
-Stratification,Mixed,NA,62,85,Mohonk Lake (2017),62,85
+stratified",NA,59,62,Mohonk Lake (2017),59,62,NA
+Stratification,Mixed,NA,62,85,Mohonk Lake (2017),62,85,NA
 Stratification,"Inversely
-stratified",NA,85,125,Mohonk Lake (2017),85,125
-Stratification,Stratified,NA,125,323,Mohonk Lake (2017),125,323
-Stratification,Mixed,NA,323,365,Mohonk Lake (2017),323,365
-Stratification,Mixed,NA,1,93,Lake Rerewhakaaitu (2022-2023),1,93
-Stratification,Stratified,NA,93,99,Lake Rerewhakaaitu (2022-2023),93,99
-Stratification,Mixed,NA,99,105,Lake Rerewhakaaitu (2022-2023),99,105
-Stratification,Stratified,NA,105,108,Lake Rerewhakaaitu (2022-2023),105,108
-Stratification,Mixed,NA,108,114,Lake Rerewhakaaitu (2022-2023),108,114
-Stratification,Stratified,NA,114,116,Lake Rerewhakaaitu (2022-2023),114,116
-Stratification,Mixed,NA,116,120,Lake Rerewhakaaitu (2022-2023),116,120
-Stratification,Stratified,NA,120,121,Lake Rerewhakaaitu (2022-2023),120,121
-Stratification,Mixed,NA,121,124,Lake Rerewhakaaitu (2022-2023),121,124
-Stratification,Stratified,NA,124,157,Lake Rerewhakaaitu (2022-2023),124,157
-Stratification,Mixed,NA,157,166,Lake Rerewhakaaitu (2022-2023),157,166
-Stratification,Stratified,NA,166,172,Lake Rerewhakaaitu (2022-2023),166,172
-Stratification,Mixed,NA,172,175,Lake Rerewhakaaitu (2022-2023),172,175
-Stratification,Stratified,NA,175,200,Lake Rerewhakaaitu (2022-2023),175,200
-Stratification,Mixed,NA,200,207,Lake Rerewhakaaitu (2022-2023),200,207
-Stratification,Stratified,NA,207,223,Lake Rerewhakaaitu (2022-2023),207,223
-Stratification,Mixed,NA,223,229,Lake Rerewhakaaitu (2022-2023),223,229
-Stratification,Stratified,NA,229,238,Lake Rerewhakaaitu (2022-2023),229,238
-Stratification,Mixed,NA,238,241,Lake Rerewhakaaitu (2022-2023),238,241
-Stratification,Stratified,NA,241,270,Lake Rerewhakaaitu (2022-2023),241,270
-Stratification,Mixed,NA,270,271,Lake Rerewhakaaitu (2022-2023),270,271
-Stratification,Stratified,NA,271,275,Lake Rerewhakaaitu (2022-2023),271,275
-Stratification,Mixed,NA,275,276,Lake Rerewhakaaitu (2022-2023),275,276
-Stratification,Stratified,NA,276,278,Lake Rerewhakaaitu (2022-2023),276,278
-Stratification,Mixed,NA,278,286,Lake Rerewhakaaitu (2022-2023),278,286
-Stratification,Stratified,NA,286,290,Lake Rerewhakaaitu (2022-2023),286,290
-Stratification,Mixed,NA,290,365,Lake Rerewhakaaitu (2022-2023),290,365
-Stratification,Mixed,NA,1,57,Lake Sunapee (2008),1,57
+stratified",NA,85,125,Mohonk Lake (2017),85,125,NA
+Stratification,Stratified,NA,125,323,Mohonk Lake (2017),125,323,NA
+Stratification,Mixed,NA,323,365,Mohonk Lake (2017),323,365,NA
+Stratification,Mixed,NA,1,93,Lake Rerewhakaaitu (2022-2023),1,93,NA
+Stratification,Stratified,NA,93,99,Lake Rerewhakaaitu (2022-2023),93,99,NA
+Stratification,Mixed,NA,99,105,Lake Rerewhakaaitu (2022-2023),99,105,NA
+Stratification,Stratified,NA,105,108,Lake Rerewhakaaitu (2022-2023),105,108,NA
+Stratification,Mixed,NA,108,114,Lake Rerewhakaaitu (2022-2023),108,114,NA
+Stratification,Stratified,NA,114,116,Lake Rerewhakaaitu (2022-2023),114,116,NA
+Stratification,Mixed,NA,116,120,Lake Rerewhakaaitu (2022-2023),116,120,NA
+Stratification,Stratified,NA,120,121,Lake Rerewhakaaitu (2022-2023),120,121,NA
+Stratification,Mixed,NA,121,124,Lake Rerewhakaaitu (2022-2023),121,124,NA
+Stratification,Stratified,NA,124,157,Lake Rerewhakaaitu (2022-2023),124,157,NA
+Stratification,Mixed,NA,157,166,Lake Rerewhakaaitu (2022-2023),157,166,NA
+Stratification,Stratified,NA,166,172,Lake Rerewhakaaitu (2022-2023),166,172,NA
+Stratification,Mixed,NA,172,175,Lake Rerewhakaaitu (2022-2023),172,175,NA
+Stratification,Stratified,NA,175,200,Lake Rerewhakaaitu (2022-2023),175,200,NA
+Stratification,Mixed,NA,200,207,Lake Rerewhakaaitu (2022-2023),200,207,NA
+Stratification,Stratified,NA,207,223,Lake Rerewhakaaitu (2022-2023),207,223,NA
+Stratification,Mixed,NA,223,229,Lake Rerewhakaaitu (2022-2023),223,229,NA
+Stratification,Stratified,NA,229,238,Lake Rerewhakaaitu (2022-2023),229,238,NA
+Stratification,Mixed,NA,238,241,Lake Rerewhakaaitu (2022-2023),238,241,NA
+Stratification,Stratified,NA,241,270,Lake Rerewhakaaitu (2022-2023),241,270,NA
+Stratification,Mixed,NA,270,271,Lake Rerewhakaaitu (2022-2023),270,271,NA
+Stratification,Stratified,NA,271,275,Lake Rerewhakaaitu (2022-2023),271,275,NA
+Stratification,Mixed,NA,275,276,Lake Rerewhakaaitu (2022-2023),275,276,NA
+Stratification,Stratified,NA,276,278,Lake Rerewhakaaitu (2022-2023),276,278,NA
+Stratification,Mixed,NA,278,286,Lake Rerewhakaaitu (2022-2023),278,286,NA
+Stratification,Stratified,NA,286,290,Lake Rerewhakaaitu (2022-2023),286,290,NA
+Stratification,Mixed,NA,290,365,Lake Rerewhakaaitu (2022-2023),290,365,NA
+Stratification,Mixed,NA,1,57,Lake Sunapee (2008),1,57,NA
 Stratification,"Inversely
-stratified",NA,57,60,Lake Sunapee (2008),57,60
-Stratification,Mixed,NA,60,61,Lake Sunapee (2008),60,61
+stratified",NA,57,60,Lake Sunapee (2008),57,60,NA
+Stratification,Mixed,NA,60,61,Lake Sunapee (2008),60,61,NA
 Stratification,"Inversely
-stratified",NA,61,97,Lake Sunapee (2008),61,97
-Stratification,Mixed,NA,97,98,Lake Sunapee (2008),97,98
+stratified",NA,61,97,Lake Sunapee (2008),61,97,NA
+Stratification,Mixed,NA,97,98,Lake Sunapee (2008),97,98,NA
 Stratification,"Inversely
-stratified",NA,98,103,Lake Sunapee (2008),98,103
-Stratification,Mixed,NA,103,106,Lake Sunapee (2008),103,106
+stratified",NA,98,103,Lake Sunapee (2008),98,103,NA
+Stratification,Mixed,NA,103,106,Lake Sunapee (2008),103,106,NA
 Stratification,"Inversely
-stratified",NA,106,107,Lake Sunapee (2008),106,107
-Stratification,Mixed,NA,107,108,Lake Sunapee (2008),107,108
+stratified",NA,106,107,Lake Sunapee (2008),106,107,NA
+Stratification,Mixed,NA,107,108,Lake Sunapee (2008),107,108,NA
 Stratification,"Inversely
-stratified",NA,108,109,Lake Sunapee (2008),108,109
-Stratification,Mixed,NA,109,113,Lake Sunapee (2008),109,113
+stratified",NA,108,109,Lake Sunapee (2008),108,109,NA
+Stratification,Mixed,NA,109,113,Lake Sunapee (2008),109,113,NA
 Stratification,"Inversely
-stratified",NA,113,114,Lake Sunapee (2008),113,114
-Stratification,Mixed,NA,114,141,Lake Sunapee (2008),114,141
-Stratification,Stratified,NA,141,144,Lake Sunapee (2008),141,144
-Stratification,Mixed,NA,144,145,Lake Sunapee (2008),144,145
-Stratification,Stratified,NA,145,273,Lake Sunapee (2008),145,273
-Stratification,Mixed,NA,273,275,Lake Sunapee (2008),273,275
-Stratification,Stratified,NA,275,276,Lake Sunapee (2008),275,276
-Stratification,Mixed,NA,276,277,Lake Sunapee (2008),276,277
-Stratification,Stratified,NA,277,280,Lake Sunapee (2008),277,280
-Stratification,Mixed,NA,280,365,Lake Sunapee (2008),280,365
-Ice,Open water,NA,0,365,Lake Ägeri (2023),NA,NA
-Ice,Open water,NA,0,365,Arendsee (2020),NA,NA
-Ice,Ice,NA,21,23,Beaverdam Reservoir (2021),NA,NA
-Ice,Ice,NA,41,42,Beaverdam Reservoir (2021),NA,NA
-Ice,Ice,NA,55,58,Beaverdam Reservoir (2021),NA,NA
-Ice,Open water,NA,0,21,Beaverdam Reservoir (2021),NA,NA
-Ice,Open water,NA,23,41,Beaverdam Reservoir (2021),NA,NA
-Ice,Open water,NA,42,55,Beaverdam Reservoir (2021),NA,NA
-Ice,Open water,NA,58,365,Beaverdam Reservoir (2021),NA,NA
-Ice,Open water,NA,0,20,Lake Erken (2018),NA,NA
-Ice,Ice,NA,20,121,Lake Erken (2018),NA,NA
-Ice,Open water,NA,121,365,Lake Erken (2018),NA,NA
-Ice,Ice,NA,0,131,Midway Pond (2023),NA,NA
-Ice,Open water,NA,131,329,Midway Pond (2023),NA,NA
-Ice,Ice,NA,329,365,Midway Pond (2023),NA,NA
-Ice,Ice,NA,0,108,Mohonk Lake (2017),NA,NA
-Ice,Open water,NA,109,365,Mohonk Lake (2017),NA,NA
-Ice,Open water,NA,0,365,Lake Rerewhakaaitu (2022-2023),NA,NA
-Ice,Ice,NA,0,126,Lake Sunapee (2008),NA,NA
-Ice,Open water,NA,126,365,Lake Sunapee (2008),NA,NA
+stratified",NA,113,114,Lake Sunapee (2008),113,114,NA
+Stratification,Mixed,NA,114,141,Lake Sunapee (2008),114,141,NA
+Stratification,Stratified,NA,141,144,Lake Sunapee (2008),141,144,NA
+Stratification,Mixed,NA,144,145,Lake Sunapee (2008),144,145,NA
+Stratification,Stratified,NA,145,273,Lake Sunapee (2008),145,273,NA
+Stratification,Mixed,NA,273,275,Lake Sunapee (2008),273,275,NA
+Stratification,Stratified,NA,275,276,Lake Sunapee (2008),275,276,NA
+Stratification,Mixed,NA,276,277,Lake Sunapee (2008),276,277,NA
+Stratification,Stratified,NA,277,280,Lake Sunapee (2008),277,280,NA
+Stratification,Mixed,NA,280,365,Lake Sunapee (2008),280,365,NA
+Ice,Open water,NA,0,365,Lake Ägeri (2023),NA,NA,2022-12-21
+Ice,Open water,NA,0,365,Arendsee (2020),NA,NA,NA
+Ice,Ice,NA,21,23,Beaverdam Reservoir (2021),NA,NA,2020-12-21
+Ice,Ice,NA,41,42,Beaverdam Reservoir (2021),NA,NA,2020-12-21
+Ice,Ice,NA,55,58,Beaverdam Reservoir (2021),NA,NA,2020-12-21
+Ice,Open water,NA,0,21,Beaverdam Reservoir (2021),NA,NA,2020-12-21
+Ice,Open water,NA,23,41,Beaverdam Reservoir (2021),NA,NA,2020-12-21
+Ice,Open water,NA,42,55,Beaverdam Reservoir (2021),NA,NA,2020-12-21
+Ice,Open water,NA,58,365,Beaverdam Reservoir (2021),NA,NA,2020-12-21
+Ice,Open water,NA,0,203,Lake Erken (2018),NA,NA,NA
+Ice,Ice,NA,203,305,Lake Erken (2018),NA,NA,NA
+Ice,Open water,NA,305,365,Lake Erken (2018),NA,NA,NA
+Ice,Ice,NA,0,365,Midway Pond (2023),NA,NA,NA
+Ice,Ice,NA,0,108,Mohonk Lake (2017),NA,NA,2016-12-21
+Ice,Open water,NA,109,365,Mohonk Lake (2017),NA,NA,2016-12-21
+Ice,Open water,NA,0,365,Lake Rerewhakaaitu (2022-2023),NA,NA,NA
+Ice,Ice,NA,0,126,Lake Sunapee (2008),NA,NA,2007-12-21
+Ice,Open water,NA,126,365,Lake Sunapee (2008),NA,NA,2007-12-21

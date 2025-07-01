@@ -31,8 +31,6 @@ LAKES <- c("Lake Erken (2018)", #59.83917
 
 # Discrete
 
-NOTE: add color for mixed period
-
 ```{r}
 #Load discrete data
 in_lake_csvs <- list.files(path = "../01b_Processed_data",

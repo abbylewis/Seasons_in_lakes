@@ -1,4 +1,4 @@
-"Lake","Date","Ice_binary","start","end"
-"Lake Erken","2017-12-21",0,0,203
-"Lake Erken","2018-07-12",1,203,305
-"Lake Erken","2018-10-22",0,305,365
+"Lake","Season","Method","start","end"
+"Lake Erken (2018)","Open water","Ice",0,203
+"Lake Erken (2018)","Ice","Ice",203,305
+"Lake Erken (2018)","Open water","Ice",305,365

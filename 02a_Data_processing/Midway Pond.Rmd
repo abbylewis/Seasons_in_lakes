@@ -20,7 +20,7 @@ In-lake data (temperature, chlorophyll-a, stratification)
 
 ```{r}
 # Load data
-in_lake_formatted <- read_csv("https://pasta-s.lternet.edu/package/data/eml/edi/1312/4/f8e0e7b22826772424f156b9565d1498") %>%
+in_lake_formatted <- read_csv("https://pasta-s.lternet.edu/package/data/eml/edi/1312/7/f8e0e7b22826772424f156b9565d1498") %>%
   mutate(Depth_m = case_match(Depth_m,
                               0.5~1,
                               .default = Depth_m)) %>%
@@ -82,7 +82,7 @@ Meteorological data
 
 ```{r}
 # Load data
-met <- read_csv("https://pasta-s.lternet.edu/package/data/eml/edi/1312/2/e312838eff13f56594021498f35c04cd")
+met <- read_csv("https://pasta-s.lternet.edu/package/data/eml/edi/1312/7/e312838eff13f56594021498f35c04cd")
 
 # Format continuous data
 met_formatted <- met %>%
