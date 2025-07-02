@@ -81,6 +81,9 @@ continuous %>%
 for_plot <- continuous %>%
   mutate(Value = ifelse(Lake == "Lake\nSunapee\n(2008)" & Variable == "Solar radiation", 
                         NA, # different units
+                        Value),
+         Value = ifelse(Lake == "Lake\nRerewhakaaitu\n(2022-2023)" & Variable == "Surface chlorophyll-a", 
+                        NA, # different units
                         Value)) %>%
   left_join(discrete %>% select(-x), relationship = "many-to-many") %>%
   mutate(Lake = sub(" ", "\n", sub(" \\(", "\n(", Lake)),
