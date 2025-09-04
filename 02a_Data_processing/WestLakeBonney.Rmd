@@ -1,0 +1,145 @@
+---
+title: "West Lake Bonney"
+author: "Dave Richardson"
+date: "2025-09-04"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(rLakeAnalyzer)
+
+#Offset so all yday values are from the winter solstice
+solstice <- as.Date("2022-12-21")
+offset = as.Date("2023-01-01") - solstice
+LAKE = "West Lake Bonney (2023)"
+```
+
+All data in one file
+
+```{r}
+# Load data
+in_lake_data <- read_csv("../01a_Raw_data/mcmlter-lake-bluebox_wlbbb_15min-20250725.csv") %>%
+  mutate(Date=date_time,
+         day = as.Date(date_time) + offset,
+         yday = yday(day)) %>%
+  filter(year(day) == 2023,
+         !is.na(yday))
+
+# Format continuous data
+in_lake_formatted <- in_lake_data %>%
+  select(day,yday,Date,stage_watertemp_degc,do_lower_watertemp_degc) %>%
+  pivot_longer(c("stage_watertemp_degc","do_lower_watertemp_degc"),
+               values_to = "Value") %>%
+  group_by(name, Date) %>%
+  filter(!is.na(Value)) %>%
+  mutate(Layer = case_when(name == "stage_watertemp_degc"~"Surface",
+                           name == "do_lower_watertemp_degc"~"Bottom")) %>%
+  filter(!is.na(Layer)) %>%
+  ungroup() %>%
+  mutate(Variable = paste(Layer, name),
+         Variable = case_match(Variable,
+                               "Surface WaterTemperature_C"~"Surface_temperature",
+                               "Surface DO_mgL"~"Surface_DO",
+                               "Bottom WaterTemperature_C"~"Bottom_temperature",
+                               "Bottom DO_mgL"~"Bottom_DO",
+                               "Surface Chla_ugL"~"Surface_chla")) %>%
+  filter(!is.na(Variable)) %>%
+  mutate(Lake = LAKE) %>%
+  select(Variable, Value, yday, Lake)
+
+write.csv(in_lake_formatted, "../01b_Processed_data/Mohonk_continuous.csv", row.names = F)
+
+# Stratification metric calcs (both discrete and continuous)
+strat_sum <- in_lake_formatted %>%
+  filter(Variable %in% c("Surface_temperature", "Bottom_temperature")) %>%
+  pivot_wider(names_from = "Variable", values_from = "Value") %>%
+  mutate(Diff_Dens_surf_bot = water.density(Bottom_temperature) - 
+           water.density(Surface_temperature),
+         Inverse = ifelse(Bottom_temperature > Surface_temperature,
+                          T, F))
+
+strat_export_discrete <- strat_sum %>%
+  mutate(Strat = ifelse(Diff_Dens_surf_bot > 0.1, "Stratified", "Mixed"),
+         Strat = ifelse(Inverse & Strat == "Stratified", "Inversely\nstratified", Strat)) %>%
+  filter(!is.na(Strat)) %>%
+  ungroup() %>%
+  filter(Strat != lag(Strat)) %>%
+  full_join(data.frame(Variable = "Diff_Dens_surf_bot", yday = 1, Strat = "Mixed")) %>%
+  arrange(yday) %>%
+  mutate(end = lead(yday, default = 365)) %>%
+  rename(start = yday, Season = Strat) %>%
+  select(start, end, Season) %>%
+  mutate(Lake = LAKE)
+
+strat_export_cont <- strat_sum %>%
+  select(yday, Diff_Dens_surf_bot) %>%
+  pivot_longer(Diff_Dens_surf_bot, names_to = "Variable", values_to = "Value") %>%
+  mutate(Lake = LAKE)
+
+write.csv(strat_export_discrete, 
+          "../01b_Processed_data/Mohonk_stratification_discrete.csv", 
+          row.names = F)
+write.csv(strat_export_cont, 
+          "../01b_Processed_data/Mohonk_stratification_continuous.csv", 
+          row.names = F)
+```
+
+Meteorological data
+
+```{r}
+# Load data
+met <- read_csv("https://pasta-s.lternet.edu/package/data/eml/edi/1312/9/e312838eff13f56594021498f35c04cd")
+
+# Format continuous data
+met_formatted <- met %>%
+  filter(Lake == "Mohonk Lake") %>%
+  mutate(Date = as.Date(Date) + offset,
+         doy = yday(Date)) %>%
+  filter(year(Date) == 2017) %>%
+  rename(AirTemp_C_Average = AirTemp_C,
+         Shortwave = ShortwaveRadiation_Wm2) %>%
+  pivot_longer(c(AirTemp_C_Average, Shortwave), names_to = "Variable", values_to = "Value") %>%
+  mutate(yday = yday(Date)) %>%
+  select(Variable, Value, yday) %>%
+  mutate(Lake = LAKE)
+
+write.csv(met_formatted, "../01b_Processed_data/Mohonk_met.csv", row.names = F)
+```
+
+Ice data
+
+```{r}
+#Load data
+ice <- read.csv("https://pasta-s.lternet.edu/package/data/eml/edi/1312/9/f8e0e7b22826772424f156b9565d1498") 
+
+ice_formatted <- ice %>%
+  filter(Lake == "Mohonk Lake",
+         !is.na(Ice_binary)) %>%
+  group_by(Lake, Date) %>%
+  summarize(Ice_binary = ifelse(sum(Ice_binary) >= 1, 1, 0)) %>%
+  group_by(Lake) %>%
+  arrange(Lake, Date) %>%
+  mutate(start = ifelse(Date == first(Date) |
+                          !Ice_binary == lag(Ice_binary),
+                        Date, NA),
+         ) %>%
+  filter(!is.na(start) | Date == last(Date)) %>%
+  mutate(end = lead(Date),
+         start = as.numeric(difftime(as.Date(start), 
+                                     as.Date(first(Date)), 
+                                     units="days")),
+         end = as.numeric(difftime(as.Date(end), 
+                                   as.Date(first(Date)), 
+                                   units="days")),
+         Season = case_match(Ice_binary,
+                             1~"Ice",
+                             0~"Open water"), 
+         Method = "Ice",
+         Lake = LAKE) %>%
+  filter(!is.na(start)) %>%
+  select(Lake, Season, Method, start, end)
+
+write.csv(ice_formatted, "../01b_Processed_data/Mohonk_ice.csv", row.names = F)
+```

@@ -3,6 +3,7 @@ if (!require(tidyverse)) {install.packages("tidyverse")}
 if (!require(ggpubr)) {install.packages("ggpubr")}
 if (!require(geosphere)) {install.packages("geosphere")}
 if (!require(ggnewscale)) {install.packages("ggnewscale")}
+if (!require(tinter)) {install.packages("tinter")}
 
 
 
@@ -15,6 +16,7 @@ library(ShellChron)
 library(rLakeAnalyzer) #water.density function
 library(patchwork) #plot panels
 library(ggnewscale)
+library(tinter)
 
 
 #Id latitude of our study lakes####
