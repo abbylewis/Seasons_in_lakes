@@ -39,18 +39,16 @@ in_lake_formatted <- in_lake_data %>%
                            name == "do_lower_watertemp_degc"~"Bottom")) %>%
   filter(!is.na(Layer)) %>%
   ungroup() %>%
-  mutate(Variable = paste(Layer, name), #########STOPPED HERE- NEED TO FIGURE OUT WHAT ABBY WAS DOING#####
-         Variable = case_match(Variable,
-                               "Surface WaterTemperature_C"~"Surface_temperature",
-                               "Surface DO_mgL"~"Surface_DO",
-                               "Bottom WaterTemperature_C"~"Bottom_temperature",
-                               "Bottom DO_mgL"~"Bottom_DO",
-                               "Surface Chla_ugL"~"Surface_chla")) %>%
+  mutate(Variable=case_when(Layer=="Surface"~"Surface_temperature",
+                              Layer=="Bottom"~"Bottom_temperature",
+                              .default=NA
+                              )
+         ) %>%
   filter(!is.na(Variable)) %>%
   mutate(Lake = LAKE) %>%
   select(Variable, Value, yday, Lake)
 
-write.csv(in_lake_formatted, "../01b_Processed_data/Mohonk_continuous.csv", row.names = F)
+write.csv(in_lake_formatted, "../01b_Processed_data/WestLakeBonney_continuous.csv", row.names = F)
 
 # Stratification metric calcs (both discrete and continuous)
 strat_sum <- in_lake_formatted %>%
@@ -80,10 +78,10 @@ strat_export_cont <- strat_sum %>%
   mutate(Lake = LAKE)
 
 write.csv(strat_export_discrete, 
-          "../01b_Processed_data/Mohonk_stratification_discrete.csv", 
+          "../01b_Processed_data/WestLakeBonney_stratification_discrete.csv", 
           row.names = F)
 write.csv(strat_export_cont, 
-          "../01b_Processed_data/Mohonk_stratification_continuous.csv", 
+          "../01b_Processed_data/WestLakeBonney_stratification_continuous.csv", 
           row.names = F)
 ```
 
@@ -91,56 +89,30 @@ Meteorological data
 
 ```{r}
 # Load data
-met <- read_csv("https://pasta-s.lternet.edu/package/data/eml/edi/1312/9/e312838eff13f56594021498f35c04cd")
+met <- read_csv("https://pasta.lternet.edu/package/data/eml/knb-lter-mcm/7003/22/b7702f38a033bf70ff4752f49886e82b")
 
 # Format continuous data
 met_formatted <- met %>%
-  filter(Lake == "Mohonk Lake") %>%
-  mutate(Date = as.Date(Date) + offset,
+  #filter(Lake == "West Lake Bonney (2023)") %>%
+  mutate(Date = as.Date(date_time) + offset,
          doy = yday(Date)) %>%
-  filter(year(Date) == 2017) %>%
-  rename(AirTemp_C_Average = AirTemp_C,
-         Shortwave = ShortwaveRadiation_Wm2) %>%
+  filter(year(Date) == 2023) %>%
+  rename(AirTemp_C_Average = airtemp_1m_degc,
+         Shortwave = swradin_wm2) %>%
   pivot_longer(c(AirTemp_C_Average, Shortwave), names_to = "Variable", values_to = "Value") %>%
   mutate(yday = yday(Date)) %>%
   select(Variable, Value, yday) %>%
   mutate(Lake = LAKE)
 
-write.csv(met_formatted, "../01b_Processed_data/Mohonk_met.csv", row.names = F)
+write.csv(met_formatted, "../01b_Processed_data/WestLakeBonney_met.csv", row.names = F)
 ```
 
 Ice data
 
 ```{r}
 #Load data
-ice <- read.csv("https://pasta-s.lternet.edu/package/data/eml/edi/1312/9/f8e0e7b22826772424f156b9565d1498") 
 
-ice_formatted <- ice %>%
-  filter(Lake == "Mohonk Lake",
-         !is.na(Ice_binary)) %>%
-  group_by(Lake, Date) %>%
-  summarize(Ice_binary = ifelse(sum(Ice_binary) >= 1, 1, 0)) %>%
-  group_by(Lake) %>%
-  arrange(Lake, Date) %>%
-  mutate(start = ifelse(Date == first(Date) |
-                          !Ice_binary == lag(Ice_binary),
-                        Date, NA),
-         ) %>%
-  filter(!is.na(start) | Date == last(Date)) %>%
-  mutate(end = lead(Date),
-         start = as.numeric(difftime(as.Date(start), 
-                                     as.Date(first(Date)), 
-                                     units="days")),
-         end = as.numeric(difftime(as.Date(end), 
-                                   as.Date(first(Date)), 
-                                   units="days")),
-         Season = case_match(Ice_binary,
-                             1~"Ice",
-                             0~"Open water"), 
-         Method = "Ice",
-         Lake = LAKE) %>%
-  filter(!is.na(start)) %>%
-  select(Lake, Season, Method, start, end)
+ice_formatted <- tibble(Lake="West Lake Bonney",Season="Ice",Method="Ice",start=0,end=365)
 
-write.csv(ice_formatted, "../01b_Processed_data/Mohonk_ice.csv", row.names = F)
+write.csv(ice_formatted, "../01b_Processed_data/WestLakeBonney_ice.csv", row.names = F)
 ```
