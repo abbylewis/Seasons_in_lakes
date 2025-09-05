@@ -4,6 +4,9 @@ if (!require(ggpubr)) {install.packages("ggpubr")}
 if (!require(geosphere)) {install.packages("geosphere")}
 if (!require(ggnewscale)) {install.packages("ggnewscale")}
 if (!require(tinter)) {install.packages("tinter")}
+if (!require(maps)) {install.packages("maps")}
+if (!require(ggmap)) {install.packages("ggmap")}
+if (!require(ggspatial)) {install.packages("ggspatial")}
 
 
 
@@ -17,11 +20,14 @@ library(rLakeAnalyzer) #water.density function
 library(patchwork) #plot panels
 library(ggnewscale)
 library(tinter)
-
+library(ggmap)
+library(maps)
+library(ggspatial) #For the scale bar and compass on the map
 
 #Id latitude of our study lakes####
 LAKES <- c("Mohonk Lake (2017)", #41.76598
-           "Lake Rerewhakaaitu (2022-2023)") #-38.2936
+           "Lake Rerewhakaaitu (2022-2023)",
+           "West Lake Bonney (2023)") #-38.2936
 
 
 #Get in the lake information####
@@ -37,6 +43,11 @@ mohonk_in_lake <- read.csv("01b_Processed_data/Mohonk_continuous.csv")
 mohonk_strat <- read.csv("01b_Processed_data/Mohonk_stratification_continuous.csv")
 mohk_ice<-read_csv("01b_Processed_data/Mohonk_ice.csv")
 
+#WestLakeBonney
+westlakebonney_in_lake <- read.csv("01b_Processed_data/WestLakeBonney_continuous.csv")
+westlakebonney_strat <- read.csv("01b_Processed_data/WestLakeBonney_stratification_continuous.csv")
+westlakebonney_met <- read.csv("01b_Processed_data/westlakebonney_met.csv")
+
 #Format
 #A bit of magic to get explicit NAs
 all <- rere_strat %>%
@@ -47,6 +58,10 @@ all <- rere_strat %>%
 full <- all %>%
   expand(Variable, yday, Lake)
 
+
+date=as.POSIXct("2023-06-21 00:00:00", tz ="Pacific/Auckland")
+latitude=-77.72
+longitude=162.2993
 
 #Function for day length####
 getDayLength <- function(date, latitude, longitude){
@@ -172,6 +187,17 @@ autumn_color<-rgb(228,141,44,maxColorValue = 255)
 #Stratification threshold
 strat_thresh = 0.1
 
+#Set all the parameters for the daylights, colors should match breaks
+daylight_colors<-c(tinter::darken("#FFC233",0.95),
+                   tinter::darken("#FFC233",0.6),
+                   tinter::lighten("#FFC233",0.8),
+                   tinter::lighten("#FFC233",0.1),
+                   tinter::lighten("#FFC233",0.05)
+                  )
+daylight_breaks<-c(0,6,12,18,24)
+daylight_limits<-c(0,24)
+
+
 #plot the seasons as a clock####
 (gg.clock.mohonk<-ggplot(data=all_mohk)+
    #Put the polar coordinates on with breaks at each of the month starts####
@@ -204,17 +230,13 @@ strat_thresh = 0.1
  ggnewscale::new_scale_color()+
     ggnewscale::new_scale_fill()+
    geom_rect(aes(xmin=(yday-1)*2*pi/365,xmax=yday*2*pi/365,ymin=2,ymax=3,fill=day_length, color = day_length),show.legend = FALSE)+ 
-   scale_fill_gradientn(limits=c(9,16),
-                        colors = c(tinter::darken("#FFC233",.6),
-                                   tinter::lighten("#FFC233",.8),
-                                   tinter::lighten("#FFC233",.1)),
-                        breaks=c(9,12,15),labels=c(9,12,15), name = "Day\nlength (hr)",
+   scale_fill_gradientn(limits=c(0,24),
+                        colors = daylight_colors,
+                        breaks=daylight_breaks,labels=daylight_breaks, name = "Day\nlength (hr)",
                         guide = "none")+
-   scale_color_gradientn(limits=c(9,16),
-                         colors = c(tinter::darken("#FFC233",.6),
-                                    tinter::lighten("#FFC233",.8),
-                                    tinter::lighten("#FFC233",.1)),
-                         breaks=c(9,12,15),labels=c(9,12,15), name = "Day\nlength (hr)",
+   scale_color_gradientn(limits=daylight_limits,
+                         colors = daylight_colors,
+                         breaks=daylight_breaks,labels=daylight_breaks, name = "Day\nlength (hr)",
                          guide = "none")+
    geom_line(aes(x=yday*2*pi/365,y=1),color="black",size=0.2)+
    geom_line(aes(x=yday*2*pi/365,y=2),color="black",size=0.2)+ #inner and outer lines
@@ -245,14 +267,14 @@ strat_thresh = 0.1
    geom_segment(data=tibble(x=0*2*pi/365,xend=366*2*pi/365,y=4,yend=4),aes(x=x,xend=xend,y=y,yend=yend),color="black", size = 1)+
    
    #Ice
-   geom_point(data=all_mohk%>%filter(Ice=="ice"),aes(x=yday*2*pi/365,y=(3+4)/2),shape=21,color="#8AB4E3",fill="#8AB4E3",size=4)+ #put blue dots for ice days in the outer ring
-   geom_point(data=all_mohk%>%filter(Ice=="ice"),aes(x=yday*2*pi/365,y=(3+4)/2),shape=21,color="white",fill="white",size=3)+ #put blue dots for ice days in the outer ring
+   geom_point(data=all_mohk%>%filter(Ice=="ice"),aes(x=yday*2*pi/365,y=(3+4)/2),shape=21,color="#8AB4E3",fill="#8AB4E3",size=1.1)+ #put blue dots for ice days in the outer ring
+   geom_point(data=all_mohk%>%filter(Ice=="ice"),aes(x=yday*2*pi/365,y=(3+4)/2),shape=21,color="white",fill="white",size=0.9)+ #put blue dots for ice days in the outer ring
    
    #Geometric segments for the months spindles coming out from the middle####
  geom_segment(data=tibble(x=(c(1,32,60,91,121,152,182,213,244,274,305,335))*2*pi/365,y=4)%>%mutate(xend=x,y=y_limit_lower,yend=4),aes(x=x,xend=xend,y=y,yend=yend),color="white", alpha = 0.3)+  
    
     #Month labels
-    geom_text(data=tibble(x=(c(1,32,60,91,121,152,182,213,244,274,305,335))*2*pi/365,label=month.abb),aes(x=x,y=4.7,label=label), color = "grey50", size = 2.8)+
+    geom_text(data=tibble(x=(c(1,32,60,91,121,152,182,213,244,274,305,335))*2*pi/365,label=month.abb),aes(x=x,y=4.7,label=label), color = "black", size = 2.8)+
     
    #arrows for labels####
  #Ice arrow
@@ -265,14 +287,22 @@ strat_thresh = 0.1
     geom_label(data=tibble(x=(c(45))*2*pi/365,y=y_limit_upper),aes(x=x,y=y),label="Ice",size=9*(5/14))+ #The size= in element_text is 14/5 of the size= in geom_text  
    
     #Daylength label
-    geom_label(data=tibble(x=(c(130))*2*pi/365,y=y_limit_upper),aes(x=x,y=y),label="Day length",size=9*(5/14))+ #The size= in element_text is 14/5 of the size= in geom_text  
+    geom_label(data=tibble(x=(c(135))*2*pi/365,y=y_limit_upper),aes(x=x,y=y),label="Day\n(hrs)",size=9*(5/14))+ #The size= in element_text is 14/5 of the size= in geom_text  
     
+   #Strat arrow
+   geom_segment(data=tibble(x=(c(228))*2*pi/365,y=3.5)%>%mutate(xend=x,yend=y_limit_upper*0.8),aes(x=x,xend=xend,y=y,yend=yend),color="black")+  
+   
+   #Strat label
+   geom_label(data=tibble(x=(c(228))*2*pi/365,y=y_limit_upper*0.9),
+              aes(x=x,y=y),label="Strat.",size=9*(5/14),
+              hjust = .8)+ #The size= in element_text is 14/5 of the size= in geom_text  
+   
    #text at the top for label####
- geom_text(data=tibble(x=2*2*pi/365,y=y_limit_upper),
-           aes(x=x,y=y),
-           label=deparse(bquote(a*"."~Mohonk~Lake~USA*","~41.8*degree*N)),
-           size = 4.2,
-           parse=TRUE)+
+  #geom_text(data=tibble(x=2*2*pi/365,y=y_limit_upper), aes(x=x,y=y), label=deparse(bquote(a*"."~Mohonk~Lake~USA*","~41.8*degree*N)),size = 4.2,parse=TRUE)+
+   
+   #Letter label in middle
+   geom_text(data=tibble(x=(c(1))*2*pi/365,label="A."),aes(x=x,y=0,label=label), color = "black", size = 2.8)+
+     
    scale_y_continuous(limits=c(y_limit_lower,y_limit_upper))+
    
    theme_bw()+
@@ -283,16 +313,20 @@ strat_thresh = 0.1
          axis.title.x=element_blank(),
          axis.title.y=element_blank(),
          axis.ticks.y=element_blank(),
+         legend.position="none", #get rid of legends
          legend.title=element_text(size=11), #change the legend title size
          legend.text=element_text(size=10), #change the legend text size
          legend.margin = margin(0,0,0,0, unit="cm"),
          legend.background = element_rect(color = NA, fill = NA), #make the background of the legend box blank
          legend.key.size = unit(1,"line"), #increase the size of the legend points
-         panel.border = element_blank() #get rid of line around plot
+         panel.border = element_blank(), #get rid of line around plot
+         plot.margin = unit(c(-0.6,-0.7,-0.6,-0.7),"cm"), #spread out the plot a bit to minimize the white space
+         panel.background = element_rect(fill = "transparent", colour = NA),
+         plot.background = element_rect(fill = "transparent", colour = NA)
    )
 ) #end of the clock plot
 
-ggsave(filename="03a_Figures/SeasonsMohonk_Clock_v2.jpg",plot=gg.clock.mohonk,width=3.3,height=3.3,units="in",dpi=300)
+ggsave(filename="03a_Figures/SeasonsMohonk_Clock_v2.png",plot=gg.clock.mohonk,width=1.75,height=1.75,units="in",dpi=300,bg="transparent")
 
 
 #####Rerewhakaaitu LAKE DATA#####
@@ -337,7 +371,7 @@ ggplot(data=rere_daylength,aes(x=yday,y=DayLength))+geom_point()
 #Set up the annual data to get the template
 annual_data_rere<-tibble(yday=rere_daylength$yday,y=min(rere_daylength$DayLength),y2=max(rere_daylength$DayLength))
 
-#Mohonk ice####
+#Rere ice####
 #Join them all together, add Mohonk Ice####
 all_rere<-annual_data_rere%>%
   left_join(.,rere_strat%>%mutate(yday=yday(Date))%>%dplyr::select(yday,delta_density))%>%
@@ -399,17 +433,13 @@ all_rere<-all_rere%>%
  ggnewscale::new_scale_color()+
    ggnewscale::new_scale_fill()+
    geom_rect(aes(xmin=(yday-1)*2*pi/365,xmax=yday*2*pi/365,ymin=2,ymax=3,fill=day_length, color = day_length),show.legend = TRUE)+ 
-   scale_fill_gradientn(limits=c(9,16),
-                        colors = c(tinter::darken("#FFC233",.6),
-                                   tinter::lighten("#FFC233",.8),
-                                   tinter::lighten("#FFC233",.1)),
-                        breaks=c(9,12,15),
-                        labels=c(9,12,15), name = "Day length (hr)")+
-   scale_color_gradientn(limits=c(9,16),
-                         colors = c(tinter::darken("#FFC233",.6),
-                                    tinter::lighten("#FFC233",.8),
-                                    tinter::lighten("#FFC233",.1)),
-                         breaks=c(9,12,15),labels=c(9,12,15), name = "Day length (hr)",
+   scale_fill_gradientn(limits=daylight_limits,
+                        colors = daylight_colors,
+                        breaks=daylight_breaks,
+                        labels=daylight_breaks, name = "Day length (hr)")+
+   scale_color_gradientn(limits=daylight_limits,
+                         colors = daylight_colors,
+                         breaks=daylight_breaks,labels=daylight_breaks, name = "Day length (hr)",
                          guide = "none")+
    guides(fill = guide_colorbar(title.position="top", title.hjust = 0.5))+
    
@@ -428,22 +458,24 @@ all_rere<-all_rere%>%
   geom_segment(data=tibble(x=(c(1,32,60,91,121,152,182,213,244,274,305,335))*2*pi/365,y=4)%>%mutate(xend=x,y=y_limit_lower,yend=4),aes(x=x,xend=xend,y=y,yend=yend),color="white", alpha = 0.3)+  
    
    #Month names
-   geom_text(data=tibble(x=(c(1,32,60,91,121,152,182,213,244,274,305,335))*2*pi/365,label=month.abb),aes(x=x,y=4.7,label=label), color = "grey50", size = 2.8)+
+   geom_text(data=tibble(x=(c(1,32,60,91,121,152,182,213,244,274,305,335))*2*pi/365,label=month.abb),aes(x=x,y=4.7,label=label), color = "black", size = 2.8)+
    
     #Strat arrow
-    geom_segment(data=tibble(x=(c(290))*2*pi/365,y=3.5)%>%mutate(xend=x,yend=y_limit_upper),aes(x=x,xend=xend,y=y,yend=yend),color="black")+  
+    geom_segment(data=tibble(x=(c(132))*2*pi/365,y=3.5)%>%mutate(xend=x,yend=y_limit_upper*0.9),aes(x=x,xend=xend,y=y,yend=yend),color="black")+  
     
     #Strat label
-    geom_label(data=tibble(x=(c(290))*2*pi/365,y=y_limit_upper),
-               aes(x=x,y=y),label="Stratification",size=9*(5/14),
-               hjust = .8)+ #The size= in element_text is 14/5 of the size= in geom_text  
+    geom_label(data=tibble(x=(c(132))*2*pi/365,y=y_limit_upper*0.9),
+               aes(x=x,y=y),label="Mix.",size=9*(5/14),
+               hjust = 0.4)+ #The size= in element_text is 14/5 of the size= in geom_text  
     
     
     
    #text at the top for label####
- geom_text(data=tibble(x=2*2*pi/365,y=y_limit_upper),aes(x=x,y=y),
-           label=deparse(bquote(b*"."~Lake~Rerewhakaaitu~NZ*","~38.3*degree*S)),
-           size = 4.2, parse=TRUE)+
+    #geom_text(data=tibble(x=2*2*pi/365,y=y_limit_upper),aes(x=x,y=y),label=deparse(bquote(b*"."~Lake~Rerewhakaaitu~NZ*","~38.3*degree*S)), size = 4.2, parse=TRUE)+
+   
+   #Letter label in middle
+   geom_text(data=tibble(x=(c(1))*2*pi/365,label="B."),aes(x=x,y=0,label=label), color = "black", size = 2.8)+
+     
    
    scale_y_continuous(limits=c(y_limit_lower,y_limit_upper))+
    
@@ -455,26 +487,266 @@ all_rere<-all_rere%>%
          axis.title.x=element_blank(),
          axis.title.y=element_blank(),
          axis.ticks.y=element_blank(),
+         legend.position = "none",
          legend.title=element_text(size=11), #change the legend title size
          legend.text=element_text(size=10), #change the legend text size
          legend.background = element_rect(color = NA, fill = NA), #make the background of the legend box blank
          legend.key.size = unit(1,"line"), #increase the size of the legend points
-         panel.border = element_blank() #get rid of line around plot
+         panel.border = element_blank(), #get rid of line around plot
+         plot.margin = unit(c(-0.6,-0.7,-0.6,-0.7),"cm"), #spread out the plot a bit to minimize the white space
+         panel.background = element_rect(fill = "transparent", colour = NA),
+         plot.background = element_rect(fill = "transparent", colour = NA)
    )+
    labs(fill="Stratification")#+
 
 ) #end of the clock plot
 
-ggsave(filename="03a_Figures/SeasonsWaikato_Clock_v2.jpg",plot=gg.clock.rere,width=3.3,height=3.3,units="in",dpi=300)
+ggsave(filename="03a_Figures/SeasonsWaikato_Clock_v2.png",plot=gg.clock.rere,width=1.75,height=1.75,units="in",dpi=300,bg="transparent")
 
 
-#Make a composite figure
-gg.2panel<-wrap_plots(list(gg.clock.mohonk,gg.clock.rere),nrow=1, guides = "collect")&
-  theme(legend.position = "bottom",
-        legend.spacing.x = unit(3, "cm"),
-        legend.box.margin=margin(-55, 0,-10,0),
-        plot.margin = unit(c(-1,0,0,0),"cm") #spread out the plot a bit to minimize the white space
-  )
-print(gg.2panel)
-ggsave(filename="03a_Figures/2panel_Clock_v2.jpg",plot=gg.2panel,width=6.6,height=3.3,units="in",dpi=300)
+################################################################################
+#####West Lake Bonney LAKE DATA#####
+
+#Get out rere data####
+wlb_cont<-read_csv("01b_Processed_data/WestLakeBonney_stratification_continuous.csv")%>%mutate(yday2=yday-194)
+
+#Check the variables here####
+unique(wlb_cont$Variable)
+
+#Get in rere raw data####
+wlb_dates <- tibble(day=seq(as.Date("2023-06-21"),as.Date("2024-06-20"),by=1))%>%
+  mutate(day2 = day + 194)
+  
+
+head(wlb_dates)
+tail(wlb_dates)
+
+
+#Recreate stratification for WLB####
+wlb_strat <- wlb_cont%>%mutate(Date=wlb_dates$day,
+                               delta_density=Value)
+ggplot(data=wlb_strat,aes(x=Date,y=delta_density))+geom_point()  
+
+#Create the correct day length for Rere####
+wlb_daylength<-tibble(Date=seq.POSIXt(as.POSIXct("2023-06-21 00:00:00", tz ="Pacific/Auckland"),as.POSIXct("2024-06-20 00:00:00",tz="Pacific/Auckland"), by = 'day'))%>%
+  mutate(DayLength=geosphere::daylength(yday(Date),lat = -77.72))%>%
+  mutate(yday=yday(Date))%>%
+  mutate(Value=DayLength)
+ggplot(data=wlb_daylength,aes(x=yday,y=DayLength))+geom_point()
+
+#Set up the annual data to get the template
+annual_data_wlb<-tibble(yday=wlb_daylength$yday,y=min(wlb_daylength$DayLength),y2=max(wlb_daylength$DayLength))
+
+#Mohonk ice####
+#Join them all together, add Mohonk Ice####
+all_wlb<-annual_data_wlb%>%
+  left_join(.,wlb_strat%>%mutate(yday=yday(Date))%>%dplyr::select(yday,delta_density))%>%
+  left_join(.,wlb_daylength%>%mutate(day_length=DayLength)%>%dplyr::select(yday,day_length))%>%
+  add_row(.,.before=195,yday=0,y=9.49,y2=14.8,delta_density=90,day_length=24)%>% #add some rows to complete the circle
+  add_row(.,.before=195,yday=366,y=9.49,y2=14.8,delta_density=90,day_length=24)%>% #add some rows to complete the circle
+  mutate(Ice="ice")%>%
+  mutate(delta_density=3.4) #max out delta_density because it is always stratified
+
+#Add on extra values to complete teh circle####
+all_wlb<-all_wlb%>%
+  bind_rows(all_wlb%>%slice(1)%>%mutate(yday=171),.)%>% #add in a duplicate first row
+  bind_rows(.,all_wlb%>%slice(365)%>%mutate(yday=172)) #add in a duplicate first row
+
+#plot the seasons as a clock####
+(gg.clock.wlb<-ggplot(data=all_wlb)+
+   #Put the polar coordinates on with breaks at each of the month starts####
+ coord_polar(start=0*2*pi/365,clip="off")+
+   scale_x_continuous(breaks=(c(1,32,60,91,121,152,182,213,244,274,305,335))*2*pi/365,limits=c(0,2*pi),oob = scales::oob_keep)+
+   
+   #Inner white circle####
+ geom_ribbon(data=all_wlb,aes(x=yday*2*pi/365,ymin=0,ymax=1),color="white",fill="white")+ #Set up inner circle
+   
+   scale_color_manual(name = "Astronomical\nseasons", 
+                      values = c(winter_color,spring_color,summer_color,autumn_color), 
+                      labels = c("Winter", "Spring","Summer","Autumn"),
+                      guide = "none")+
+   
+   #Seasons colors for each 1/4####
+ geom_ribbon(data=tibble(rad=c(-1:80)*2*pi/365),aes(x=rad,ymin=1,ymax=2),color="black",fill=summer_color)+ #summer
+   geom_ribbon(data=tibble(rad=c(355:366)*2*pi/365),aes(x=rad,ymin=1,ymax=2),color="black",fill=summer_color)+ #summer2
+   geom_ribbon(data=all_mohk%>%filter(yday>=80&yday<=172),aes(x=yday*2*pi/365,ymin=1,ymax=2),color="black",fill=autumn_color)+ #fall
+   geom_ribbon(data=all_mohk%>%filter(yday>=172&yday<=264),aes(x=yday*2*pi/365,ymin=1,ymax=2),color="black",fill=winter_color)+ #winter
+   geom_ribbon(data=all_mohk%>%filter(yday>=264&yday<=355),aes(x=yday*2*pi/365,ymin=1,ymax=2),color="black",fill=spring_color)+ #spring
+   geom_segment(data=tibble(x=(c(355, 80, 172, 264))*2*pi/365,y=4)%>%mutate(xend=x,y=y_limit_lower,yend=4),aes(x=x,xend=xend,y=y,yend=yend),color="black")+  
+   
+   #Rectangles for the center####
+ geom_rect(data=tibble(xmin=0*2*pi/365,xmax=365*2*pi/365,
+                       ymin=y_limit_lower,ymax=1),
+           aes(xmin=xmin,xmax=xmax,ymin=ymin,ymax=ymax),
+           fill="white",color="white")+
+   
+   #Rectangles for the stratification####
+ ggnewscale::new_scale_fill()+
+   ggnewscale::new_scale_color()+
+   geom_rect(aes(xmin=(yday-1)*2*pi/365,xmax=yday*2*pi/365,ymin=3,ymax=4,fill=delta_density, color = delta_density))+
+   scale_fill_gradientn(limits=c(0,3.4),
+                        colors = c("#DB8080","#DB8080","white","#7CA2CB"),
+                        values=scales::rescale(c(3.4, 1, strat_thresh, 0)),
+                        breaks=c(strat_thresh,3.4),labels=c("Mixed","Stratified"), 
+                        name = "Stratification",
+                        guide = "none")+
+   scale_color_gradientn(limits=c(0,3.4),colors = c("#DB8080","#DB8080","white","#7CA2CB"),
+                         values=scales::rescale(c(3.4, 1, strat_thresh, 0)),
+                         breaks=c(strat_thresh,3.4),labels=c("Mixed","Stratified"), 
+                         name = "Stratification",
+                         guide = "none")+
+   
+   #Rectangle for the daylength as the inner circle####
+ ggnewscale::new_scale_color()+
+   ggnewscale::new_scale_fill()+
+   geom_rect(aes(xmin=(yday-1)*2*pi/365,xmax=yday*2*pi/365,ymin=2,ymax=3,fill=day_length, color = day_length),show.legend = TRUE)+ 
+   scale_fill_gradientn(limits=daylight_limits,
+                        colors = daylight_colors,
+                        breaks=daylight_breaks,
+                        labels=daylight_breaks, name = "Day length (hr)",
+                        guide_colorbar(frame.colour="black") #gets a grame around the gradient bar
+                        )+
+   scale_color_gradientn(limits=daylight_limits,
+                         colors = daylight_colors,
+                         breaks=daylight_breaks,labels=daylight_breaks, name = "Day length (hr)",
+                         guide_colorbar(frame.colour="black") #gets a grame around the gradient bar
+                         )+
+   guides(fill = guide_colorbar(title.position="top", title.hjust = 0.5))+
+   
+   geom_line(aes(x=yday*2*pi/365,y=1),color="black",size=0.2)+
+   geom_line(aes(x=yday*2*pi/365,y=2),color="black",size=0.2)+ #inner and outer lines
+   
+   #Ice
+   geom_point(data=all_wlb%>%filter(Ice=="ice"),aes(x=yday*2*pi/365,y=(3+4)/2),shape=21,color="#8AB4E3",fill="#8AB4E3",size=1.1)+ #put blue dots for ice days in the outer ring
+   geom_point(data=all_wlb%>%filter(Ice=="ice"),aes(x=yday*2*pi/365,y=(3+4)/2),shape=21,color="white",fill="white",size=0.9)+ #put blue dots for ice days in the outer ring
+   
+   
+   #circles overtop
+   geom_segment(data=tibble(x=0*2*pi/365,xend=366*2*pi/365,y=1,yend=1),aes(x=x,xend=xend,y=y,yend=yend),color="black", size = 1)+
+   geom_segment(data=tibble(x=0*2*pi/365,xend=366*2*pi/365,y=2,yend=2),aes(x=x,xend=xend,y=y,yend=yend),color="black", size = 1)+
+   geom_segment(data=tibble(x=0*2*pi/365,xend=366*2*pi/365,y=3,yend=3),aes(x=x,xend=xend,y=y,yend=yend),color="black", size = 1)+
+   geom_segment(data=tibble(x=0*2*pi/365,xend=366*2*pi/365,y=4,yend=4),aes(x=x,xend=xend,y=y,yend=yend),color="black", size = 1)+
+   
+   #Geometric segments for the months spindles coming out from the middle####
+ geom_segment(data=tibble(x=(c(1,32,60,91,121,152,182,213,244,274,305,335))*2*pi/365,y=4)%>%mutate(xend=x,y=y_limit_lower,yend=4),aes(x=x,xend=xend,y=y,yend=yend),color="white", alpha = 0.3)+  
+   
+   #Month names
+   geom_text(data=tibble(x=(c(1,32,60,91,121,152,182,213,244,274,305,335))*2*pi/365,label=month.abb),aes(x=x,y=4.7,label=label), color = "black", size = 2.8)+
+   
+   #Strat arrow
+   geom_segment(data=tibble(x=(c(290))*2*pi/365,y=3.5)%>%mutate(xend=x,yend=y_limit_upper*0.8),aes(x=x,xend=xend,y=y,yend=yend),color="black")+  
+   
+   #Strat label
+   geom_label(data=tibble(x=(c(290))*2*pi/365,y=y_limit_upper*0.8),
+              aes(x=x,y=y),label="Ice",size=9*(5/14),
+              hjust = .8)+ #The size= in element_text is 14/5 of the size= in geom_text  
+   
+   
+   
+   #text at the top for label####
+   #geom_text(data=tibble(x=2*2*pi/365,y=y_limit_upper),aes(x=x,y=y), label=deparse(bquote(WLB~Antarctica*","~77.7*degree*S)), size = 4.2, parse=TRUE)+
+   
+    #Letter label in middle
+    geom_text(data=tibble(x=(c(1))*2*pi/365,label="A."),aes(x=x,y=0,label=label), color = "black", size = 2.8)+
+   
+ 
+   scale_y_continuous(limits=c(y_limit_lower,y_limit_upper))+
+   
+   theme_bw()+
+   theme(panel.grid.major = element_blank(),
+         panel.grid.minor = element_blank(),
+         axis.text.x = element_blank(),
+         axis.text.y = element_blank(),
+         axis.title.x=element_blank(),
+         axis.title.y=element_blank(),
+         axis.ticks.y=element_blank(),
+         legend.position = "none", #get rid of the legend
+         legend.title=element_text(size=11), #change the legend title size
+         legend.text=element_text(size=10), #change the legend text size
+         legend.background = element_rect(color = NA, fill = NA), #make the background of the legend box blank
+         legend.key.size = unit(1,"line"), #increase the size of the legend points
+         panel.border = element_blank(), #get rid of line around plot
+         plot.margin = unit(c(-0.6,-0.7,-0.6,-0.7),"cm"), #spread out the plot a bit to minimize the white space
+         panel.background = element_rect(fill = "transparent", colour = NA),
+         plot.background = element_rect(fill = "transparent", colour = NA)
+   )+
+   labs(fill="Stratification")#+
+ 
+) #end of the clock plot
+
+ggsave(filename="03a_Figures/SeasonsMcMurdo_Clock_v2.png",plot=gg.clock.wlb,width=1.75,height=1.75,units="in",dpi=300,bg="transparent")
+
+
+
+
+
+#Read in country data
+world<-map_data('world')
+#Set the x and y limits
+lat_lim <- c(-82, 82)
+lon_lim <- c(-182, 182)
+
+(gg.WorldMap<-ggplot()+
+    #geom_polygon(data=state,aes(x=long,y=lat,group=group),fill='white',color='dark grey')+
+    geom_polygon(data=world,aes(x=long,y=lat,group=group),color='#9fc164',fill="#9fc164",linewidth=0.2)+ #6b93d6 EDEDED
+    #annotation_scale(location = "br", width_hint = 0.5) +
+    geom_point(data=tibble(Latitude=c(-77.7,-38.29,41.77),Longitude=c(162.3,176.5,-74.16)),aes(x=Longitude,y=Latitude),shape=21,size=3,fill="red")+
+    coord_sf(crs = 4326,xlim = lon_lim,ylim=lat_lim,expand=FALSE)+
+    #coord_sf(crs = 4326,xlim = lon_lim, ylim = lat_lim)+
+    ggspatial::annotation_north_arrow(location = "bl")+
+    #geom_label_repel(data=waterChemDF_trophic%>%ungroup()%>%filter(parameterType=="TP")%>%dplyr::select(MULakeNumber,samplingSiteLatitude,samplingSiteLongitude)%>%distinct(),aes(x=samplingSiteLongitude,y=samplingSiteLatitude,label=MULakeNumber),fill=alpha("white",0.9),size=2,min.segment.length = 0)+
+    #coord_equal()+
+    scale_y_continuous(breaks=c(-45,0,45),labels=c(bquote(45*degree*S),bquote(0*degree),bquote(45*degree*N)))+
+    scale_x_continuous(breaks=c(-120,-60,0,60,120),labels=c(bquote(120*degree*W),bquote(60*degree*W),bquote(0*degree),bquote(60*degree*E),bquote(120*degree*E)))+
+    #xlab(bquote(Longitude~(degree*W)))+
+    #ylab(bquote(Latitude~(degree*N)))+
+    theme_bw()+
+    theme(axis.title.x=element_blank(),
+          axis.title.y=element_blank(),
+          panel.grid.major = element_blank(), 
+          panel.grid.minor = element_blank(),
+          panel.background = element_rect(fill = "#6b93d6")) #D3E6F5
+          #panel.background = element_rect(fill = "white")) #D3E6F5
+)
+
+# Let coord_quickmap figure out the correct aspect ratio for export:####
+#https://community.rstudio.com/t/aspect-ratio-of-a-plot-produced-with-ggplot2-coord-quickmap/9282/2
+coord <- coord_quickmap(xlim = lon_lim, ylim = lat_lim, expand = F)
+asp <- coord$aspect(list(x.range = lon_lim, y.range = lat_lim))
+asp
+
+#Desired plot width in inches
+plot.width<-6.6
+# Calculate height
+plot.height.new <- plot.width * asp
+
+#Export the plot as a jpg####
+ggsave(gg.WorldMap,file=paste0("03a_Figures/WorldMap.jpg"),width=plot.width,height=plot.height.new,units="in",dpi=400)
+
+
+
+#Get legend only####
+#This extracts the legends from the previous plots and fits them on a new blank plot - export has them all overlaid.
+library(grid)
+
+g_source <- ggplot_gtable(ggplot_build(gg.clock.mohonk+theme(legend.position="bottom")))
+legend_grob_SeasonsStratification <- g_source$grobs[[which(sapply(g_source$grobs, function(x) x$name == "guide-box"))]]
+
+g_source <- ggplot_gtable(ggplot_build(gg.clock.wlb+theme(legend.position="bottom")))
+legend_grob_dayLength <- g_source$grobs[[which(sapply(g_source$grobs, function(x) x$name == "guide-box"))]]
+
+p_empty <- # Create a blank plot
+  p <- ggplot() +
+  # Set the coordinate limits for the x-axis from 0 to 10
+  xlim(0, 10) +
+  # Set the coordinate limits for the y-axis from 0 to 10
+  ylim(3, 7) +
+  # Remove the axis ticks, labels, and plot background
+  theme_void()
+p_final <- p_empty + 
+            annotation_custom(legend_grob_SeasonsStratification, xmin = 3.5, xmax = 5, ymin = 5, ymax = 5)+
+            annotation_custom(legend_grob_dayLength, xmin = 6, xmax = 9, ymin = 5, ymax = 5)
+
+ggsave(filename="03a_Figures/SeasonsScales.png",plot=p_final,width=2.3,height=0.7,units="in",dpi=300,bg="transparent")
+
 
