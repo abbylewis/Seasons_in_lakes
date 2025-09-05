@@ -20,7 +20,8 @@ All data in one file
 
 ```{r}
 # Load data
-in_lake_data <- read_csv("../01a_Raw_data/mcmlter-lake-bluebox_wlbbb_15min-20250725.csv") %>%
+#https://portal.edirepository.org/nis/mapbrowse?packageid=knb-lter-mcm.3204.1
+in_lake_data <- read_csv("https://pasta.lternet.edu/package/data/eml/knb-lter-mcm/3204/1/781e602f85044544c1eda00e47fa7092") %>%
   mutate(Date=date_time,
          day = as.Date(date_time) + offset,
          yday = yday(day)) %>%
@@ -38,7 +39,7 @@ in_lake_formatted <- in_lake_data %>%
                            name == "do_lower_watertemp_degc"~"Bottom")) %>%
   filter(!is.na(Layer)) %>%
   ungroup() %>%
-  mutate(Variable = paste(Layer, name),
+  mutate(Variable = paste(Layer, name), #########STOPPED HERE- NEED TO FIGURE OUT WHAT ABBY WAS DOING#####
          Variable = case_match(Variable,
                                "Surface WaterTemperature_C"~"Surface_temperature",
                                "Surface DO_mgL"~"Surface_DO",
