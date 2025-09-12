@@ -50,6 +50,10 @@ westlakebonney_in_lake <- read.csv("01b_Processed_data/WestLakeBonney_continuous
 westlakebonney_strat <- read.csv("01b_Processed_data/WestLakeBonney_stratification_continuous.csv")
 westlakebonney_met <- read.csv("01b_Processed_data/westlakebonney_met.csv")
 
+#kinneret
+kin_strat<-read.csv("01b_Processed_data/Kinneret_stratification_continuous.csv")
+
+
 #Format
 #A bit of magic to get explicit NAs
 all <- rere_strat %>%
@@ -691,6 +695,175 @@ all_wlb<-all_wlb%>%
 
 ggsave(filename="03a_Figures/SeasonsMcMurdo_Clock_v2.png",plot=gg.clock.wlb,width=1.75,height=1.75,units="in",dpi=300,bg="transparent")
 
+################################################################################
+#####KINNERET LAKE DATA#####
+
+#Get in kinneret raw data####
+kin_dates <- tibble(day=seq(as.Date("1993-01-01"),as.Date("1993-12-31"),by=1))
+
+head(kin_dates)
+tail(kin_dates)
+
+
+#Recreate stratification for WLB####
+kin_strat <- kin_strat%>%mutate(
+                               delta_density=Value,
+                               Date=make_date(1993, 1, 1) + days(yday - 1))
+ggplot(data=kin_strat,aes(x=Date,y=delta_density))+geom_point()  
+
+#Create the correct day length for Kin####
+kin_daylength<-tibble(Date=seq.POSIXt(as.POSIXct("1993-01-01 00:00:00", tz ="Asia/Jerusalem"),as.POSIXct("1993-12-31 00:00:00",tz="Asia/Jerusalem"), by = 'day'))%>%
+  mutate(DayLength=geosphere::daylength(yday(Date),lat = 32.72))%>%
+  mutate(yday=yday(Date))%>%
+  mutate(Value=DayLength)
+ggplot(data=kin_daylength,aes(x=yday,y=DayLength))+geom_point()
+
+#Set up the annual data to get the template
+annual_data_kin<-tibble(yday=kin_daylength$yday,y=min(kin_daylength$DayLength),y2=max(kin_daylength$DayLength))
+
+#kin ice####
+#Join them all together, add Mohonk Ice####
+all_kin<-annual_data_kin%>%
+  left_join(.,kin_strat%>%mutate(yday=yday(Date))%>%dplyr::select(yday,delta_density))%>%
+  left_join(.,kin_daylength%>%mutate(day_length=DayLength)%>%dplyr::select(yday,day_length))%>%
+  add_row(.,.before=0,yday=0,y=9.99,y2=14.3,delta_density=0.001,day_length=10)%>% #add some rows to complete the circle
+  add_row(.,.before=355,yday=366,y=9.49,y2=14.8,delta_density=0.001,day_length=10)%>% #add some rows to complete the circle
+  mutate(Ice="open water")%>%
+  arrange(yday)%>%
+  mutate(delta_density=na.approx(delta_density))%>% #linearly interpolate weekly stratification to daily
+  mutate(delta_density=ifelse(delta_density<0,0,delta_density))%>% #set negative values to 0
+  mutate(delta_density=ifelse(delta_density>3.4,3.4,delta_density)) #set all large values to 3.4 
+  
+ggplot(data=all_kin,aes(x=yday,y=delta_density))+geom_point() 
+
+#Add on extra values to complete teh circle####
+# all_kin<-all_kin%>%
+#   bind_rows(all_kin%>%slice(1)%>%mutate(yday=171),.)%>% #add in a duplicate first row
+#   bind_rows(.,all_wlb%>%slice(365)%>%mutate(yday=172)) #add in a duplicate first row
+
+#plot the seasons as a clock####
+(gg.clock.kin<-ggplot(data=all_kin)+
+   #Put the polar coordinates on with breaks at each of the month starts####
+ coord_polar(start=0*2*pi/365,clip="off")+
+   scale_x_continuous(breaks=(c(1,32,60,91,121,152,182,213,244,274,305,335))*2*pi/365,limits=c(0,2*pi),oob = scales::oob_keep)+
+   
+   #Inner white circle####
+ geom_ribbon(data=all_kin,aes(x=yday*2*pi/365,ymin=0,ymax=1),color="white",fill="white")+ #Set up inner circle
+   
+   scale_color_manual(name = "Astronomical\nseasons", 
+                      values = c(summer_color,autumn_color,winter_color,spring_color), 
+                      labels = c("Summer", "Fall","Winter","Spring"),
+                      guide = "none")+
+   
+   #Seasons colors for each 1/4####
+ geom_ribbon(data=tibble(rad=c(-1:80)*2*pi/365),aes(x=rad,ymin=1,ymax=2),color="black",fill=winter_color)+ #winter
+   geom_ribbon(data=tibble(rad=c(355:366)*2*pi/365),aes(x=rad,ymin=1,ymax=2),color="black",fill=winter_color)+ #winter2
+   geom_ribbon(data=all_mohk%>%filter(yday>=80&yday<=172),aes(x=yday*2*pi/365,ymin=1,ymax=2),color="black",fill=spring_color)+ #spring
+   geom_ribbon(data=all_mohk%>%filter(yday>=172&yday<=264),aes(x=yday*2*pi/365,ymin=1,ymax=2),color="black",fill=summer_color)+ #summer
+   geom_ribbon(data=all_mohk%>%filter(yday>=264&yday<=355),aes(x=yday*2*pi/365,ymin=1,ymax=2),color="black",fill=autumn_color)+ #fall
+   geom_segment(data=tibble(x=(c(355, 80, 172, 264))*2*pi/365,y=4)%>%mutate(xend=x,y=y_limit_lower,yend=4),aes(x=x,xend=xend,y=y,yend=yend),color="black")+  
+   
+   #Rectangles for the center####
+ geom_rect(data=tibble(xmin=0*2*pi/365,xmax=365*2*pi/365,
+                       ymin=y_limit_lower,ymax=1),
+           aes(xmin=xmin,xmax=xmax,ymin=ymin,ymax=ymax),
+           fill="white",color="white")+
+   
+   #Rectangles for the stratification####
+ ggnewscale::new_scale_fill()+
+   ggnewscale::new_scale_color()+
+   geom_rect(aes(xmin=(yday-1)*2*pi/365,xmax=yday*2*pi/365,ymin=3,ymax=4,fill=delta_density, color = delta_density))+
+   scale_fill_gradientn(limits=c(0,3.4),
+                        colors = c("#DB8080","#DB8080","white","#7CA2CB"),
+                        values=scales::rescale(c(3.4, 1, strat_thresh, 0)),
+                        breaks=c(strat_thresh,3.4),labels=c("Mixed","Strat."), 
+                        name = "Stratification",
+                        guide = "none")+
+   scale_color_gradientn(limits=c(0,3.4),colors = c("#DB8080","#DB8080","white","#7CA2CB"),
+                         values=scales::rescale(c(3.4, 1, strat_thresh, 0)),
+                         breaks=c(strat_thresh,3.4),labels=c("Mixed","Strat."), 
+                         name = "Stratification",
+                         guide = "none")+
+   
+   #Rectangle for the daylength as the inner circle####
+ ggnewscale::new_scale_color()+
+   ggnewscale::new_scale_fill()+
+   geom_rect(aes(xmin=(yday-1)*2*pi/365,xmax=yday*2*pi/365,ymin=2,ymax=3,fill=day_length, color = day_length),show.legend = TRUE)+ 
+   scale_fill_gradientn(limits=daylight_limits,
+                        colors = daylight_colors,
+                        breaks=daylight_breaks,
+                        labels=daylight_breaks, name = "Day length (hr)",
+                        guide_colorbar(frame.colour="black") #gets a grame around the gradient bar
+   )+
+   scale_color_gradientn(limits=daylight_limits,
+                         colors = daylight_colors,
+                         breaks=daylight_breaks,labels=daylight_breaks, name = "Day length (hr)",
+                         guide_colorbar(frame.colour="black") #gets a grame around the gradient bar
+   )+
+   guides(fill = guide_colorbar(title.position="top", title.hjust = 0.5))+
+   
+   geom_line(aes(x=yday*2*pi/365,y=1),color="black",size=0.2)+
+   geom_line(aes(x=yday*2*pi/365,y=2),color="black",size=0.2)+ #inner and outer lines
+   
+   #NO Ice
+   #geom_point(data=all_wlb%>%filter(Ice=="ice"),aes(x=yday*2*pi/365,y=(3+4)/2),shape=21,color="#8AB4E3",fill="#8AB4E3",size=1.1)+ #put blue dots for ice days in the outer ring
+   #geom_point(data=all_wlb%>%filter(Ice=="ice"),aes(x=yday*2*pi/365,y=(3+4)/2),shape=21,color="white",fill="white",size=0.9)+ #put blue dots for ice days in the outer ring
+   
+   
+   #circles overtop
+   geom_segment(data=tibble(x=0*2*pi/365,xend=366*2*pi/365,y=1,yend=1),aes(x=x,xend=xend,y=y,yend=yend),color="black", size = 1)+
+   geom_segment(data=tibble(x=0*2*pi/365,xend=366*2*pi/365,y=2,yend=2),aes(x=x,xend=xend,y=y,yend=yend),color="black", size = 1)+
+   geom_segment(data=tibble(x=0*2*pi/365,xend=366*2*pi/365,y=3,yend=3),aes(x=x,xend=xend,y=y,yend=yend),color="black", size = 1)+
+   geom_segment(data=tibble(x=0*2*pi/365,xend=366*2*pi/365,y=4,yend=4),aes(x=x,xend=xend,y=y,yend=yend),color="black", size = 1)+
+   
+   #Geometric segments for the months spindles coming out from the middle####
+ geom_segment(data=tibble(x=(c(1,32,60,91,121,152,182,213,244,274,305,335))*2*pi/365,y=4)%>%mutate(xend=x,y=y_limit_lower,yend=4),aes(x=x,xend=xend,y=y,yend=yend),color="white", alpha = 0.3)+  
+   
+   #Month names
+   geom_text(data=tibble(x=(c(1,32,60,91,121,152,182,213,244,274,305,335))*2*pi/365,label=month.abb),aes(x=x,y=4.7,label=label), color = "black", size = 2.8)+
+   
+   #Strat arrow
+   geom_segment(data=tibble(x=(c(290))*2*pi/365,y=3.5)%>%mutate(xend=x,yend=y_limit_upper*0.8),aes(x=x,xend=xend,y=y,yend=yend),color="black")+  
+   
+   #Strat label
+   geom_label(data=tibble(x=(c(290))*2*pi/365,y=y_limit_upper*0.8),
+              aes(x=x,y=y),label="Stratified",size=9*(5/14),
+              hjust = .8)+ #The size= in element_text is 14/5 of the size= in geom_text  
+   
+   
+   
+   #text at the top for label####
+ geom_text(data=tibble(x=2*2*pi/365,y=y_limit_upper),aes(x=x,y=y), label=deparse(bquote(Kinneret~ISR*","~32.7*degree*N)), size = 4.2, parse=TRUE)+
+   
+   #Letter label in middle
+   #geom_text(data=tibble(x=(c(1))*2*pi/365,label="A."),aes(x=x,y=0,label=label), color = "black", size = 2.8)+
+   
+   scale_y_continuous(limits=c(y_limit_lower,y_limit_upper))+
+   
+   theme_bw()+
+   theme(panel.grid.major = element_blank(),
+         panel.grid.minor = element_blank(),
+         axis.text.x = element_blank(),
+         axis.text.y = element_blank(),
+         axis.title.x=element_blank(),
+         axis.title.y=element_blank(),
+         axis.ticks.y=element_blank(),
+         legend.position = "none", #get rid of the legend
+         legend.title=element_text(size=11), #change the legend title size
+         legend.text=element_text(size=10), #change the legend text size
+         legend.background = element_rect(color = NA, fill = NA), #make the background of the legend box blank
+         legend.key.size = unit(1,"line"), #increase the size of the legend points
+         panel.border = element_blank(), #get rid of line around plot
+         plot.margin = unit(c(-0.6,-0.7,-0.6,-0.7),"cm"), #spread out the plot a bit to minimize the white space
+         panel.background = element_rect(fill = "transparent", colour = NA),
+         plot.background = element_rect(fill = "transparent", colour = NA)
+   )+
+   labs(fill="Stratification")#+
+ 
+) #end of the clock plot
+
+ggsave(filename="03a_Figures/SeasonsKinneret_Clock_v2.png",plot=gg.clock.kin,width=1.75,height=1.75,units="in",dpi=300,bg="transparent")
+
 
 
 
@@ -836,7 +1009,7 @@ ggsave(filename="03a_Figures/SeasonsScales_vertical.jpg",plot=p_final_vertical,w
 (gg.NorthernHemisphere_panel<-wrap_plots(
                                 list(
                                   gg.clock.mohonk+theme(legend.position = "none"),
-                                  gg.clock.rere+theme(legend.position = "none") 
+                                  gg.clock.kin+theme(legend.position = "none") 
                                   ),
                                   nrow=1
                                   )&
