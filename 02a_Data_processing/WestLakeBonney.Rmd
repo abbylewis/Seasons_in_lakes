@@ -114,7 +114,7 @@ Ice data
 ```{r}
 #Load data
 
-ice_formatted <- tibble(Lake="West Lake Bonney",Season="Ice",Method="Ice",start=0,end=365)
+ice_formatted <- tibble(Lake=LAKE,Season="Ice",Method="Ice",start=0,end=365)
 
 write.csv(ice_formatted, "../01b_Processed_data/WestLakeBonney_ice.csv", row.names = F)
 ```

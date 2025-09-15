@@ -17,7 +17,7 @@ library(ggnewscale) # For multiple color scales on the discrete panel
 if(!file.exists("../03a_Figures")){dir.create("../03a_Figures")}
 
 #Southern hemisphere lakes
-sh_lakes <- c("Rerewhakaaitu")
+sh_lakes <- c("Rerewhakaaitu", "West Lake Bonney (2023-2024)")
 
 LAKES <- c("Lake Erken (2018)", #59.83917
            "Arendsee (2020)", #52.89099
@@ -26,7 +26,10 @@ LAKES <- c("Lake Erken (2018)", #59.83917
            "Lake Sunapee (2008)", #43.3802
            "Mohonk Lake (2017)", #41.76598
            "Beaverdam Reservoir (2021)", #37.3164
-           "Lake Rerewhakaaitu (2022-2023)") #-38.2936
+           "Kinneret (1993)", #32.7
+           "Lake Rerewhakaaitu (2022-2023)", #-38.2936
+           "West Lake Bonney (2023-2024)"
+           ) 
 ```
 
 # Discrete
@@ -40,6 +43,7 @@ in_lake_csvs <- list.files(path = "../01b_Processed_data",
 ice_csvs <- list.files(path = "../01b_Processed_data",
                             pattern = "ice.csv",
                             full.names = TRUE)
+
 temperate_raw <- read.csv("../01b_Processed_data/Temperate_seasons.csv")
 
 #Format
@@ -80,7 +84,9 @@ lake_relabel <- function(lakes){
     "Lake Sunapee (2008)" = "bold('e)')~`Lake Sunapee (2008); Z`[max]~`= 32 m`", 
     "Mohonk Lake (2017)" = "bold('f)')~`Mohonk Lake (2017); Z`[max]~`= 18 m`",
     "Beaverdam Reservoir (2021)" = "bold('g)')~`Beaverdam Reservoir (2021); Z`[max]~`= 11 m`",
-    "Lake Rerewhakaaitu (2022-2023)" = "bold('h)')~`Lake Rerewhakaaitu (2022-2023); Z`[max]~`= 15 m`"
+    "Kinneret (1993)" = "bold('h)')~`Kinneret (1993); Z`[max]~`= 43 m`",
+    "Lake Rerewhakaaitu (2022-2023)" = "bold('i)')~`Lake Rerewhakaaitu (2022-2023); Z`[max]~`= 15 m`",
+    "West Lake Bonney (2023-2024)" = "bold('j)')~`West Lake Bonney (2023-2024); Z`[max]~`= 40 m`"
   )
   
   return(unname(labels[lakes]))

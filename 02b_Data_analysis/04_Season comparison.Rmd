@@ -16,10 +16,6 @@ library(ggnewscale) # For multiple color scales on the discrete panel
 #The ../03a_Figures folder is not pushed to GitHub
 if(!file.exists("../03a_Figures")){dir.create("../03a_Figures")}
 
-#Southern hemisphere offset
-offset = 184
-sh_lakes <- c("Rerewhakaaitu")
-
 #Load data
 discrete <- read_csv("../01b_Processed_data/Discrete_seasons.csv")
 continuous <- read_csv("../01b_Processed_data/Continuous_data.csv")
@@ -31,15 +27,19 @@ LAKES <- c("Lake\nErken\n(2018)", #59.83917
            "Lake\nSunapee\n(2008)", #43.3802
            "Mohonk\nLake\n(2017)", #41.76598
            "Beaverdam\nReservoir\n(2021)", #37.3164
-           "Lake\nRerewhakaaitu\n(2022-2023)") #-38.2936
-lats <- c(59.83917,
+           "Kinneret\n(1993)", #32.7
+           "Lake\nRerewhakaaitu\n(2022-2023)",#-38.2936
+           "West\nLake\nBonney\n(2023-2024)") 
+lats <- c(43.3802, 
+          59.83917, 
           52.89099,
-          47.1213,
-          44.9312,
-          43.3802,
-          41.76598,
-          37.3164,
-          -38.2936)
+          44.93120951379321, 
+          37.3164747, 
+          -38.2936, 
+          41.765984891547966,
+          47.121327295305115,
+          32.7224,
+          -77.720191955566)
 ref <- data.frame(LAKES, lats)
 vars <- c("Surface temperature", 
           "Air temperature",
@@ -86,7 +86,7 @@ for_plot <- continuous %>%
                         NA, # different units
                         Value)) %>%
   left_join(discrete %>% select(-x), relationship = "many-to-many") %>%
-  mutate(Lake = sub(" ", "\n", sub(" \\(", "\n(", Lake)),
+  mutate(Lake = gsub(" ", "\n", sub(" \\(", "\n(", Lake)),
          Lake = factor(Lake, levels = LAKES),
          Season = factor(Season, levels = c("Spring", "Summer", "Autumn", "Winter"))) %>%
   left_join(ref, by = c("Lake" = "LAKES")) %>%

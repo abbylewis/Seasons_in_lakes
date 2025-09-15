@@ -35,6 +35,15 @@ Months,Winter,Northern,1,71,Lake Erken (2018),NA,NA,NA
 Astronomical,Spring,Northern,90,183,Lake Erken (2018),NA,NA,NA
 Astronomical,Summer,Northern,183,276,Lake Erken (2018),NA,NA,NA
 Astronomical,Winter,Northern,1,90,Lake Erken (2018),NA,NA,NA
+Months,Winter,Northern,346,365,Kinneret (1993),NA,NA,NA
+Astronomical,Autumn,Northern,276,365,Kinneret (1993),NA,NA,NA
+Months,Spring,Northern,71,163,Kinneret (1993),NA,NA,NA
+Months,Summer,Northern,163,255,Kinneret (1993),NA,NA,NA
+Months,Autumn,Northern,255,346,Kinneret (1993),NA,NA,NA
+Months,Winter,Northern,1,71,Kinneret (1993),NA,NA,NA
+Astronomical,Spring,Northern,90,183,Kinneret (1993),NA,NA,NA
+Astronomical,Summer,Northern,183,276,Kinneret (1993),NA,NA,NA
+Astronomical,Winter,Northern,1,90,Kinneret (1993),NA,NA,NA
 Months,Winter,Northern,346,365,Midway Pond (2023),NA,NA,NA
 Astronomical,Autumn,Northern,276,365,Midway Pond (2023),NA,NA,NA
 Months,Spring,Northern,71,163,Midway Pond (2023),NA,NA,NA
@@ -71,6 +80,15 @@ Months,Winter,Northern,1,71,Lake Sunapee (2008),NA,NA,NA
 Astronomical,Spring,Northern,90,183,Lake Sunapee (2008),NA,NA,NA
 Astronomical,Summer,Northern,183,276,Lake Sunapee (2008),NA,NA,NA
 Astronomical,Winter,Northern,1,90,Lake Sunapee (2008),NA,NA,NA
+Months,Winter,Southern,346,365,West Lake Bonney (2023-2024),NA,NA,NA
+Astronomical,Autumn,Southern,273,365,West Lake Bonney (2023-2024),NA,NA,NA
+Months,Spring,Southern,73,164,West Lake Bonney (2023-2024),NA,NA,NA
+Months,Summer,Southern,164,254,West Lake Bonney (2023-2024),NA,NA,NA
+Months,Autumn,Southern,254,346,West Lake Bonney (2023-2024),NA,NA,NA
+Months,Winter,Southern,1,73,West Lake Bonney (2023-2024),NA,NA,NA
+Astronomical,Spring,Southern,94,184,West Lake Bonney (2023-2024),NA,NA,NA
+Astronomical,Summer,Southern,184,273,West Lake Bonney (2023-2024),NA,NA,NA
+Astronomical,Winter,Southern,1,94,West Lake Bonney (2023-2024),NA,NA,NA
 Stratification,Mixed,NA,1,120,Lake Ägeri (2023),1,120,NA
 Stratification,Stratified,NA,120,343,Lake Ägeri (2023),120,343,NA
 Stratification,Mixed,NA,343,365,Lake Ägeri (2023),343,365,NA
@@ -93,6 +111,10 @@ Stratification,Mixed,NA,334,365,Beaverdam Reservoir (2021),334,365,NA
 Stratification,Mixed,NA,1,137,Lake Erken (2018),1,137,NA
 Stratification,Stratified,NA,137,266,Lake Erken (2018),137,266,NA
 Stratification,Mixed,NA,266,365,Lake Erken (2018),266,365,NA
+Stratification,Mixed,NA,1,59,Kinneret (1993),1,59,NA
+Stratification,Stratified,NA,59,74,Kinneret (1993),59,74,NA
+Stratification,Mixed,NA,74,81,Kinneret (1993),74,81,NA
+Stratification,Stratified,NA,81,365,Kinneret (1993),81,365,NA
 Stratification,Mixed,NA,1,140,Midway Pond (2023),1,140,NA
 Stratification,Stratified,NA,140,301,Midway Pond (2023),140,301,NA
 Stratification,Mixed,NA,301,312,Midway Pond (2023),301,312,NA
@@ -155,6 +177,7 @@ Stratification,Stratified,NA,275,276,Lake Sunapee (2008),275,276,NA
 Stratification,Mixed,NA,276,277,Lake Sunapee (2008),276,277,NA
 Stratification,Stratified,NA,277,280,Lake Sunapee (2008),277,280,NA
 Stratification,Mixed,NA,280,365,Lake Sunapee (2008),280,365,NA
+Stratification,Stratified,NA,1,365,West Lake Bonney (2023-2024),1,365,NA
 Ice,Open water,NA,0,365,Lake Ägeri (2023),NA,NA,2022-12-21
 Ice,Open water,NA,0,365,Arendsee (2020),NA,NA,NA
 Ice,Ice,NA,21,23,Beaverdam Reservoir (2021),NA,NA,2020-12-21
@@ -167,6 +190,7 @@ Ice,Open water,NA,58,365,Beaverdam Reservoir (2021),NA,NA,2020-12-21
 Ice,Open water,NA,0,9,Lake Erken (2018),NA,NA,NA
 Ice,Ice,NA,9,111,Lake Erken (2018),NA,NA,NA
 Ice,Open water,NA,111,365,Lake Erken (2018),NA,NA,NA
+Ice,Open water,NA,0,365,Kinneret (1993),NA,NA,NA
 Ice,Ice,NA,0,121,Midway Pond (2023),NA,NA,NA
 Ice,Open water,NA,121,318,Midway Pond (2023),NA,NA,NA
 Ice,Ice,NA,318,365,Midway Pond (2023),NA,NA,NA
@@ -175,3 +199,4 @@ Ice,Open water,NA,109,365,Mohonk Lake (2017),NA,NA,NA
 Ice,Open water,NA,0,365,Lake Rerewhakaaitu (2022-2023),NA,NA,NA
 Ice,Ice,NA,0,126,Lake Sunapee (2008),NA,NA,2007-12-21
 Ice,Open water,NA,126,365,Lake Sunapee (2008),NA,NA,2007-12-21
+Ice,Ice,NA,0,365,West Lake Bonney (2023-2024),NA,NA,NA
