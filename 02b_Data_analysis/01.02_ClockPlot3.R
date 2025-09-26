@@ -1040,3 +1040,27 @@ ggsave(filename="03a_Figures/2panel_Clock_v3_northernHemisphere.jpg",plot=gg.Nor
 ggsave(filename="03a_Figures/2panel_Clock_v3_southernHemisphere.jpg",plot=gg.SouthernHemisphere_panel,width=6,height=2.5,units="in",dpi=300)
 
 
+#Create a composite figure that is 6.3" wide and 7.3" high 
+#with 1/3 for the top panel, 1/3 for the middle, and 1/3 for the bottom
+gg.NorthernHemisphere_panel+gg.NorthernHemisphere_panel + gg.SouthernHemisphere_panel + plot_layout(nrow=4,ncol=1,heights=unit(c(2.5,2.3,2.5),c('in','in','in')))
+
+layout<-"AAABBB
+         CCCCDD
+         EEEFFF"
+
+#Need to figure out how to maximize all the spacing
+
+full.list<-list(
+              gg.clock.mohonk+theme(legend.position = "none",plot.margin = unit(c(0,-2,-4,-2),"cm")),
+              gg.clock.kin+theme(legend.position = "none",plot.margin = unit(c(0,-2,-4,-2),"cm")),
+              gg.worldMap.naturalEarth +theme(legend.position = "none",plot.margin = unit(c(-1,0,-1,0),"cm")) ,
+              p_final_vertical+theme(legend.position = "none",plot.margin = unit(c(-1,0,-1,0),"cm")),
+              gg.clock.wlb+theme(legend.position = "none",plot.margin = unit(c(-5,0,-1.75,0),"cm")),
+              gg.clock.rere+theme(legend.position = "none",plot.margin = unit(c(-5,0,-1.75,0),"cm"))
+              )
+
+(gg.full<-wrap_plots(full.list,design=layout,heights=unit(c(2.7,1.9,2.7),c('in','in','in')))&theme(plot.margin=unit(c(0,0,0,0),"cm"))
+)
+
+ggsave(filename="03a_Figures/ClockPlotFull-MultiPaneled.jpg",plot=gg.full,width=6.3,height=7.3,units="in",dpi=400)
+
