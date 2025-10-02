@@ -28,19 +28,23 @@ for_map <- data.frame(Lake = c("e) Sunapee",
                                "b) Arendsee",
                                "d) Midway",
                                "g) Beaverdam", 
-                               "i) Rerewhakaaitu", 
+                               "k) Rerewhakaaitu", 
                                "f) Mohonk",
                                "c) Ägeri",
-                               "j) West Lake Bonney",
+                               "l) West Lake Bonney",
+                               "i) Tanganyika",
+                               "j) Batur",
                                "h) Kinneret"),
                       Label = c("e", 
                                "a", 
                                "b",
                                "d",
                                "g", 
-                               "i", 
+                               "k", 
                                "f",
                                "c",
+                               "l",
+                               "i",
                                "j",
                                "h"),
                        Latitude_DD = c(43.3802, 
@@ -52,6 +56,8 @@ for_map <- data.frame(Lake = c("e) Sunapee",
                                        41.765984891547966,
                                        47.121327295305115,
                                        -77.720191955566,
+                                       -6.243460676885329,
+                                       -8.2587,
                                        32.7224),
                        Longitude_DD = c(-72.05065, 
                                         18.6334, 
@@ -62,6 +68,8 @@ for_map <- data.frame(Lake = c("e) Sunapee",
                                         -74.15761300441983,
                                         8.621537222014771,
                                         162.305068969727,
+                                        29.54517622429039,
+                                        115.40702843735731,
                                         35.5658))
 
 #Create a world map of the sites in this analysis
@@ -89,3 +97,52 @@ world_map
 dev.off()
 ```
 
+Reduced
+```{r}
+for_map <- data.frame(Lake = c("a) Arendsee",
+                               "b) Midway",
+                               "c) Beaverdam", 
+                               "f) Rerewhakaaitu", 
+                               "g) West Lake Bonney",
+                               "d) Tanganyika",
+                               "e) Batur"),
+                      Label = c("a", "b", "c", "f", "g", "d", "e"),
+                       Latitude_DD = c(52.89099,
+                                       44.93120951379321, 
+                                       37.3164747, 
+                                       -38.2936, 
+                                       -77.720191955566,
+                                       -6.243460676885329,
+                                       -8.2587),
+                       Longitude_DD = c(11.47521,
+                                        -70.54186959069048,
+                                        279.8188267-360, 
+                                        176.5022, 
+                                        162.305068969727,
+                                        29.54517622429039,
+                                        115.40702843735731))
+
+#Create a world map of the sites in this analysis
+world <- ne_countries(scale = "medium", returnclass = "sf")
+
+jpeg("../03a_Figures/World Map - just points - reduced.jpg", res = 300, width = 6, height = 3.2, units = "in")
+world_map <- ggplot(data = world) +
+  geom_sf(fill = "grey95", color = "grey50") +
+  coord_sf(expand = FALSE)+
+  geom_point(data = for_map, aes(Longitude_DD, Latitude_DD), 
+             color = "white",shape = 21, fill = "black", size = 5, alpha  =.7, stroke = 1)+
+  ggrepel::geom_text_repel(aes(label = Label, x = Longitude_DD, y =Latitude_DD), 
+             data = for_map, size = 12)+
+  geom_hline(yintercept = 0, lwd = 0.1, alpha = 0.2) +
+  theme_void()+
+  theme(plot.margin = margin(0, 0, 0, 0, "cm"),
+    legend.box.background = element_rect(fill = "white", color = "white"))+
+  theme(axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        panel.background = element_rect(fill = "white"),
+        panel.border = element_rect(colour = "black", fill = NA),
+        panel.grid = element_blank(),
+        plot.margin = margin(0.1, 0.1, 0.1, 0.1, "cm"),)
+world_map
+dev.off()
+```

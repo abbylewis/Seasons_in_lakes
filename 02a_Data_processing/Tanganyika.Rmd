@@ -1,0 +1,134 @@
+---
+title: "Tanganyika"
+author: "Abby Lewis"
+date: "2025-10-02"
+output: html_document
+---
+
+For continuous data, the output format has three columns (with one year of data):
+
+-   `yday`: day of year (numeric)
+-   `Variable`: Variable name
+-   `Value`: Variable value
+
+For discrete data, the output format has four columns
+
+-   `start`: start date of this "season" as numeric day of year
+-   `end`: end date of this season as numeric day of year
+-   `Season`: season name (e.g., "summer", "stratified")
+-   `Method`: method name (i.e., y-axis label in figure 3)
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(rLakeAnalyzer)
+
+solstice <- as.Date("2012-06-21")
+offset = as.Date("2013-01-01") - solstice
+LAKE = "Lake Tanganyika (2012-2013)" 
+```
+
+In-lake data (temperature, chlorophyll-a, stratification)
+
+```{r}
+# Load data
+in_lake_data <- read_csv("../01a_Raw_data/DATA_Casts_forSeasonsMS_v1.csv") %>%
+  mutate(day = as.Date(Date) + offset,
+         yday = yday(day)) %>%
+  filter(year(day) == 2013,
+         !is.na(yday)) 
+
+# Format continuous data
+in_lake_formatted <- in_lake_data %>%
+  select(day, yday, Temp, DO, Chla, Depth) %>%
+  pivot_longer(c("Temp", "DO", "Chla"),
+               values_to = "Value") %>%
+  group_by(name, day) %>%
+  mutate(Layer = case_when(Depth == 5~"Surface",
+                           Depth == max(Depth)~"Bottom")) %>%
+  filter(!is.na(Layer)) %>%
+  ungroup() %>%
+  mutate(Variable = paste(Layer, name),
+         Variable = case_match(Variable,
+                               "Surface Temp"~"Surface_temperature",
+                               "Bottom Temp"~"Bottom_temperature",
+                               "Surface Chla"~"Surface_chla",
+                               "Surface DO"~"Surface_DO",
+                               "Bottom DO"~"Bottom_DO"
+                               )) %>%
+  filter(!is.na(Variable)) %>%
+  mutate(Lake = LAKE) %>%
+  select(Variable, Value, yday, Lake)
+
+write.csv(in_lake_formatted, "../01b_Processed_data/Tanganyika_continuous.csv", row.names = F)
+
+# Stratification metric calcs (both discrete and continuous)
+strat_sum <- in_lake_formatted %>%
+  filter(Variable %in% c("Surface_temperature", "Bottom_temperature")) %>%
+  pivot_wider(names_from = "Variable", values_from = "Value") %>%
+  mutate(Diff_Dens_surf_bot = water.density(Bottom_temperature) - 
+           water.density(Surface_temperature),
+         Inverse = ifelse(Bottom_temperature > Surface_temperature,
+                          T, F))
+
+strat_export_discrete <- strat_sum %>%
+  mutate(Strat = ifelse(Diff_Dens_surf_bot > 0.1, "Stratified", "Mixed"),
+         Strat = ifelse(Inverse & Strat == "Stratified", "Inversely\nstratified", Strat)) %>%
+  filter(!is.na(Strat)) %>%
+  ungroup() %>%
+  filter(Strat != lag(Strat)) %>%
+  full_join(data.frame(Variable = "Diff_Dens_surf_bot", yday = 1, Strat = "Mixed")) %>%
+  arrange(yday) %>%
+  mutate(end = lead(yday, default = 365)) %>%
+  rename(start = yday, Season = Strat) %>%
+  select(start, end, Season) %>%
+  mutate(Lake = LAKE)
+
+strat_export_cont <- strat_sum %>%
+  select(yday, Diff_Dens_surf_bot) %>%
+  pivot_longer(Diff_Dens_surf_bot, names_to = "Variable", values_to = "Value") %>%
+  mutate(Lake = LAKE)
+
+write.csv(strat_export_discrete, 
+          "../01b_Processed_data/Tanganyika_stratification_discrete.csv", 
+          row.names = F)
+write.csv(strat_export_cont, 
+          "../01b_Processed_data/Tanganyika_stratification_continuous.csv", 
+          row.names = F)
+```
+
+Meteorological data
+
+```{r}
+# Load data
+met <- read_csv("../01a_Raw_data/DATA_Weather_forSeasonsMS_v1.csv")
+
+# Format continuous data
+met_formatted <- met %>%
+  mutate(Date = as.Date(Date) + offset,
+         doy = yday(Date)) %>%
+  filter(year(Date) == 2013) %>%
+  rename(AirTemp_C_Average = Temp_mean,
+         Shortwave = PAR_mean) %>%
+  select(Shortwave, AirTemp_C_Average, Date) %>%
+  pivot_longer(c(AirTemp_C_Average, Shortwave), names_to = "Variable", values_to = "Value") %>%
+  mutate(yday = yday(Date)) %>%
+  select(Variable, Value, yday) %>%
+  mutate(Lake = LAKE)
+
+write.csv(met_formatted, "../01b_Processed_data/Tanganyika_met.csv", row.names = F)
+```
+
+Ice data
+(no ice)
+```{r}
+#Load data
+ice_formatted <- data.frame(Season = "Open water",
+                            start = 0, 
+                            end = 365,
+                            Lake = LAKE,
+                            Method = "Ice")
+
+write.csv(ice_formatted, "../01b_Processed_data/Tanganyika_ice.csv", row.names = F)
+```
+

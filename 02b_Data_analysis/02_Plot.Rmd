@@ -17,7 +17,10 @@ library(ggnewscale) # For multiple color scales on the discrete panel
 if(!file.exists("../03a_Figures")){dir.create("../03a_Figures")}
 
 #Southern hemisphere lakes
-sh_lakes <- c("Rerewhakaaitu", "West Lake Bonney (2023-2024)")
+sh_lakes <- c("Lake Rerewhakaaitu (2022-2023)", 
+              "West Lake Bonney (2023-2024)",
+              "Lake Tanganyika (2012-2013)",
+              "Lake Batur (2022-2023)")
 
 LAKES <- c("Lake Erken (2018)", #59.83917
            "Arendsee (2020)", #52.89099
@@ -27,8 +30,10 @@ LAKES <- c("Lake Erken (2018)", #59.83917
            "Mohonk Lake (2017)", #41.76598
            "Beaverdam Reservoir (2021)", #37.3164
            "Kinneret (1993)", #32.7
+           "Lake Tanganyika (2012-2013)", #-6.24346
+           "Lake Batur (2022-2023)", #-8.259
            "Lake Rerewhakaaitu (2022-2023)", #-38.2936
-           "West Lake Bonney (2023-2024)"
+           "West Lake Bonney (2023-2024)" #-77.720
            ) 
 ```
 
@@ -85,8 +90,10 @@ lake_relabel <- function(lakes){
     "Mohonk Lake (2017)" = "bold('f)')~`Mohonk Lake (2017); Z`[max]~`= 18 m`",
     "Beaverdam Reservoir (2021)" = "bold('g)')~`Beaverdam Reservoir (2021); Z`[max]~`= 11 m`",
     "Kinneret (1993)" = "bold('h)')~`Kinneret (1993); Z`[max]~`= 43 m`",
-    "Lake Rerewhakaaitu (2022-2023)" = "bold('i)')~`Lake Rerewhakaaitu (2022-2023); Z`[max]~`= 15 m`",
-    "West Lake Bonney (2023-2024)" = "bold('j)')~`West Lake Bonney (2023-2024); Z`[max]~`= 40 m`"
+    "Lake Tanganyika (2012-2013)" = "bold('i)')~`Lake Tanganyika (2012-2013); Z`[max]~`= 1470 m`",
+    "Lake Batur (2022-2023)" = "bold('j)')~`Lake Batur (2022-2023); Z`[max]~`= 88 m`",
+    "Lake Rerewhakaaitu (2022-2023)" = "bold('k)')~`Lake Rerewhakaaitu (2022-2023); Z`[max]~`= 15 m`",
+    "West Lake Bonney (2023-2024)" = "bold('l)')~`West Lake Bonney (2023-2024); Z`[max]~`= 40 m`"
   )
   
   return(unname(labels[lakes]))
@@ -121,7 +128,7 @@ discrete_ice <- temperate %>%
                    xend = end, 
                    color = Season), 
                lwd = 3) +
-  scale_color_manual("Stratification", values = c("#FACFCF", "#F6A2A2", "#DB8080"),
+  scale_color_manual("Stratification", values = c("#fce6e6", "#F6A2A2", "#DB8080"),
                      breaks = c("Inversely\nstratified", "Mixed", "Stratified")) +
   guides(color = guide_legend(ncol = 1, title.position="top")) +
   ggnewscale::new_scale_color() +
@@ -168,7 +175,6 @@ cont <- all_csvs[!grepl("season|ice|discrete|All|longoutput|data.csv", all_csvs)
 all <- cont %>%
   map(read_csv, show_col_types = FALSE) %>%
   bind_rows()
-
 full <- all %>%
   expand(Variable, yday, Lake)
 
@@ -242,7 +248,7 @@ continuous <- continuous_data %>%
 # Combine and save
 
 ```{r}
-jpeg("../03a_Figures/Seasons_data_ice.jpg", width = 8.5, height = 9, units = "in", res = 300)
+jpeg("../03a_Figures/Seasons_data_ice.jpg", width = 8.5, height = 11, units = "in", res = 300)
 ggarrange(discrete_ice, continuous, align = "h")
 dev.off()
 ```

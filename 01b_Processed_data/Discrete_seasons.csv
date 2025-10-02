@@ -17,6 +17,15 @@ Months,Winter,Northern,1,71,Arendsee (2020),NA,NA,NA
 Astronomical,Spring,Northern,90,183,Arendsee (2020),NA,NA,NA
 Astronomical,Summer,Northern,183,276,Arendsee (2020),NA,NA,NA
 Astronomical,Winter,Northern,1,90,Arendsee (2020),NA,NA,NA
+Months,Winter,Southern,346,365,Lake Batur (2022-2023),NA,NA,NA
+Astronomical,Autumn,Southern,273,365,Lake Batur (2022-2023),NA,NA,NA
+Months,Spring,Southern,73,164,Lake Batur (2022-2023),NA,NA,NA
+Months,Summer,Southern,164,254,Lake Batur (2022-2023),NA,NA,NA
+Months,Autumn,Southern,254,346,Lake Batur (2022-2023),NA,NA,NA
+Months,Winter,Southern,1,73,Lake Batur (2022-2023),NA,NA,NA
+Astronomical,Spring,Southern,94,184,Lake Batur (2022-2023),NA,NA,NA
+Astronomical,Summer,Southern,184,273,Lake Batur (2022-2023),NA,NA,NA
+Astronomical,Winter,Southern,1,94,Lake Batur (2022-2023),NA,NA,NA
 Months,Winter,Northern,346,365,Beaverdam Reservoir (2021),NA,NA,NA
 Astronomical,Autumn,Northern,276,365,Beaverdam Reservoir (2021),NA,NA,NA
 Months,Spring,Northern,71,163,Beaverdam Reservoir (2021),NA,NA,NA
@@ -62,15 +71,15 @@ Months,Winter,Northern,1,71,Mohonk Lake (2017),NA,NA,NA
 Astronomical,Spring,Northern,90,183,Mohonk Lake (2017),NA,NA,NA
 Astronomical,Summer,Northern,183,276,Mohonk Lake (2017),NA,NA,NA
 Astronomical,Winter,Northern,1,90,Mohonk Lake (2017),NA,NA,NA
-Months,Winter,Northern,346,365,Lake Rerewhakaaitu (2022-2023),NA,NA,NA
-Astronomical,Autumn,Northern,276,365,Lake Rerewhakaaitu (2022-2023),NA,NA,NA
-Months,Spring,Northern,71,163,Lake Rerewhakaaitu (2022-2023),NA,NA,NA
-Months,Summer,Northern,163,255,Lake Rerewhakaaitu (2022-2023),NA,NA,NA
-Months,Autumn,Northern,255,346,Lake Rerewhakaaitu (2022-2023),NA,NA,NA
-Months,Winter,Northern,1,71,Lake Rerewhakaaitu (2022-2023),NA,NA,NA
-Astronomical,Spring,Northern,90,183,Lake Rerewhakaaitu (2022-2023),NA,NA,NA
-Astronomical,Summer,Northern,183,276,Lake Rerewhakaaitu (2022-2023),NA,NA,NA
-Astronomical,Winter,Northern,1,90,Lake Rerewhakaaitu (2022-2023),NA,NA,NA
+Months,Winter,Southern,346,365,Lake Rerewhakaaitu (2022-2023),NA,NA,NA
+Astronomical,Autumn,Southern,273,365,Lake Rerewhakaaitu (2022-2023),NA,NA,NA
+Months,Spring,Southern,73,164,Lake Rerewhakaaitu (2022-2023),NA,NA,NA
+Months,Summer,Southern,164,254,Lake Rerewhakaaitu (2022-2023),NA,NA,NA
+Months,Autumn,Southern,254,346,Lake Rerewhakaaitu (2022-2023),NA,NA,NA
+Months,Winter,Southern,1,73,Lake Rerewhakaaitu (2022-2023),NA,NA,NA
+Astronomical,Spring,Southern,94,184,Lake Rerewhakaaitu (2022-2023),NA,NA,NA
+Astronomical,Summer,Southern,184,273,Lake Rerewhakaaitu (2022-2023),NA,NA,NA
+Astronomical,Winter,Southern,1,94,Lake Rerewhakaaitu (2022-2023),NA,NA,NA
 Months,Winter,Northern,346,365,Lake Sunapee (2008),NA,NA,NA
 Astronomical,Autumn,Northern,276,365,Lake Sunapee (2008),NA,NA,NA
 Months,Spring,Northern,71,163,Lake Sunapee (2008),NA,NA,NA
@@ -80,6 +89,15 @@ Months,Winter,Northern,1,71,Lake Sunapee (2008),NA,NA,NA
 Astronomical,Spring,Northern,90,183,Lake Sunapee (2008),NA,NA,NA
 Astronomical,Summer,Northern,183,276,Lake Sunapee (2008),NA,NA,NA
 Astronomical,Winter,Northern,1,90,Lake Sunapee (2008),NA,NA,NA
+Months,Winter,Southern,346,365,Lake Tanganyika (2012-2013),NA,NA,NA
+Astronomical,Autumn,Southern,273,365,Lake Tanganyika (2012-2013),NA,NA,NA
+Months,Spring,Southern,73,164,Lake Tanganyika (2012-2013),NA,NA,NA
+Months,Summer,Southern,164,254,Lake Tanganyika (2012-2013),NA,NA,NA
+Months,Autumn,Southern,254,346,Lake Tanganyika (2012-2013),NA,NA,NA
+Months,Winter,Southern,1,73,Lake Tanganyika (2012-2013),NA,NA,NA
+Astronomical,Spring,Southern,94,184,Lake Tanganyika (2012-2013),NA,NA,NA
+Astronomical,Summer,Southern,184,273,Lake Tanganyika (2012-2013),NA,NA,NA
+Astronomical,Winter,Southern,1,94,Lake Tanganyika (2012-2013),NA,NA,NA
 Months,Winter,Southern,346,365,West Lake Bonney (2023-2024),NA,NA,NA
 Astronomical,Autumn,Southern,273,365,West Lake Bonney (2023-2024),NA,NA,NA
 Months,Spring,Southern,73,164,West Lake Bonney (2023-2024),NA,NA,NA
@@ -97,6 +115,63 @@ Stratification,Stratified,NA,110,116,Arendsee (2020),110,116,NA
 Stratification,Mixed,NA,116,118,Arendsee (2020),116,118,NA
 Stratification,Stratified,NA,118,349,Arendsee (2020),118,349,NA
 Stratification,Mixed,NA,349,365,Arendsee (2020),349,365,NA
+Stratification,Mixed,NA,1,114,Lake Batur (2022-2023),1,114,NA
+Stratification,Mixed,NA,114,116,Lake Batur (2022-2023),114,116,NA
+Stratification,Stratified,NA,116,121,Lake Batur (2022-2023),116,121,NA
+Stratification,Mixed,NA,121,124,Lake Batur (2022-2023),121,124,NA
+Stratification,Stratified,NA,124,128,Lake Batur (2022-2023),124,128,NA
+Stratification,Mixed,NA,128,129,Lake Batur (2022-2023),128,129,NA
+Stratification,Stratified,NA,129,130,Lake Batur (2022-2023),129,130,NA
+Stratification,Mixed,NA,130,131,Lake Batur (2022-2023),130,131,NA
+Stratification,Stratified,NA,131,151,Lake Batur (2022-2023),131,151,NA
+Stratification,Mixed,NA,151,152,Lake Batur (2022-2023),151,152,NA
+Stratification,Stratified,NA,152,157,Lake Batur (2022-2023),152,157,NA
+Stratification,Mixed,NA,157,163,Lake Batur (2022-2023),157,163,NA
+Stratification,Stratified,NA,163,185,Lake Batur (2022-2023),163,185,NA
+Stratification,Mixed,NA,185,203,Lake Batur (2022-2023),185,203,NA
+Stratification,Stratified,NA,203,205,Lake Batur (2022-2023),203,205,NA
+Stratification,Mixed,NA,205,206,Lake Batur (2022-2023),205,206,NA
+Stratification,Stratified,NA,206,212,Lake Batur (2022-2023),206,212,NA
+Stratification,Mixed,NA,212,213,Lake Batur (2022-2023),212,213,NA
+Stratification,Stratified,NA,213,227,Lake Batur (2022-2023),213,227,NA
+Stratification,Mixed,NA,227,228,Lake Batur (2022-2023),227,228,NA
+Stratification,Stratified,NA,228,230,Lake Batur (2022-2023),228,230,NA
+Stratification,Mixed,NA,230,233,Lake Batur (2022-2023),230,233,NA
+Stratification,Stratified,NA,233,238,Lake Batur (2022-2023),233,238,NA
+Stratification,Mixed,NA,238,242,Lake Batur (2022-2023),238,242,NA
+Stratification,Stratified,NA,242,244,Lake Batur (2022-2023),242,244,NA
+Stratification,Mixed,NA,244,246,Lake Batur (2022-2023),244,246,NA
+Stratification,Stratified,NA,246,251,Lake Batur (2022-2023),246,251,NA
+Stratification,Mixed,NA,251,252,Lake Batur (2022-2023),251,252,NA
+Stratification,Stratified,NA,252,253,Lake Batur (2022-2023),252,253,NA
+Stratification,Mixed,NA,253,260,Lake Batur (2022-2023),253,260,NA
+Stratification,Stratified,NA,260,283,Lake Batur (2022-2023),260,283,NA
+Stratification,Mixed,NA,283,286,Lake Batur (2022-2023),283,286,NA
+Stratification,Stratified,NA,286,288,Lake Batur (2022-2023),286,288,NA
+Stratification,Mixed,NA,288,289,Lake Batur (2022-2023),288,289,NA
+Stratification,Stratified,NA,289,292,Lake Batur (2022-2023),289,292,NA
+Stratification,Mixed,NA,292,296,Lake Batur (2022-2023),292,296,NA
+Stratification,Stratified,NA,296,298,Lake Batur (2022-2023),296,298,NA
+Stratification,Mixed,NA,298,299,Lake Batur (2022-2023),298,299,NA
+Stratification,Stratified,NA,299,325,Lake Batur (2022-2023),299,325,NA
+Stratification,Mixed,NA,325,326,Lake Batur (2022-2023),325,326,NA
+Stratification,Stratified,NA,326,327,Lake Batur (2022-2023),326,327,NA
+Stratification,Mixed,NA,327,330,Lake Batur (2022-2023),327,330,NA
+Stratification,Stratified,NA,330,331,Lake Batur (2022-2023),330,331,NA
+Stratification,Mixed,NA,331,334,Lake Batur (2022-2023),331,334,NA
+Stratification,Stratified,NA,334,335,Lake Batur (2022-2023),334,335,NA
+Stratification,Mixed,NA,335,339,Lake Batur (2022-2023),335,339,NA
+Stratification,Stratified,NA,339,341,Lake Batur (2022-2023),339,341,NA
+Stratification,Mixed,NA,341,342,Lake Batur (2022-2023),341,342,NA
+Stratification,Stratified,NA,342,343,Lake Batur (2022-2023),342,343,NA
+Stratification,Mixed,NA,343,345,Lake Batur (2022-2023),343,345,NA
+Stratification,Stratified,NA,345,347,Lake Batur (2022-2023),345,347,NA
+Stratification,Mixed,NA,347,348,Lake Batur (2022-2023),347,348,NA
+Stratification,Stratified,NA,348,360,Lake Batur (2022-2023),348,360,NA
+Stratification,Mixed,NA,360,361,Lake Batur (2022-2023),360,361,NA
+Stratification,Stratified,NA,361,362,Lake Batur (2022-2023),361,362,NA
+Stratification,Mixed,NA,362,365,Lake Batur (2022-2023),362,365,NA
+Stratification,Stratified,NA,365,365,Lake Batur (2022-2023),365,365,NA
 Stratification,Mixed,NA,1,81,Beaverdam Reservoir (2021),1,81,NA
 Stratification,Stratified,NA,81,85,Beaverdam Reservoir (2021),81,85,NA
 Stratification,Mixed,NA,85,89,Beaverdam Reservoir (2021),85,89,NA
@@ -177,9 +252,11 @@ Stratification,Stratified,NA,275,276,Lake Sunapee (2008),275,276,NA
 Stratification,Mixed,NA,276,277,Lake Sunapee (2008),276,277,NA
 Stratification,Stratified,NA,277,280,Lake Sunapee (2008),277,280,NA
 Stratification,Mixed,NA,280,365,Lake Sunapee (2008),280,365,NA
+Stratification,Mixed,NA,1,365,Lake Tanganyika (2012-2013),1,365,NA
 Stratification,Stratified,NA,1,365,West Lake Bonney (2023-2024),1,365,NA
-Ice,Open water,NA,0,365,Lake Ägeri (2023),NA,NA,2022-12-21
+Ice,Open water,NA,0,365,Lake Ägeri (2023),NA,NA,NA
 Ice,Open water,NA,0,365,Arendsee (2020),NA,NA,NA
+Ice,Open water,NA,0,365,Lake Batur (2022-2023),NA,NA,NA
 Ice,Ice,NA,21,23,Beaverdam Reservoir (2021),NA,NA,2020-12-21
 Ice,Ice,NA,41,42,Beaverdam Reservoir (2021),NA,NA,2020-12-21
 Ice,Ice,NA,55,58,Beaverdam Reservoir (2021),NA,NA,2020-12-21
@@ -199,4 +276,5 @@ Ice,Open water,NA,109,365,Mohonk Lake (2017),NA,NA,NA
 Ice,Open water,NA,0,365,Lake Rerewhakaaitu (2022-2023),NA,NA,NA
 Ice,Ice,NA,0,126,Lake Sunapee (2008),NA,NA,2007-12-21
 Ice,Open water,NA,126,365,Lake Sunapee (2008),NA,NA,2007-12-21
+Ice,Open water,NA,0,365,Lake Tanganyika (2012-2013),NA,NA,NA
 Ice,Ice,NA,0,365,West Lake Bonney (2023-2024),NA,NA,NA

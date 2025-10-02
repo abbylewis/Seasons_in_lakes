@@ -154,8 +154,7 @@ ice <- data.frame(Lake = c(LAKE),
                   Season = c("Open water"),
                   Method = c("Ice"),
                   start = c(0),
-                  end = c(365)) %>%
-  mutate(Solstice = solstice)
+                  end = c(365))
 
 write.csv(ice, "../01b_Processed_data/Ägeri_ice.csv", row.names = F)
 ```

@@ -3,24 +3,37 @@ library(rLakeAnalyzer)
 
 #Reads in data from Lewis et al. edi.1530.1, https://portal.edirepository.org/nis/mapbrowse?packageid=edi.1530.1
 #Gets out Kinneret data
-kinneret_data<-read_csv("https://pasta.lternet.edu/package/data/eml/edi/1530/1/caf59a118a1490e7cb1a219c55b920f9")%>%filter(LakeID=="aba03")
+kinneret_data<-read_csv("https://pasta.lternet.edu/package/data/eml/edi/1530/1/caf59a118a1490e7cb1a219c55b920f9") %>%
+  filter(LakeID=="aba03")
+#No chla data at Kinneret
+#kinneret_chla <- read_csv("https://pasta.lternet.edu/package/data/eml/edi/1530/1/0ece9d7b67cd49741ed7ee60192832e4") %>%
+#  filter(LakeID=="aba03")
 
 #Plot the data
 ggplot(data=kinneret_data,aes(x=Date,y=Temp_C,color=Depth_m))+geom_point()
 
 #Most years have weekly data
-kinneret_data%>%distinct(Date)%>%mutate(year=year(Date))%>%group_by(year)%>%summarize(counts=n())%>%print(n=Inf)
+kinneret_data %>% 
+  distinct(Date) %>% 
+  mutate(year=year(Date)) %>% 
+  group_by(year) %>% 
+  summarize(counts=n()) %>% 
+  print(n=Inf)
 
 #Get out just 1993 - year with the most data####
-kinneret_data_1993<-kinneret_data%>%filter(year(Date)==1993)%>%filter(!is.na(Temp_C))
+kinneret_data_1993 <- kinneret_data %>%
+  filter(year(Date)==1993) %>%
+  filter(!is.na(Temp_C))
 
 #Get out the 0 meter data
-kinneret_data_1993_surface<-kinneret_data_1993%>%filter(Depth_m==0)%>%
-  mutate(Surface_temperature=Temp_C)%>%
+kinneret_data_1993_surface <- kinneret_data_1993 %>% 
+  filter(Depth_m==0)%>%
+  mutate(Surface_temperature=Temp_C) %>%
   dplyr::select(Date,Surface_temperature)
 
 #Deep is 40m (there are 51 of those)
-kinneret_data_1993_deep<-kinneret_data_1993%>%filter(Depth_m==40)%>%
+kinneret_data_1993_deep<-kinneret_data_1993 %>% 
+  filter(Depth_m==40)%>%
   mutate(Bottom_temperature=Temp_C,
          Bottom_DO = DO_mgL)%>%
   dplyr::select(Date,Bottom_temperature, Bottom_DO)
