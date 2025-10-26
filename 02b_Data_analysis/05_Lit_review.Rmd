@@ -75,6 +75,10 @@ processed <- all_classified %>%
     AB = str_replace_all(AB, regex("\\brain[[:space:]]+season\\b", 
                                    ignore_case = TRUE), "rainy season"),
     
+    # Normalize "non" before extraction
+    TI = str_replace_all(TI, regex("\\bnon(?!-)", ignore_case = TRUE), "non-"),
+    AB = str_replace_all(AB, regex("\\bnon(?!-)", ignore_case = TRUE), "non-"),
+    
     # Normalize ice free before extraction
     TI = str_replace_all(TI, regex("\\bice[[:space:]]+free[[:space:]]+season\\b", 
                                    ignore_case = TRUE), "ice-free season"),
@@ -105,33 +109,32 @@ filler_words <- c(
   "either", "previous", "other")
 temporal_phases <- c("early", "mid", "late", "first", "second", 
                      "end-of", "whole", "entire", "two", "four", 
-                     "all", "normal")
+                     "all", "normal", "peak")
 
 #Define season types
 temperate <- c("spring", "summer", "autumn", "winter", "fall")
 flora <- c("wintering", "growth", "growing", "non-growing", 
-           "nongrowing", "vegetative", "productive", "non-productive",
+           "vegetative", "productive", "non-productive",
            "dormant", "bloom", "blooming", "vegetation", "fire")
 fauna <- c("breeding", "spawning", "reproductive", "mating",
-           "nesting","non-breeding", "nonbreeding", "migration")
+           "nesting","non-breeding", "migration","active")
 ice <- c("ice-covered", "ice-free", "open-water", "melt", 
          "melting", "thaw", "snowmelt", "ice", "ice-cover", 
          "snow", "snow-free", "ablation")
 stratification <- c("stratified", "mixing")
 temperature <- c("cold", "cool", "warm", "hot", "warmer", "heating")
 hydrology <- c("dry", "rainy", "wet","runoff", "hydrological", 
-               "flood", "flooding",
-               "high-water", "low-water", "high-flow",
+               "flood", "flooding", "high-water", "low-water", "high-flow",
                "low-flow", "non-flood", "rainfall", "monsoon",
                "post-monsoon", "pre-monsoon", "non-monsoon", "drought")
 agriculture <- c("irrigation", "rice-growing", "cropping", 
                  "planting", "harvest", "wheat", "rice")
-economic <- c("peak", "active", "fishing", "angling", "closed",
+economic <- c("fishing", "angling", "closed",
                 "hunting", "tourist", "bathing", "swimming")
 research <- c("field", "sampling")
 
 #Check
-#processed$AB[processed$SeasonWords == "closed"]
+#processed$AB[processed$SeasonWords == "active"]
 
 season_word_counts <- processed %>%
   select(SeasonWords) %>%
@@ -176,15 +179,6 @@ season_word_counts_plot <- season_word_counts %>%
 
 sum_seas <- sum(season_word_counts_plot$n, na.rm = T)
 
-p1 <- season_word_counts_plot %>%
-  filter(n > 10) %>%
-  mutate(tot = sum_seas) %>%
-  ggplot() +
-  #geom_bar(aes(x=1, y=tot), fill='darkgrey', stat='identity') +
-  geom_text(aes(x=1, y=tot/2, 
-                label=paste(tot, 'total seasons')), color='white')+ 
-  coord_polar('y')
-
 seasons_by_cat <- season_word_counts_plot %>%
   filter(n > 10) %>%
   group_by(Type) %>%
@@ -223,7 +217,7 @@ thirdLevel = season_word_counts_plot %>%
   mutate(angle = compute_angle(pos / sum_seas),
          hjust = ifelse(pos/sum_seas > 0.5, 1, 0),
          label = SeasonWords, #paste0(SeasonWords, " (", comma(n), ")"),
-         label = ifelse(n < 100, "", label))
+         label = ifelse(n < 75, "", label))
 
 secondLevel$Type <- factor(secondLevel$Type, 
                            levels = rev(seasons_by_cat$Type))
@@ -233,37 +227,41 @@ thirdLevel$Type <- factor(thirdLevel$Type,
 
 colors <- c("#64c7cc", #hydrology
             "#11592b", #growing
-            "#8f6521", #fauna
+            "#8f6501", #fauna
             "grey", #temperate
             "#8AB4E3", #ice
-            "#99152b", #temperature
-            "#e3c21b", #economic
+            "#993355", #temperature
+            "#ddbb66", #economic
             "#79ad24",#ag
             "#66450c",#research
-            "#F6A2A2") #stratification
+            "#F6A2A2")#stratification
+            #"grey20") #other
 
 jpeg("../03a_Figures/Sunburst.jpg", res = 300, width = 6, height = 5, units = "in")
 ggplot() +
-  geom_bar(data=secondLevel,
-           aes(x=3, y=total_by_type, fill=Type),
-           width = 2,
-           color='white', position='stack', stat='identity')+
   geom_bar(data=thirdLevel,
            aes(x=5, y=n, fill = Type),
-           color = "white",
+           color = "white",linewidth = 0.2,
            position='stack', stat='identity', 
            alpha = 0.5, width = 2) +
+  geom_bar(data=secondLevel,
+           aes(x=3, y=total_by_type, fill=Type),
+           width = 2,color = "white",linewidth = 0.2,
+           position='stack', stat='identity')+
+  
+  #geom_segment(data=secondLevel %>% ungroup() %>% mutate(prev = lag(running),
+  #                                         prev = ifelse(is.na(prev), 0, prev)),
+  #         aes(x=4, y = prev, yend=running, color=Type), linewidth = 1.5)+
   geom_text(data=thirdLevel, 
             aes(label=label, x=6.2, y=pos, angle=angle, 
-                hjust = hjust), 
-            color = "grey50"
+                hjust = hjust, color = Type), show.legend = F
             ) +
   xlim(c(0,8))+
   coord_polar('y')+
   scale_color_manual(values= colors, breaks = seasons_by_cat$Type) + 
   scale_fill_manual(values = colors, breaks = seasons_by_cat$Type) + 
   theme_void()+
-  ggtitle('Words that preceed "season"')+
+  ggtitle('Words that precede "season"')+
   guides(fill = guide_legend(title = NULL, nrow = 4)) + 
   theme(
     plot.title = element_text(hjust = 0.5, vjust = -6, size = 14),
@@ -274,5 +272,177 @@ ggplot() +
     plot.margin = margin(0, 0, 0, 0)
   )
 dev.off()
+```
+
+```{r}
+library(stringi)
+library(data.table)
+
+#https://simplemaps.com/data/world-cities
+places <- fread("../01a_Raw_data/worldcities.csv")
+
+# Load data
+countries <- unique(places$country)
+places[, city_lower := tolower(city)]
+places[, country_lower := tolower(country)]
+
+# Extract country info
+countries <- unique(places[, .(country, iso2, iso3)])
+countries[, `:=`(
+  country_lower = tolower(country),
+  iso2_lower = tolower(iso2),
+  iso3_lower = tolower(iso3)
+)]
+
+# --- Create search vectors ---
+countries_lower <- countries$country_lower
+iso2_lower <- na.omit(countries$iso2_lower)
+iso3_lower <- na.omit(countries$iso3_lower[!countries$iso3_lower=="and"])
+
+papers <- setDT(processed %>%
+                  select(TI, AB, SeasonWords))
+places <- setDT(places)
+papers[, full_text := tolower(paste(TI, AB))]
+
+# Vectorize country detection
+detect_country <- function(text) {
+  # Match full country name
+  idx <- which(stri_detect_fixed(text, countries$country_lower))
+  if (length(idx) > 1) return("Multi")
+  if (length(idx) > 0) return(countries$country[idx[1]])
+  
+  # Match ISO3
+  idx <- which(stri_detect_regex(text, paste0("\\b", countries$iso3_lower, "\\b")))
+  if (length(idx) > 1) return("Multi")
+  if (length(idx) == 1) return(countries$country[idx])
+  
+  return(NA_character_)
+}
+
+
+# Vectorize city detection
+detect_city_country <- function(text) {
+  matches <- places$city_lower[stri_detect_fixed(text, places$city_lower)]
+  if (length(matches) > 1) return("Multi")
+  if (length(matches) == 0) return(NA_character_)
+  unique(places[c(city_lower %in% matches), country_lower])[1]
+}
+
+# Apply
+papers[, Country := {
+  ctry <- detect_country(full_text)
+  if (is.na(ctry)) detect_city_country(full_text) else ctry
+}, by = 1:nrow(papers)]  
+
+spat2 <- papers %>%
+  as.data.frame()
+
+sum(!is.na(spat2$Country))/nrow(spat2) #Currently matching ~1/2 of abstracts
+
+top5 <- spat2 %>%
+  group_by(Country) %>%
+  summarize(n = n()) %>%
+  arrange(desc(n)) %>%
+  filter(!Country == "Multi",
+         !is.na(Country)) %>%
+  head(5) %>%
+  pull(Country)
+
+season_word_counts_spat <- spat2 %>%
+  filter(Country %in% top5) %>%
+  select(SeasonWords, Country) %>%
+  unnest(SeasonWords) %>%
+  mutate(SeasonWords = tolower(SeasonWords),
+         SeasonWords = gsub("[[:space:]-]$", "", SeasonWords)) %>%
+  filter(!SeasonWords %in% filler_words,
+         !SeasonWords %in% temporal_phases,
+         !is.na(SeasonWords)) %>% 
+  mutate(
+    Type = case_when(
+      SeasonWords %in% temperate ~ "Temperate",
+      SeasonWords %in% flora ~ "Flora",
+      SeasonWords %in% fauna ~ "Fauna",
+      SeasonWords %in% ice ~ "Ice/Snow",
+      SeasonWords %in% stratification ~ "Stratification",
+      SeasonWords %in% temperature ~ "Temperature",
+      SeasonWords %in% hydrology ~ "Hydrology",
+      SeasonWords %in% agriculture ~ "Agriculture",
+      SeasonWords %in% economic ~ "Economic",
+      SeasonWords %in% research ~ "Research",
+      TRUE ~ "Other"
+    )
+  ) %>%
+  count(Type, SeasonWords, Country, sort = TRUE)
+
+season_word_counts_plot <- season_word_counts_spat %>%
+    filter(n > 10)
+```
+
+Facet plot
+```{r}
+seasons_by_cat_i <- season_word_counts_plot %>%
+  filter(Country %in% top5) %>%
+  group_by(Type, Country) %>%
+  summarize(total_by_type = sum(n)) %>% 
+  arrange(desc(total_by_type))
+
+secondLevel = seasons_by_cat_i %>%
+  group_by(Country) %>%
+  arrange(desc(total_by_type)) %>%
+  mutate(running = cumsum(total_by_type), 
+         pos=running - total_by_type/2,
+         sum_seas = sum(total_by_type),
+         Country_label = paste0(Country, "(n = ", sum_seas, ")")) %>% 
+  rowwise() %>% 
+  mutate(angle = compute_angle(pos / sum_seas))
+
+thirdLevel = season_word_counts_plot %>%
+  filter(Country %in% top5) %>%
+  group_by(Type, Country) %>%
+  mutate(total_by_type = sum(n)) %>% 
+  group_by(Country) %>%
+  arrange(desc(total_by_type),
+          desc(n)) %>%
+  mutate(running = cumsum(n), 
+         pos=running - n/2,
+         sum_seas = sum(total_by_type),
+         Country_label = paste0(Country, "(n = ", sum_seas, ")")) %>% 
+  rowwise() %>% 
+  mutate(angle = compute_angle(pos / sum_seas),
+         hjust = ifelse(pos/sum_seas > 0.5, 1, 0),
+         label = SeasonWords, #paste0(SeasonWords, " (", comma(n), ")"),
+         label = ifelse(n < 30, "", label))
+
+secondLevel$Type <- factor(secondLevel$Type, 
+                           levels = rev(sub(" \\(.+\\)","",seasons_by_cat$Type)))
+
+thirdLevel$Type <- factor(thirdLevel$Type, 
+                          levels = rev(sub(" \\(.+\\)","",seasons_by_cat$Type)))
+
+ggplot() +
+  geom_bar(data=thirdLevel,
+           aes(x=5, y=n, fill = Type),
+           color = "white",linewidth = 0.2,
+           position='stack', stat='identity', 
+           alpha = 0.5, width = 2) +
+  geom_bar(data=secondLevel,
+           aes(x=3, y=total_by_type, fill=Type),
+           width = 2,color = "white",linewidth = 0.2,
+           position='stack', stat='identity')+
+  xlim(c(0,7))+
+  coord_polar('y')+
+  scale_color_manual(values = colors, breaks = sub(" \\(.+\\)","",seasons_by_cat$Type)) + 
+  scale_fill_manual(values = colors, breaks = sub(" \\(.+\\)","",seasons_by_cat$Type)) + 
+  theme_void()+
+  guides(fill = guide_legend(title = NULL, nrow = 4)) + 
+  theme(
+    plot.title = element_text(hjust = 0.5, vjust = -6, size = 14),
+    legend.position = "bottom",
+    legend.box.margin = margin(t = -10),
+    legend.margin = margin(t = -5),
+    legend.spacing.y = unit(0, "pt"),
+    plot.margin = margin(0, 0, 0, 0)
+  )+
+  facet_wrap(~Country_labe, scales = "free_y")
 ```
 
