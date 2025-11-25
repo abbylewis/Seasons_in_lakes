@@ -5,10 +5,13 @@ date: "2025-10-24"
 output: html_document
 ---
 
+Setup: load data and functions
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 
+#For circle plots
 compute_angle = function(perc){
   angle = -1
   
@@ -40,6 +43,7 @@ detect_country <- function(text) {
   return(NA_character_)
 }
 
+#Vectorize province/state/territory detection
 canadian_provinces <- c("Alberta","British Columbia","Manitoba","New Brunswick",
                         "Newfoundland and Labrador","Nova Scotia","Ontario",
                         "Prince Edward Island","Quebec","Saskatchewan")
@@ -79,6 +83,7 @@ detect_state <- function(text) {
   return(NA_character_)
 }
 
+#Standardized colors throughout
 colors <- c(
   Hydrology      = "#64c7cc",
   Flora          = "#11592b",
@@ -94,12 +99,16 @@ colors <- c(
 )
 ```
 
+Identify seasons in title/abstract
+
 ```{r}
+#Load files
 files <- list.files("../05_Lit_review", full.names = T)
 all <- read_delim(files, show_col_types = F, delim = "\t") %>%
   select(TI, AB, PY) %>%
   distinct()
 
+#Identify spring/summer/autumn/winter
 all_classified <- all %>%
   mutate(Spring = grepl("spring", TI, ignore.case = T) | 
            grepl("spring", AB, ignore.case = T),
@@ -108,87 +117,44 @@ all_classified <- all %>%
          Autumn = grepl("autumn|fall", TI, ignore.case = T) | 
            grepl("autumn|fall", AB, ignore.case = T),
          Winter = grepl("winter", TI, ignore.case = T) | 
-           grepl("winter", AB, ignore.case = T),
-         Rainy = grepl("rain(y)?[[:space:]-]+season|wet[[:space:]-]+season", TI, ignore.case = T) | 
-           grepl("rain(y)?[[:space:]-]+season|wet[[:space:]-]+season", AB, ignore.case = T),
-         Dry = grepl("dry[[:space:]-]+season", TI, ignore.case = T) | 
-           grepl("dry[[:space:]-]+season", AB, ignore.case = T),
-         Growing = grepl("growing[[:space:]-]+season|growth[[:space:]-]+season", TI, ignore.case = T) | 
-           grepl("growing[[:space:]-]+season|growth[[:space:]-]+season", AB, ignore.case = T))
+           grepl("winter", AB, ignore.case = T))
 
-jpeg("../03a_Figures/change_over_time.jpg", res = 300, width = 6, height = 4, units = "in")
-all_classified %>%
-  filter(PY <= 2025,
-         PY >= 1980) %>% #Incomplete
-  group_by(PY) %>%
-  mutate(N = n()) %>%
-  pivot_longer(Spring:Growing) %>%
-  mutate(Temperate = ifelse(name %in% c("Spring", "Summer", "Autumn", "Winter"), "Temperate", "Other")) %>%
-  group_by(name, PY, Temperate) %>%
-  summarize(n = sum(value),
-            tot = unique(N)) %>%
-  ggplot(aes(x = PY, y = n/tot, color = name))+
-  geom_point()+
-  geom_smooth()+
-  facet_wrap(~Temperate, scales = "free_y")+
-  theme_bw()
-dev.off()
-
+#Identify season words
 processed <- all_classified %>%
+  mutate(full_text = tolower(paste(TI, AB))) %>%
+  select(-TI, -AB) %>% #decrease df size
   mutate(
     # Normalize "low water", "warm water" etc. before extraction
-    TI = str_replace_all(TI,
-                         regex("\\b([a-z]+)[-\\s]?water\\b", 
-                               ignore_case = TRUE),
-                         "\\1-water"),
-    AB = str_replace_all(AB,
+    full_text = str_replace_all(full_text,
                          regex("\\b([a-z]+)[-\\s]?water\\b", 
                                ignore_case = TRUE),
                          "\\1-water"),
     
     # Normalize "low flow", "high flow" etc. before extraction
-    TI = str_replace_all(TI,
-                         regex("\\b([a-z]+)[-\\s]?flow\\b", 
-                               ignore_case = TRUE),
-                         "\\1-flow"),
-    AB = str_replace_all(AB,
+    full_text = str_replace_all(full_text,
                          regex("\\b([a-z]+)[-\\s]?flow\\b", 
                                ignore_case = TRUE),
                          "\\1-flow"),
     
     # Normalize rain/rainy before extraction
-    TI = str_replace_all(TI, regex("\\brain[[:space:]]+season\\b", 
-                                   ignore_case = TRUE), "rainy season"),
-    AB = str_replace_all(AB, regex("\\brain[[:space:]]+season\\b", 
+    full_text = str_replace_all(full_text, regex("\\brain[[:space:]]+season\\b", 
                                    ignore_case = TRUE), "rainy season"),
     
     # Normalize "non", post, and pre before extraction
-    TI = str_replace_all(TI, regex("\\bnon(?!-)", ignore_case = TRUE), "non-"),
-    AB = str_replace_all(AB, regex("\\bnon(?!-)", ignore_case = TRUE), "non-"),
-    TI = str_replace_all(TI, regex("\\bpost(?!-)", ignore_case = TRUE), "post-"),
-    AB = str_replace_all(AB, regex("\\bpost(?!-)", ignore_case = TRUE), "post-"),
-    TI = str_replace_all(TI, regex("\\bpre[:space:]", ignore_case = TRUE), "pre-"),
-    AB = str_replace_all(AB, regex("\\bpre[:space:]", ignore_case = TRUE), "pre-"),
+    full_text = str_replace_all(full_text, regex("\\bnon(?!-)", ignore_case = TRUE), "non-"),
+    full_text = str_replace_all(full_text, regex("\\bpost(?!-)", ignore_case = TRUE), "post-"),
+    full_text = str_replace_all(full_text, regex("\\bpre[:space:]", ignore_case = TRUE), "pre-"),
     
     # Normalize ice free before extraction
-    TI = str_replace_all(TI, regex("\\bice[[:space:]]+free[[:space:]]+season\\b", 
-                                   ignore_case = TRUE), "ice-free season"),
-    AB = str_replace_all(AB, regex("\\bice[[:space:]]+free[[:space:]]+season\\b", 
+    full_text = str_replace_all(full_text, regex("\\bice[[:space:]]+free[[:space:]]+season\\b", 
                                    ignore_case = TRUE), "ice-free season"),
     
     # Normalize ice cover before extraction
-    TI = str_replace_all(TI, regex("\\bice[[:space:]-]+cover(?:ed)?[[:space:]]+season\\b", 
+    full_text = str_replace_all(full_text, regex("\\bice[[:space:]-]+cover(?:ed)?[[:space:]]+season\\b", 
                                    ignore_case = TRUE), "ice-cover season"),
-    AB = str_replace_all(AB, regex("\\bice[[:space:]-]+cover(?:ed)?[[:space:]]+season\\b", 
-                                   ignore_case = TRUE), "ice-cover season")
-  ) %>%
-  #Extract
-  mutate(
-    Type_TI = str_extract_all(TI, regex("\\b[\\w-]+(?=[[:space:]-]+seasons?\\b)", ignore_case = TRUE)),
-    Type_AB = str_extract_all(AB, regex("\\b[\\w-]+(?=[[:space:]-]+seasons?\\b)", ignore_case = TRUE)),
-
-    #Combine
-    SeasonWords = map2(Type_TI, Type_AB, ~ unique(tolower(c(.x, .y))))
+    
+    #Extract
+    SeasonWords = list(unique(tolower(str_extract_all(TI, regex("\\b[\\w-]+(?=[[:space:]-]+seasons?\\b)", ignore_case = TRUE)))))
   )
 
 # Define words to remove
@@ -248,10 +214,10 @@ season_word_counts <- processed %>%
   unnest(SeasonWords) %>%
   mutate(SeasonWords = tolower(SeasonWords),
          SeasonWords = gsub("[[:space:]-]$", "", SeasonWords)) %>%
-  filter(!SeasonWords %in% filler_words,
+  filter(!SeasonWords %in% filler_words,  # remove words that aren't seasons
          !SeasonWords %in% temporal_phases,
-         !is.na(SeasonWords)) %>%   # remove filler words
-  mutate(
+         !is.na(SeasonWords)) %>%  
+  mutate( #Classify season "type"
     Type = case_when(
       SeasonWords %in% temperate ~ "Temperate",
       SeasonWords %in% flora ~ "Flora",
@@ -267,231 +233,9 @@ season_word_counts <- processed %>%
     )
   ) %>%
   count(Type, SeasonWords, sort = TRUE)
-
-# Plot the results
-jpeg("../03a_Figures/count.jpg", res = 300, width = 4, height = 12, units = "in")
-season_word_counts %>%
-  filter(n > 10) %>%
-  ggplot(aes(y = reorder(SeasonWords, n), x = n, fill = Type)) +
-  geom_col() +
-  ylab("Word before 'season'")+
-  xlab("Frequency")+
-  theme_minimal(base_size = 14)
-dev.off()
 ```
 
-Sunburst
-
-```{r}
-season_word_counts_plot <- season_word_counts %>%
-  filter(n > 10)
-
-sum_seas <- sum(season_word_counts_plot$n, na.rm = T)
-
-seasons_by_cat <- season_word_counts_plot %>%
-  group_by(Type) %>%
-  summarize(total_by_type = sum(n)) %>% 
-  arrange(desc(total_by_type)) %>%
-  mutate(Type = paste0(Type, " (n = ", total_by_type, ")"))
-
-secondLevel = seasons_by_cat %>%
-  arrange(desc(total_by_type)) %>%
-  mutate(running = cumsum(total_by_type), 
-         pos=running - total_by_type/2) %>% 
-  rowwise() %>% 
-  mutate(angle = compute_angle(pos / sum_seas))
-
-thirdLevel = season_word_counts_plot %>%
-  mutate(total_overall = sum(n)) %>%
-  group_by(Type) %>%
-  mutate(total_by_type = sum(n)) %>% 
-  ungroup() %>%
-  arrange(desc(total_by_type),
-          desc(n)) %>%
-  mutate(running = cumsum(n), 
-         pos=running - n/2,
-         Type = paste0(Type, " (n = ", total_by_type, ")")) %>% 
-  rowwise() %>% 
-  mutate(angle = compute_angle(pos / sum_seas),
-         hjust = ifelse(pos/sum_seas > 0.5, 1, 0),
-         label = SeasonWords, #paste0(SeasonWords, " (", comma(n), ")"),
-         label = ifelse(n/total_overall < 0.01, "", label))
-
-secondLevel$Type <- factor(secondLevel$Type, 
-                           levels = rev(seasons_by_cat$Type))
-
-thirdLevel$Type <- factor(thirdLevel$Type, 
-                          levels = rev(seasons_by_cat$Type))
-
-jpeg("../03a_Figures/Sunburst.jpg", res = 300, width = 6, height = 5, units = "in")
-og <- ggplot() +
-  geom_bar(data=thirdLevel,
-           aes(x=5, y=n, fill = Type),
-           color = "white",linewidth = 0.2,
-           position='stack', stat='identity', 
-           alpha = 0.5, width = 2) +
-  geom_bar(data=secondLevel,
-           aes(x=3, y=total_by_type, fill=Type),
-           width = 2,color = "white",linewidth = 0.2,
-           position='stack', stat='identity')+
-  
-  #geom_segment(data=secondLevel %>% ungroup() %>% mutate(prev = lag(running),
-  #                                         prev = ifelse(is.na(prev), 0, prev)),
-  #         aes(x=4, y = prev, yend=running, color=Type), linewidth = 1.5)+
-  geom_text(data=thirdLevel, 
-            aes(label=label, x=6.2, y=pos, angle=angle, 
-                hjust = hjust, color = Type), show.legend = F
-            ) +
-  xlim(c(0,8))+
-  coord_polar('y')+
-  scale_color_manual(values= unname(colors), breaks = seasons_by_cat$Type) + 
-  scale_fill_manual(values = unname(colors), breaks = seasons_by_cat$Type) + 
-  theme_void()+
-  ggtitle('Words that precede "season"')+
-  guides(fill = guide_legend(title = NULL, nrow = 4)) + 
-  theme(
-    plot.title = element_text(hjust = 0.5, vjust = 0, size = 14),
-    legend.position = "bottom",
-    legend.box.margin = margin(t = -10),
-    legend.margin = margin(t = -5),
-    legend.spacing.y = unit(0, "pt"),
-    plot.margin = margin(10, 0, 0, 0)
-  )
-og
-dev.off()
-```
-
-Temperate sunburst
-
-```{r}
-with_temperate <- processed %>%
-  select(SeasonWords, Spring, Summer, Autumn, Winter) %>%
-  mutate(
-    TemperateSeasons = pmap(
-      list(Spring, Summer, Autumn, Winter),
-      ~ {
-        seasons <- c(
-          if (..1) "spring",
-          if (..2) "summer",
-          if (..3) "autumn",
-          if (..4) "winter"
-        )
-        seasons
-      }
-    ),
-    
-    # combine with existing SeasonWords
-    AllSeasons = map2(SeasonWords, TemperateSeasons, ~ unique(c(.x, .y)))
-  ) %>%
-  select(AllSeasons) %>%
-  unnest(AllSeasons) %>%
-  mutate(AllSeasons = tolower(AllSeasons),
-         AllSeasons = gsub("[[:space:]-]$", "", AllSeasons)) %>%
-  filter(!AllSeasons %in% filler_words,
-         !AllSeasons %in% temporal_phases,
-         !is.na(AllSeasons)) %>%   # remove filler words
-  mutate(
-    Type = case_when(
-      AllSeasons %in% temperate ~ "Temperate",
-      AllSeasons %in% flora ~ "Flora",
-      AllSeasons %in% fauna ~ "Fauna",
-      AllSeasons %in% ice ~ "Ice/Snow",
-      AllSeasons %in% stratification ~ "Stratification",
-      AllSeasons %in% temperature ~ "Temperature",
-      AllSeasons %in% hydrology ~ "Hydrology",
-      AllSeasons %in% agriculture ~ "Agriculture",
-      AllSeasons %in% economic ~ "Economic",
-      AllSeasons %in% research ~ "Research",
-      TRUE ~ "Other"
-    )
-  )
-
-with_temperate2 <- with_temperate %>%
-  mutate(Meta = ifelse(AllSeasons %in% c("spring", "summer", "autumn","winter"),
-                             "Temperate",
-                             "Other")) %>%
-  group_by(Type, Meta) %>%
-  count(AllSeasons, sort = TRUE) %>%
-  filter(n > 10)
-
-sum_seas <- sum(with_temperate2$n, na.rm = T)
-
-seasons_by_cat <- with_temperate2 %>%
-  group_by(Meta) %>%
-  summarize(total_by_type = sum(n)) %>% 
-  arrange(desc(total_by_type)) %>%
-  mutate(Type = paste0(Meta, " (n = ", total_by_type, ")"))
-
-secondLevel = seasons_by_cat %>%
-  arrange(desc(total_by_type)) %>%
-  mutate(running = cumsum(total_by_type), 
-         pos=running - total_by_type/2) %>% 
-  rowwise() %>% 
-  mutate(angle = compute_angle(pos / sum_seas))
-
-thirdLevel = with_temperate2 %>%
-  ungroup() %>%
-  mutate(total_overall = sum(n)) %>%
-  group_by(Type, Meta) %>%
-  mutate(total_by_type = sum(n)) %>% 
-  ungroup() %>%
-  arrange(desc(total_by_type),
-          desc(n)) %>%
-  mutate(running = cumsum(n), 
-         pos=running - n/2,
-         Type = paste0(Type, " (n = ", total_by_type, ")")) %>% 
-  rowwise() %>% 
-  mutate(angle = compute_angle(pos / sum_seas),
-         hjust = ifelse(pos/sum_seas > 0.5, 1, 0),
-         label = AllSeasons, #paste0(SeasonWords, " (", comma(n), ")"),
-         label = ifelse(n/total_overall < 0.1, "", label))
-
-secondLevel$Type <- factor(secondLevel$Type, 
-                           levels = rev(unique(thirdLevel$Type)))
-
-thirdLevel$Type <- factor(thirdLevel$Type, 
-                          levels = rev(unique(thirdLevel$Type)))
-
-jpeg("../03a_Figures/Sunburst_temperate.jpg", res = 300, width = 6, height = 5, units = "in")
-og_temp <- ggplot() +
-  geom_bar(data=thirdLevel,
-           aes(x=5, y=n, fill = Type),
-           color = "white",linewidth = 0.2,
-           position='stack', stat='identity', 
-           alpha = 0.5, width = 2) +
-  geom_bar(data=secondLevel,
-           aes(x=3, y=total_by_type),
-           fill = "black",
-           width = 2,color = "white",linewidth = 0.2,
-           position='stack', stat='identity')+
-  
-  #geom_segment(data=secondLevel %>% ungroup() %>% mutate(prev = lag(running),
-  #                                         prev = ifelse(is.na(prev), 0, prev)),
-  #         aes(x=4, y = prev, yend=running, color=Type), linewidth = 1.5)+
-  geom_text(data=thirdLevel, 
-            aes(label=label, x=6.2, y=pos, angle=angle, 
-                hjust = hjust, color = Type), show.legend = F
-            ) +
-  xlim(c(0,8))+
-  coord_polar('y')+
-  scale_color_manual(values= unname(colors), breaks = unique(thirdLevel$Type)) + 
-  scale_fill_manual(values = unname(colors), breaks = unique(thirdLevel$Type)) + 
-  theme_void()+
-  ggtitle('Words that precede "season"')+
-  guides(fill = guide_legend(title = NULL, nrow = 4)) + 
-  theme(
-    plot.title = element_text(hjust = 0.5, vjust = 0, size = 14),
-    legend.position = "bottom",
-    legend.box.margin = margin(t = -10),
-    legend.margin = margin(t = -5),
-    legend.spacing.y = unit(0, "pt"),
-    plot.margin = margin(10, 0, 0, 0)
-  )
-og_temp
-dev.off()
-```
-
-Over time
+Plot the use of different seasons over time
 
 ```{r}
 with_temperate <- processed %>%
@@ -549,6 +293,7 @@ with_temperate2 <- with_temperate %>%
 
 sum_seas <- sum(with_temperate2$n, na.rm = T)
 
+#Separate WoS search for just "lake" in title, abstract, and keywords
 lake <- read_delim("../01a_Raw_data/WoS_lake_24Nov25.txt", delim = "\t", 
                    col_names = c("Year", "Count", "Percent"), skip = 1)
 
