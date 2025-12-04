@@ -19,28 +19,12 @@ if(!file.exists("../03a_Figures")){dir.create("../03a_Figures")}
 #Load data
 discrete <- read_csv("../01b_Processed_data/Discrete_seasons.csv")
 continuous <- read_csv("../01b_Processed_data/Continuous_data.csv")
+reference <- read_csv("../01b_Processed_data/Lake_reference.csv")
 
-LAKES <- c("Lake\nErken\n(2018)", #59.83917
-           "Arendsee\n(2020)", #52.89099
-           "Lake\nÄgeri\n(2023)", #47.1213
-           "Midway\nPond\n(2023)", #44.9312
-           "Lake\nSunapee\n(2008)", #43.3802
-           "Mohonk\nLake\n(2017)", #41.76598
-           "Beaverdam\nReservoir\n(2021)", #37.3164
-           "Kinneret\n(1993)", #32.7
-           "Lake\nRerewhakaaitu\n(2022-2023)",#-38.2936
-           "West\nLake\nBonney\n(2023-2024)") 
-lats <- c(43.3802, 
-          59.83917, 
-          52.89099,
-          44.93120951379321, 
-          37.3164747, 
-          -38.2936, 
-          41.765984891547966,
-          47.121327295305115,
-          32.7224,
-          -77.720191955566)
+LAKES <- gsub(" ", "\n", reference$Lake_data)
+lats <- reference$Latitude_DD
 ref <- data.frame(LAKES, lats)
+
 vars <- c("Surface temperature", 
           "Air temperature",
           "Surface chlorophyll-a",

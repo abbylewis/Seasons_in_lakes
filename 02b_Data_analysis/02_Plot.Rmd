@@ -16,25 +16,13 @@ library(ggnewscale) # For multiple color scales on the discrete panel
 #The ../03a_Figures folder is not pushed to GitHub
 if(!file.exists("../03a_Figures")){dir.create("../03a_Figures")}
 
-#Southern hemisphere lakes
-sh_lakes <- c("Lake Rerewhakaaitu (2022-2023)", 
-              "West Lake Bonney (2023-2024)",
-              "Lake Tanganyika (2012-2013)",
-              "Lake Batur (2022-2023)")
+reference <- read_csv("../01b_Processed_data/Lake_reference.csv")
 
-LAKES <- c("Lake Erken (2018)", #59.83917
-           "Arendsee (2020)", #52.89099
-           "Lake Ägeri (2023)", #47.1213
-           "Midway Pond (2023)", #44.9312
-           "Lake Sunapee (2008)", #43.3802
-           "Mohonk Lake (2017)", #41.76598
-           "Beaverdam Reservoir (2021)", #37.3164
-           "Kinneret (1993)", #32.7
-           "Lake Tanganyika (2012-2013)", #-6.24346
-           "Lake Batur (2022-2023)", #-8.259
-           "Lake Rerewhakaaitu (2022-2023)", #-38.2936
-           "West Lake Bonney (2023-2024)" #-77.720
-           ) 
+#Southern hemisphere lakes
+select <- reference %>%
+  arrange(-Latitude_DD)
+LAKES <- select$Lake_data
+sh_lakes <- select$Lake_data[select$Latitude_DD < 0]
 ```
 
 # Discrete
@@ -89,11 +77,10 @@ lake_relabel <- function(lakes){
     "Lake Sunapee (2008)" = "bold('e)')~`Lake Sunapee (2008); Z`[max]~`= 32 m`", 
     "Mohonk Lake (2017)" = "bold('f)')~`Mohonk Lake (2017); Z`[max]~`= 18 m`",
     "Beaverdam Reservoir (2021)" = "bold('g)')~`Beaverdam Reservoir (2021); Z`[max]~`= 11 m`",
-    "Kinneret (1993)" = "bold('h)')~`Kinneret (1993); Z`[max]~`= 43 m`",
-    "Lake Tanganyika (2012-2013)" = "bold('i)')~`Lake Tanganyika (2012-2013); Z`[max]~`= 1470 m`",
-    "Lake Batur (2022-2023)" = "bold('j)')~`Lake Batur (2022-2023); Z`[max]~`= 88 m`",
-    "Lake Rerewhakaaitu (2022-2023)" = "bold('k)')~`Lake Rerewhakaaitu (2022-2023); Z`[max]~`= 15 m`",
-    "West Lake Bonney (2023-2024)" = "bold('l)')~`West Lake Bonney (2023-2024); Z`[max]~`= 40 m`"
+    "Lake Tanganyika (2012-2013)" = "bold('h)')~`Lake Tanganyika (2012-2013); Z`[max]~`= 1470 m`",
+    "Lake Batur (2022-2023)" = "bold('i)')~`Lake Batur (2022-2023); Z`[max]~`= 88 m`",
+    "Lake Rerewhakaaitu (2022-2023)" = "bold('j)')~`Lake Rerewhakaaitu (2022-2023); Z`[max]~`= 15 m`",
+    "West Lake Bonney (2023-2024)" = "bold('k)')~`West Lake Bonney (2023-2024); Z`[max]~`= 40 m`"
   )
   
   return(unname(labels[lakes]))
@@ -168,13 +155,14 @@ discrete_ice <- temperate %>%
 ```{r}
 #Load data
 all_csvs <- list.files("../01b_Processed_data", full.names = TRUE)
-cont <- all_csvs[!grepl("season|ice|discrete|All|longoutput|data.csv", all_csvs)]
+cont <- all_csvs[!grepl("season|ice|discrete|All|longoutput|data.csv|reference", all_csvs)]
 
 #Format
 #A bit of magic to get explicit NAs
 all <- cont %>%
   map(read_csv, show_col_types = FALSE) %>%
-  bind_rows()
+  bind_rows() %>%
+  filter(!grepl("Kinneret", Lake))
 full <- all %>%
   expand(Variable, yday, Lake)
 
@@ -243,6 +231,7 @@ continuous <- continuous_data %>%
         panel.grid.major.y = element_blank(),
         panel.grid.major.x = element_blank(),
         plot.background = element_rect(fill = "transparent"))
+continuous
 ```
 
 # Combine and save

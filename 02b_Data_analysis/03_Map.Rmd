@@ -23,54 +23,7 @@ if(!file.exists("../03a_Figures")){dir.create("../03a_Figures")}
 ```
 
 ```{r}
-for_map <- data.frame(Lake = c("e) Sunapee", 
-                               "a) Erken", 
-                               "b) Arendsee",
-                               "d) Midway",
-                               "g) Beaverdam", 
-                               "k) Rerewhakaaitu", 
-                               "f) Mohonk",
-                               "c) Ägeri",
-                               "l) West Lake Bonney",
-                               "i) Tanganyika",
-                               "j) Batur",
-                               "h) Kinneret"),
-                      Label = c("e", 
-                               "a", 
-                               "b",
-                               "d",
-                               "g", 
-                               "k", 
-                               "f",
-                               "c",
-                               "l",
-                               "i",
-                               "j",
-                               "h"),
-                       Latitude_DD = c(43.3802, 
-                                       59.83917, 
-                                       52.89099,
-                                       44.93120951379321, 
-                                       37.3164747, 
-                                       -38.2936, 
-                                       41.765984891547966,
-                                       47.121327295305115,
-                                       -77.720191955566,
-                                       -6.243460676885329,
-                                       -8.2587,
-                                       32.7224),
-                       Longitude_DD = c(-72.05065, 
-                                        18.6334, 
-                                        11.47521,
-                                        -70.54186959069048,
-                                        279.8188267-360, 
-                                        176.5022, 
-                                        -74.15761300441983,
-                                        8.621537222014771,
-                                        162.305068969727,
-                                        29.54517622429039,
-                                        115.40702843735731,
-                                        35.5658))
+for_map <- read_csv("../01b_Processed_data/Lake_reference.csv")
 
 #Create a world map of the sites in this analysis
 world <- ne_countries(scale = "medium", returnclass = "sf")
@@ -132,7 +85,7 @@ world_map <- ggplot(data = world) +
   geom_point(data = for_map, aes(Longitude_DD, Latitude_DD), 
              color = "white",shape = 21, fill = "black", size = 5, alpha  =.7, stroke = 1)+
   ggrepel::geom_text_repel(aes(label = Label, x = Longitude_DD, y =Latitude_DD), 
-             data = for_map, size = 12)+
+             data = for_map, size = 12, force_pull = 0.1)+
   geom_hline(yintercept = 0, lwd = 0.1, alpha = 0.2) +
   theme_void()+
   theme(plot.margin = margin(0, 0, 0, 0, "cm"),

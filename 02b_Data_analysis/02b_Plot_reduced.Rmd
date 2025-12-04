@@ -16,20 +16,22 @@ library(ggnewscale) # For multiple color scales on the discrete panel
 #The ../03a_Figures folder is not pushed to GitHub
 if(!file.exists("../03a_Figures")){dir.create("../03a_Figures")}
 
-#Southern hemisphere lakes
-sh_lakes <- c("Lake Rerewhakaaitu (2022-2023)", 
-              "West Lake Bonney (2023-2024)",
-              "Lake Tanganyika (2012-2013)",
-              "Lake Batur (2022-2023)")
+reference <- read_csv("../01b_Processed_data/Lake_reference.csv")
 
-LAKES <- c("Arendsee (2020)", #52.89099
-           "Midway Pond (2023)", #44.931
-           "Beaverdam Reservoir (2021)", #37.3164
-           "Lake Tanganyika (2012-2013)", #-6.24346
-           "Lake Batur (2022-2023)", #-8.259
-           "Lake Rerewhakaaitu (2022-2023)", #-38.2936
-           "West Lake Bonney (2023-2024)" #-77.720
-           ) 
+#Southern hemisphere lakes
+select <- reference %>%
+  filter(Lake_data %in% 
+           c("Arendsee (2020)", #52.89099
+             "Midway Pond (2023)", #44.931
+             "Beaverdam Reservoir (2021)", #37.3164
+             "Lake Tanganyika (2012-2013)", #-6.24346
+             "Lake Batur (2022-2023)", #-8.259
+             "Lake Rerewhakaaitu (2022-2023)", #-38.2936
+             "West Lake Bonney (2023-2024)" #-77.720
+           )) %>%
+  arrange(-Latitude_DD)
+LAKES <- select$Lake_data
+sh_lakes <- select$Lake_data[select$Latitude_DD < 0]
 ```
 
 # Discrete
@@ -91,6 +93,9 @@ lake_relabel <- function(lakes){
   return(unname(labels[lakes]))
 }
 
+reference <- reference %>%
+  arrange(-Latitude_DD)
+
 #Plot
 discrete_ice <- temperate %>%
   mutate(Lake = factor(Lake, levels = LAKES)) %>%
@@ -150,6 +155,7 @@ discrete_ice <- temperate %>%
         strip.clip= "off") +
   scale_y_discrete(limits = rev(methods))+
   guides(color = guide_legend(ncol = 1, title.position="top")) +
+  ylab("Method          ")+
   facet_wrap(~Lake, ncol = 1, 
              labeller = as_labeller(lake_relabel, 
                                     default = label_parsed))
@@ -207,8 +213,8 @@ continuous <- continuous_data %>%
   geom_smooth(se = F, method = "gam") +
   #geom_vline(xintercept = c(0, 90, 183, 276, 365), color = "black", alpha = 0.2)+
   theme_bw() + 
-  ylab("% of range") +
-  ggtitle("Seasonally-varying parameters")  +
+  labs(y = "% of range          ",
+       title = "Seasonally-varying parameters")  +
   guides(color = guide_legend(ncol = 1)) +
   scale_x_continuous(breaks = c(0, 90, 183, 276, 365),
                  labels = c("Winter\nsolstice", "Spring\nequinox", 

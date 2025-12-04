@@ -10,6 +10,36 @@ Setup: load data and functions
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
+source("lit_review_helper_scripts/text_vectors.R")
+source("lit_review_helper_scripts/country_detection.R")
+library(stringi)
+library(data.table)
+
+#https://simplemaps.com/data/world-cities
+places <- fread("../01a_Raw_data/worldcities.csv") %>%
+  mutate(country = case_match(country,
+                              "Korea, South"~"South Korea",
+                              "Korea, North"~"North Korea",
+                              "Burma"~"Myanmar",
+                              "Czechia"~"Czech Republic",
+                              "Virgin Islands, British"~"British Virgin Islands",
+                              "Micronesia, Federated States of"~"Federated States of Micronesia",
+                              "Bahamas, The"~"The Bahamas",
+                              "Gambia, The"~"The Gambia",
+                              .default = country))
+
+#Load files
+files <- list.files("../05_Lit_review", full.names = T)
+all <- read_delim(files, show_col_types = F, delim = "\t") %>%
+  select(TI, AB, PY) %>%
+  distinct()
+
+#Separate WoS search for just "lake" in title, abstract, and keywords
+lake <- read_delim("../01a_Raw_data/WoS_lake_24Nov25.txt", delim = "\t", 
+                   col_names = c("Year", "Count", "Percent"), skip = 1)
+
+#Country demonyms
+demonyms <- read_csv("../01a_Raw_data/Demonyms.csv")
 
 #For circle plots
 compute_angle = function(perc){
@@ -21,66 +51,6 @@ compute_angle = function(perc){
     angle = (90 - ((perc - 0.5)/0.5) * 180)
 
   return(angle)
-}
-
-# Vectorize country detection
-detect_country <- function(text) {
-  # Match full country name
-  idx <- which(stri_detect_regex(
-    text, 
-    paste0("\\b",countries$country_lower,"\\b")))
-  if (length(idx) > 1) return("Multi")
-  if (length(idx) == 1) return(countries$country[idx])
-  
-  # Match ISO3
-  idx <- which(
-    stri_detect_regex(
-      text, 
-      paste0("\\b",countries_iso3$iso3_lower, "\\b")))
-  if (length(idx) > 1) return("Multi")
-  if (length(idx) == 1) return(countries_iso3$country[idx])
-  
-  return(NA_character_)
-}
-
-#Vectorize province/state/territory detection
-canadian_provinces <- c("Alberta","British Columbia","Manitoba","New Brunswick",
-                        "Newfoundland and Labrador","Nova Scotia","Ontario",
-                        "Prince Edward Island","Quebec","Saskatchewan")
-
-uk_countries <- c("England","Scotland","Wales","Northern Ireland")
-
-detect_state <- function(text) {
-  
-  text <- tolower(text)  # normalize input
-  
-  # 1. US states
-  us_found <- sum(stri_detect_regex(
-    text,
-    paste0("\\b", tolower(state.name), "\\b")
-  ))
-  
-  # 2. Canadian provinces
-  ca_found <- sum(stri_detect_regex(
-    text,
-    paste0("\\b", tolower(canadian_provinces), "\\b")
-  ))
-  
-  # 3. UK countries
-  uk_found <- sum(stri_detect_regex(
-    text,
-    paste0("\\b", tolower(uk_countries), "\\b")
-  ))
-  
-  # Count matches
-  total_hits <- (us_found > 0) + (ca_found > 0) + (uk_found > 0)
-  
-  if (total_hits > 1) return("Multi")
-  if (us_found > 0) return("United States")
-  if (ca_found > 0) return("Canada")
-  if (uk_found > 0) return("United Kingdom")
-  
-  return(NA_character_)
 }
 
 #Standardized colors throughout
@@ -102,27 +72,17 @@ colors <- c(
 Identify seasons in title/abstract
 
 ```{r}
-#Load files
-files <- list.files("../05_Lit_review", full.names = T)
-all <- read_delim(files, show_col_types = F, delim = "\t") %>%
-  select(TI, AB, PY) %>%
-  distinct()
-
 #Identify spring/summer/autumn/winter
 all_classified <- all %>%
-  mutate(Spring = grepl("spring", TI, ignore.case = T) | 
-           grepl("spring", AB, ignore.case = T),
-         Summer = grepl("summer", TI, ignore.case = T) | 
-           grepl("summer", AB, ignore.case = T),
-         Autumn = grepl("autumn|fall", TI, ignore.case = T) | 
-           grepl("autumn|fall", AB, ignore.case = T),
-         Winter = grepl("winter", TI, ignore.case = T) | 
-           grepl("winter", AB, ignore.case = T))
+  mutate(full_text = tolower(paste(TI, AB))) %>%
+  select(-AB) %>% #decrease df size 
+  mutate(Spring = grepl("spring", full_text, ignore.case = T),
+         Summer = grepl("summer", full_text, ignore.case = T),
+         Autumn = grepl("autumn|fall", full_text, ignore.case = T),
+         Winter = grepl("winter", full_text, ignore.case = T))
 
 #Identify season words
 processed <- all_classified %>%
-  mutate(full_text = tolower(paste(TI, AB))) %>%
-  select(-TI, -AB) %>% #decrease df size
   mutate(
     # Normalize "low water", "warm water" etc. before extraction
     full_text = str_replace_all(full_text,
@@ -143,7 +103,7 @@ processed <- all_classified %>%
     # Normalize "non", post, and pre before extraction
     full_text = str_replace_all(full_text, regex("\\bnon(?!-)", ignore_case = TRUE), "non-"),
     full_text = str_replace_all(full_text, regex("\\bpost(?!-)", ignore_case = TRUE), "post-"),
-    full_text = str_replace_all(full_text, regex("\\bpre[:space:]", ignore_case = TRUE), "pre-"),
+    full_text = str_replace_all(full_text, regex("\\bpre[[:space:]]", ignore_case = TRUE), "pre-"),
     
     # Normalize ice free before extraction
     full_text = str_replace_all(full_text, regex("\\bice[[:space:]]+free[[:space:]]+season\\b", 
@@ -154,66 +114,16 @@ processed <- all_classified %>%
                                    ignore_case = TRUE), "ice-cover season"),
     
     #Extract
-    SeasonWords = list(unique(tolower(str_extract_all(TI, regex("\\b[\\w-]+(?=[[:space:]-]+seasons?\\b)", ignore_case = TRUE)))))
+    SeasonWords = lapply(str_extract_all(full_text, 
+                                         regex("\\b[\\w-]+(?=[[:space:]-]+seasons?\\b)", 
+                                               ignore_case = TRUE)),
+                         function(x) unique(x))
   )
-
-# Define words to remove
-filler_words <- c(
-  #Prepositions
-  "in", "on", "at", "by", "between", "of", "to", "over",
-  "for","with", "within", "from","across", "among",
-  #Articles
-  "a", "the", "that", "this", "these",
-  #Conjunctions
-  "and", "or",
-  #Numbers
-  "one","single", "both", "three","multiple", "various","most",
-  "either", "every", "multi", "2","3","4","individual","first", "second", 
-  "two", "four", "all", "some","several","particular","successive","those",
-  #Comparison
-  "as","different","same","distinct",
-  #Other
-  "each","per", 
-  "any", "given", "following",
-  "subsequent","during","climatic",
-  "consecutive", "specific","than","certain","contrasting",
-  "previous", "other")
-temporal_phases <- c("early", "mid", "late", 
-                     "end-of", "whole", "entire", "normal", "peak")
-
-#Define season types
-temperate <- c("spring", "summer", "autumn", "winter", "fall",
-               "winter-spring", "summer-autumn")
-flora <- c("wintering", "growth", "growing", "non-growing", 
-           "vegetative", "productive", "non-productive",
-           "dormant", "bloom", "blooming", "vegetation", "fire")
-fauna <- c("breeding", "spawning", "reproductive", "mating",
-           "nesting","non-breeding", "migration","active", "migratory",
-           "transmission")
-ice <- c("ice-covered", "ice-free", "open-water", "melt", 
-         "melting", "thaw", "snowmelt", "ice", "ice-cover", 
-         "snow", "snow-free", "ablation", "thawing")
-stratification <- c("stratified", "mixing")
-temperature <- c("cold", "cool", "warm", "hot", "warmer", "heating","colder")
-hydrology <- c("dry", "rainy", "wet","runoff", "hydrological", "postmonsoon",
-               "post-rainy",
-               "flood", "flooding", "high-water", "low-water", "high-flow",
-               "low-flow", "non-flood", "rainfall", "monsoon",
-               "post-monsoon", "pre-monsoon", "non-monsoon", "drought")
-agriculture <- c("irrigation", "rice-growing", "cropping", "crop",
-                 "planting", "harvest", "wheat", "rice", "farming")
-economic <- c("fishing", "angling", "closed","trapping",
-                "hunting", "tourist", "bathing", "swimming")
-research <- c("field", "sampling")
-
-#Check
-#processed$AB[processed$SeasonWords == "active"]
 
 season_word_counts <- processed %>%
   select(SeasonWords) %>%
   unnest(SeasonWords) %>%
-  mutate(SeasonWords = tolower(SeasonWords),
-         SeasonWords = gsub("[[:space:]-]$", "", SeasonWords)) %>%
+  mutate(SeasonWords = gsub("[[:space:]-]$", "", SeasonWords)) %>%
   filter(!SeasonWords %in% filler_words,  # remove words that aren't seasons
          !SeasonWords %in% temporal_phases,
          !is.na(SeasonWords)) %>%  
@@ -233,11 +143,31 @@ season_word_counts <- processed %>%
     )
   ) %>%
   count(Type, SeasonWords, sort = TRUE)
+
+all_seas <- all %>%
+  mutate(full_text = tolower(paste(TI, AB))) %>%
+  group_by(PY) %>%
+  summarize(season = sum(grepl("\\bseasons?\\b", full_text)),
+            seasonality = sum(grepl("\\bseasonality\\b", full_text)))
+
+all_season_plot <- all_seas %>%
+  pivot_longer(c(season, seasonality)) %>%
+  mutate(name = paste0('"',name,'"')) %>%
+  left_join(lake, by = c("PY" = "Year")) %>%
+  filter(PY >=1980, PY <= 2025) %>%
+  ggplot(aes(x = PY, y = value/Count*100))+
+  geom_point(alpha = 0.3)+
+  ylab('Papers that mention "seasons" or\n"seasonality" (% of all lake papers in each year)')+
+  geom_smooth(method = "gam", color = "black", linewidth = 0.5)+
+  egg::theme_article()+
+  theme(axis.title.x = element_blank())+
+  facet_wrap(~name, scales = "free_y", ncol = 1)
 ```
 
 Plot the use of different seasons over time
 
 ```{r}
+#Add temperate seasons
 with_temperate <- processed %>%
   select(SeasonWords, Spring, Summer, Autumn, Winter, PY) %>%
   mutate(
@@ -260,8 +190,7 @@ with_temperate <- processed %>%
   group_by(PY) %>%
   select(AllSeasons) %>%
   unnest(AllSeasons) %>%
-  mutate(AllSeasons = tolower(AllSeasons),
-         AllSeasons = gsub("[[:space:]-]$", "", AllSeasons)) %>%
+  mutate(AllSeasons = gsub("[[:space:]-]$", "", AllSeasons)) %>%
   filter(!AllSeasons %in% filler_words,
          !AllSeasons %in% temporal_phases,
          !is.na(AllSeasons)) %>%   # remove filler words
@@ -290,12 +219,6 @@ with_temperate2 <- with_temperate %>%
   group_by(AllSeasons) %>%
   mutate(sum_allseasons = sum(n)) %>%
   filter(sum_allseasons > 10)
-
-sum_seas <- sum(with_temperate2$n, na.rm = T)
-
-#Separate WoS search for just "lake" in title, abstract, and keywords
-lake <- read_delim("../01a_Raw_data/WoS_lake_24Nov25.txt", delim = "\t", 
-                   col_names = c("Year", "Count", "Percent"), skip = 1)
 
 sums <- with_temperate2 %>%
   ungroup() %>%
@@ -347,23 +270,6 @@ sums %>%
     size = 3
   )
 
-sums %>%
-  filter(PY >= 1980, 
-         PY <= 2025) %>%
-  ggplot(aes(x = PY, y = pct_of_all_by_year, fill = Type))+
-  geom_area(aes(group = AllSeasons), color = "white", linewidth = 0.1)+
-  scale_fill_manual(values = colors)+
-  scale_color_manual(values = colors)+
-  guides(color = "none")+
-  egg::theme_article()+
-  scale_x_continuous(expand = expansion(mult = c(0, 0.1)))+
-  geom_text(
-    data = label_data_pct,
-    aes(x = 2025.5, y = ymid, color = Type, label = AllSeasons),
-    hjust = 0,
-    size = 3
-  ) 
-
 label_data_pct <- sums %>%
   ungroup() %>%
   arrange(desc(AllSeasons)) %>%
@@ -389,7 +295,7 @@ timeline <- sums %>%
   xlab("Publication year")+
   coord_cartesian(xlim = c(1980,2025),clip = "off", expand = c(0,0))+
   geom_hline(yintercept = 0, alpha = .1)+
-  ggrepel::geom_text_repel(aes(x = 2025.5, label = AllSeasons), 
+  ggrepel::geom_text_repel(aes(x = 2026, label = AllSeasons), 
                            direction = "y",
                            hjust = 0,
                            #vjust = 0.5,
@@ -412,96 +318,77 @@ timeline <- sums %>%
         plot.margin = unit(c(5.5, 40, 5.5, 5.5), units ="pt"))
 timeline
 dev.off()
+
+png("../03a_Figures/Total_prevalence_comb.png", res = 300, width = 5.5, 
+    height = 3.5, units = "in")
+ggpubr::ggarrange(all_season_plot, 
+                  timeline+
+                    theme(legend.position = "none",
+                          axis.title.x = element_blank())+
+                    ylab("Papers that mention each season\n(% of all lake papers in each year)"), 
+                  nrow = 1, widths = c(.9, 1), labels = c("a)", "b)"),
+                  hjust = -0.1)
+dev.off()
 ```
 
-
-Indentify countries
+Identify countries
 
 ```{r}
-library(stringi)
-library(data.table)
-
-#https://simplemaps.com/data/world-cities
-places <- fread("../01a_Raw_data/worldcities.csv")
-
-# Load data
-countries <- unique(places$country)
-places[, city_lower := tolower(city)]
 places[, country_lower := tolower(country)]
 
 # Extract country info
-countries <- unique(places[, .(country, iso2, iso3)])
+countries <- unique(places[, .(country, iso3)])
 countries[, `:=`(
   country_lower = tolower(country),
-  iso2_lower = tolower(iso2),
   iso3_lower = tolower(iso3)
 )]
 
+#Set dt
 papers <- setDT(processed %>%
-                  select(TI, AB, SeasonWords))
+                  select(full_text, SeasonWords))
 places <- setDT(places)
-papers[, full_text := tolower(paste(TI, AB))]
+
 #for iso3
 countries_iso3 <- countries[!countries$iso3_lower %in%
                               c("and", "can", "ago", "are", "per")]
 
-# Apply
+# Identify countries using functions sourced at the top of this script
+#Warning: this will take a while!
 papers[, Country := vapply(
   full_text,
   function(t) {
-    ctry <- detect_country(t)
+    t_lower <- tolower(t)  # normalize once
+    
+    # 1. Try full country / ISO3 detection
+    ctry <- detect_country(t_lower)
+    
+    # 2. Try states
     if (length(ctry) == 0 || is.na(ctry)) {
-      detect_state(t)
-    } else {
-      ctry
+      ctry <- detect_state(t_lower)
     }
+    
+    # 3. Try demonyms
+    if (is.na(ctry)) {
+      match_idx <- which(stri_detect_regex(t_lower, tolower(paste0("\\b", demonyms$Demonym, "\\b"))))
+      if (length(match_idx) == 1) {
+        ctry <- demonyms$Country[match_idx]
+      } else if (length(match_idx) > 1) {
+        ctry <- "Multi"
+      } else {
+        ctry <- NA_character_
+      }
+    }
+    
+    return(ctry)
   },
   FUN.VALUE = character(1)
 )]
 
-#Siberia
-#Canadian provinces
-#England, Scotland
-#Taihu
-#Antarctic
-#Patagonia
-#Polish
-
-# Demonym
-#Currently not using because it feels arbitrary
-#demonym_table <- data.table(
-#  Country = c("Australia", "Canada", "China", "Ethiopia", "Sweden", "Russia", 
-#              "Russia", "Chile", "Chile"),
-#  demonym = c("australian", "canadian", "chinese", "ethiopian", "swedish", "siberian", 
-#              "russian", "patagonian", "chilean")
-#)
-#demonym_table[, demonym := tolower(demonym)]
-#
-## Precompute a single giant regex
-#demonym_pattern <- paste0("\\b(", paste(demonym_table$demonym, collapse = "|"), ")\\b lakes?")
-#
-## Find demonym hits per abstract
-#papers[, demonym_hit := stringr::str_extract(full_text, demonym_pattern)]
-
-# Join on demonym → country
-#papers <- merge(
-#  papers,
-#  demonym_table,
-#  by.x = "demonym_hit",
-#  by.y = "demonym",
-#  all.x = TRUE
-#)
-
-#papers[is.na(Country) & !is.na(Country.y), Country := Country.y]
-#papers[, country.y := NULL]   # cleanup
-#papers[, demonym_hit := NULL]
-
 spat2 <- papers %>%
   as.data.frame()
-
+sum(!is.na(spat2$Country))/nrow(spat2) #Currently matching ~72% of abstracts
 spat_missing <- spat2 %>%
   filter(is.na(Country))
-sum(!is.na(spat2$Country))/nrow(spat2) #Currently matching ~65% of abstracts
 
 top5 <- spat2 %>%
   group_by(Country) %>%
@@ -514,10 +401,9 @@ top5 <- spat2 %>%
 season_word_counts_spat <- spat2 %>%
   filter(!is.na(Country),
          !Country == "Multi") %>%
-  select(SeasonWords, Country, TI) %>%
+  select(SeasonWords, Country, full_text) %>%
   unnest(SeasonWords) %>%
-  mutate(SeasonWords = tolower(SeasonWords),
-         SeasonWords = gsub("[[:space:]-]$", "", SeasonWords)) %>%
+  mutate(SeasonWords = gsub("[[:space:]-]$", "", SeasonWords)) %>%
   filter(!SeasonWords %in% filler_words,
          !SeasonWords %in% temporal_phases,
          !is.na(SeasonWords)) %>% 
@@ -538,298 +424,13 @@ season_word_counts_spat <- spat2 %>%
   ) %>%
   filter(!Type == "Other") %>%
   group_by(Country) %>%
-  mutate(n_papers = length(unique(TI)),
+  mutate(n_papers = length(unique(full_text)),
          Country_no_num = Country,
-         Country = paste0(Country, " (n = ", n_papers,")")) %>%
+         Country = paste0(Country, "\n(n = ", n_papers,")")) %>%
   ungroup() %>%
   count(Type, SeasonWords, Country, Country_no_num, sort = TRUE)
-
-season_word_counts_plot <- season_word_counts_spat %>%
-  mutate(n_papers = as.numeric(str_extract(Country, "\\d+"))) %>%
-  filter(n_papers >= 200)
-    #filter(n > 10)
 ```
 
-With temperate
-
-```{r}
-with_temperate <- spat2 %>%
-  select(SeasonWords, Country, full_text) %>%
-  mutate(Spring = grepl("\\bspring\\b", full_text, ignore.case = T),
-         Summer = grepl("\\bsummer\\b", full_text, ignore.case = T),
-         Autumn = grepl("\\bautumn\\b|\\bfall\\b", full_text, ignore.case = T),
-         Winter = grepl("\\bwinter\\b", full_text, ignore.case = T),
-         
-         # make a list of detected temperate seasons
-         TemperateSeasons = pmap(
-           list(Spring, Summer, Autumn, Winter),
-           ~ discard(
-             c(if(..1) "spring", if(..2) "summer", if(..3) "autumn", if(..4) "winter"),
-             is.null
-           )
-         ),
-         
-         # combine with existing SeasonWords
-         AllSeasons = map2(SeasonWords, TemperateSeasons, ~ unique(c(.x, .y)))) %>%
-  select(Country, full_text, AllSeasons) %>%
-  unnest(AllSeasons) %>%
-  mutate(AllSeasons = tolower(AllSeasons),
-         AllSeasons = gsub("[[:space:]-]$", "", AllSeasons)) %>%
-  filter(!AllSeasons %in% filler_words,
-         !AllSeasons %in% temporal_phases,
-         !is.na(AllSeasons)) 
-
-with_temperate2 <- with_temperate %>%
-  mutate(AllSeasons = ifelse(AllSeasons %in% c("spring", "summer", "autumn","winter"),
-                             AllSeasons,
-                             "other")) %>%
-  filter(!is.na(Country),
-         !Country == "Multi") %>%
-  ungroup() %>%
-  count(AllSeasons, Country, sort = TRUE)
-
-thirdLevel = with_temperate2 %>%
-  filter(Country %in% sub(" \\(.+\\)", "", 
-                          season_word_counts_plot$Country[season_word_counts_plot$n_papers >= 200])) %>%
-  group_by(Country) %>%
-  mutate(total_by_type = sum(n)) %>% 
-  group_by(Country) %>%
-  arrange(desc(total_by_type),
-          desc(n)) %>%
-  mutate(running = cumsum(n), 
-         pos=running - n/2,
-         sum_seas = sum(total_by_type)) %>% 
-  rowwise() %>% 
-  mutate(angle = compute_angle(pos / sum_seas),
-         hjust = ifelse(pos/sum_seas > 0.5, 1, 0),
-         label = AllSeasons, #paste0(SeasonWords, " (", comma(n), ")"),
-         label = ifelse(n < 30, "", label))
-
-jpeg("../03a_Figures/Sunburst_by_country.jpg", res = 300, width = 6, height = 6, units = "in")
-ggplot() +
-  geom_bar(data=thirdLevel,
-           aes(x=5, y=n, fill = AllSeasons),
-           color = "white",linewidth = 0.2,
-           position='stack', stat='identity', 
-           alpha = 0.5, width = 2) +
-  #geom_bar(data=secondLevel,
-  #         aes(x=3, y=total_by_type, fill=Type),
-  #         width = 2,color = "white",linewidth = 0.2,
-  #         position='stack', stat='identity')+
-  xlim(c(0,7))+
-  coord_polar('y')+
-  #scale_color_manual(values = colors, breaks = sub(" \\(.+\\)","",seasons_by_cat$Type)) + 
-  #scale_fill_manual(values = colors, breaks = sub(" \\(.+\\)","",seasons_by_cat$Type)) + 
-  theme_void()+
-  guides(fill = guide_legend(title = NULL, nrow = 4)) + 
-  theme(
-    plot.title = element_text(hjust = 0.5, vjust = -6, size = 14),
-    legend.position = "bottom",
-    legend.box.margin = margin(t = -10),
-    legend.margin = margin(t = -5),
-    legend.spacing.y = unit(0, "pt"),
-    plot.margin = margin(0, 0, 0, 0)
-  )+
-  facet_wrap(~Country, scales = "free_y")
-dev.off()
-
-spat_missing <- spat2 %>%
-  filter(is.na(Country))
-```
-
-With temperate by type
-
-```{r}
-with_temperate_type <- with_temperate %>% 
-  mutate(
-    Type = case_when(
-      AllSeasons %in% temperate ~ "Temperate",
-      AllSeasons %in% flora ~ "Flora",
-      AllSeasons %in% fauna ~ "Fauna",
-      AllSeasons %in% ice ~ "Ice/Snow",
-      AllSeasons %in% stratification ~ "Stratification",
-      AllSeasons %in% temperature ~ "Temperature",
-      AllSeasons %in% hydrology ~ "Hydrology",
-      AllSeasons %in% agriculture ~ "Agriculture",
-      AllSeasons %in% economic ~ "Economic",
-      AllSeasons %in% research ~ "Research",
-      TRUE ~ "Other"
-    )
-  ) %>%
-  filter(!Type == "Other")
-
-with_temperate2 <- with_temperate_type %>%
-  filter(!is.na(Country),
-         !Country == "Multi") %>%
-  ungroup() %>%
-  count(AllSeasons, Country, Type, sort = TRUE)
-
-secondLevel = with_temperate_type %>%
-  ungroup() %>%
-  count(AllSeasons, Country, Type, sort = TRUE) %>%
-  group_by(Type, Country) %>%
-  summarize(total_by_type = sum(n)) %>% 
-  arrange(desc(total_by_type)) %>%
-  filter(Country %in% 
-           sub(" \\(.+\\)", "", 
-               season_word_counts_plot$Country[season_word_counts_plot$n_papers >= 200])) %>%
-  group_by(Country) %>%
-  arrange(desc(total_by_type)) %>%
-  mutate(running = cumsum(total_by_type), 
-         pos=running - total_by_type/2,
-         sum_seas = sum(total_by_type)) %>% 
-  rowwise() %>% 
-  mutate(angle = compute_angle(pos / sum_seas))
-
-thirdLevel = with_temperate2 %>%
-  filter(Country %in% 
-           sub(" \\(.+\\)", "", 
-               season_word_counts_plot$Country[season_word_counts_plot$n_papers >= 200])) %>%
-  group_by(Country) %>%
-  mutate(total_by_type = sum(n)) %>% 
-  group_by(Country) %>%
-  arrange(desc(total_by_type),
-          desc(n)) %>%
-  mutate(running = cumsum(n), 
-         pos=running - n/2,
-         sum_seas = sum(total_by_type)) %>% 
-  rowwise() %>% 
-  mutate(angle = compute_angle(pos / sum_seas),
-         hjust = ifelse(pos/sum_seas > 0.5, 1, 0),
-         label = AllSeasons, #paste0(SeasonWords, " (", comma(n), ")"),
-         label = ifelse(n < 30, "", label))
-
-jpeg("../03a_Figures/Sunburst_by_country_temperate_type.jpg", res = 300, width = 6, height = 6, units = "in")
-ggplot() +
-  geom_bar(data=thirdLevel,
-           aes(x=5, y=n, fill = Type),
-           color = "white",linewidth = 0.2,
-           position='stack', stat='identity', 
-           alpha = 0.5, width = 2) +
-  geom_bar(data=secondLevel,
-           aes(x=3, y=total_by_type, fill=Type),
-           width = 2,color = "white",linewidth = 0.2,
-           position='stack', stat='identity')+
-  xlim(c(0,7))+
-  coord_polar('y')+
-  scale_color_manual(values = colors, breaks = sub(" \\(.+\\)","",seasons_by_cat$Type)) + 
-  scale_fill_manual(values = colors, breaks = sub(" \\(.+\\)","",seasons_by_cat$Type)) + 
-  theme_void()+
-  guides(fill = guide_legend(title = NULL, ncol = 2)) + 
-  theme(
-    plot.title = element_text(hjust = 0.5, vjust = -6, size = 14),
-    legend.position = "bottom",
-    legend.box.margin = margin(t = -10),
-    legend.margin = margin(t = -5),
-    legend.spacing.y = unit(0, "pt"),
-    plot.margin = margin(0, 0, 0, 0)
-  )+
-  facet_wrap(~Country, scales = "free_y")
-dev.off()
-```
-
-Facet plot
-
-```{r}
-country_levels <- c("Canada", "United States", "China", "India", "Ethiopia", "Brazil")
-country_names <- season_word_counts_plot %>%
-  select(Country_no_num, Country) %>%
-  distinct() %>%
-  filter(Country_no_num %in% country_levels) %>%
-  mutate(
-    Country_no_num = factor(Country_no_num, levels = country_levels)
-  ) %>%
-  arrange(Country_no_num) %>%
-  pull(Country)
-
-seasons_by_cat_i <- season_word_counts_plot %>%
-  mutate(
-    Country = factor(Country, levels = country_names)
-  ) %>%
-  group_by(Type, Country) %>%
-  summarize(total_by_type = sum(n), .groups = "drop") %>%
-  arrange(desc(total_by_type))
-
-secondLevel = seasons_by_cat_i %>%
-  group_by(Country) %>%
-  arrange(desc(total_by_type)) %>%
-  left_join(top5) %>%
-  mutate(running = cumsum(total_by_type), 
-         pos=running - total_by_type/2,
-         sum_seas = sum(total_by_type)) %>% 
-  rowwise() %>% 
-  mutate(angle = compute_angle(pos / sum_seas),
-         Country = factor(Country, levels = country_names))
-
-thirdLevel = season_word_counts_plot %>%
-  #filter(Country %in% top5$Country) %>%
-  group_by(Type, Country) %>%
-  mutate(total_by_type = sum(n)) %>% 
-  group_by(Country) %>%
-  arrange(desc(total_by_type),
-          desc(n)) %>%
-  mutate(running = cumsum(n), 
-         pos=running - n/2,
-         sum_seas = sum(total_by_type)) %>% 
-  rowwise() %>% 
-  mutate(angle = compute_angle(pos / sum_seas),
-         hjust = ifelse(pos/sum_seas > 0.5, 1, 0),
-         label = SeasonWords, #paste0(SeasonWords, " (", comma(n), ")"),
-         label = ifelse(n < 30, "", label),
-         Country = factor(Country, levels = country_names))
-
-secondLevel$Type <- factor(secondLevel$Type, 
-                           levels = rev(sub(" \\(.+\\)","",seasons_by_cat$Type)))
-
-thirdLevel$Type <- factor(thirdLevel$Type, 
-                          levels = rev(sub(" \\(.+\\)","",seasons_by_cat$Type)))
-
-jpeg("../03a_Figures/Sunburst_by_country_simple.jpg", res = 300, width = 6, height = 6, units = "in")
-counts <- ggplot() +
-  #geom_bar(data=thirdLevel,
-  #         aes(x=5, y=n, fill = Type),
-  #         color = "white",linewidth = 0.2,
-  #         position='stack', stat='identity', 
-  #         alpha = 0.5, width = 2) +
-  geom_bar(data=secondLevel,
-           aes(x=3, y=total_by_type, fill=Type),
-           width = 2,color = "white",linewidth = 0.2,
-           position='stack', stat='identity')+
-  xlim(c(0,4))+
-  coord_polar('y')+
-  scale_color_manual(values = colors, breaks = sub(" \\(.+\\)","",seasons_by_cat$Type)) + 
-  scale_fill_manual(values = colors, breaks = sub(" \\(.+\\)","",seasons_by_cat$Type)) + 
-  theme_void()+
-  guides(fill = guide_legend(title = NULL, ncol = 2)) + 
-  theme(
-    plot.title = element_text(hjust = 0.5, vjust = -6, size = 14),
-    legend.position = "bottom",
-    legend.box.margin = margin(t = -10),
-    legend.margin = margin(t = -5),
-    legend.spacing.y = unit(0, "pt"),
-    plot.margin = margin(0, 0, 0, 0)
-  )+
-  facet_wrap(~Country, scales = "free_y")
-counts
-dev.off()
-
-jpeg("../03a_Figures/Sunburst_by_country_comb.jpg", res = 300, width = 7, height = 6, units = "in")
-ggpubr::ggarrange(og+
-                    guides(fill = guide_legend(title = NULL, ncol = 2))+ 
-                    theme(
-                      plot.title = element_text(hjust = 0.5, vjust = 1, size = 16),
-                      legend.position = "bottom",
-                      legend.box.margin = margin(t = -5),
-                      legend.margin = margin(t = 0),
-                      legend.spacing.y = unit(0, "pt"),
-                      plot.margin = margin(0, 0, 0, 0)
-                    ), 
-                  counts +
-                    facet_wrap(~Country, scales = "free_y", ncol = 2)+ 
-                    theme(legend.position = "none"),
-                  widths = c(1,.7))
-dev.off()
-```
 
 NOT temperate
 
@@ -844,7 +445,7 @@ seasons_by_cat <- season_word_counts_plot %>%
   group_by(Type) %>%
   summarize(total_by_type = sum(n)) %>% 
   arrange(desc(total_by_type)) %>%
-  mutate(Type = paste0(Type, " (n = ", total_by_type, ")"))
+  mutate(Type = paste0(Type, "\n(n = ", total_by_type, ")"))
 
 secondLevel = seasons_by_cat %>%
   arrange(desc(total_by_type)) %>%
@@ -862,7 +463,7 @@ thirdLevel = season_word_counts_plot %>%
           desc(n)) %>%
   mutate(running = cumsum(n), 
          pos=running - n/2,
-         Type = paste0(Type, " (n = ", total_by_type, ")")) %>% 
+         Type = paste0(Type, "\n(n = ", total_by_type, ")")) %>% 
   rowwise() %>% 
   mutate(angle = compute_angle(pos / sum_seas),
          hjust = ifelse(pos/sum_seas > 0.5, 1, 0),
@@ -960,10 +561,10 @@ thirdLevel = season_word_counts_plot %>%
          Country = factor(Country, levels = country_names))
 
 secondLevel$Type <- factor(secondLevel$Type, 
-                           levels = rev(sub(" \\(.+\\)","",seasons_by_cat$Type)))
+                           levels = rev(sub("\n\\(.+\\)","",seasons_by_cat$Type)))
 
 thirdLevel$Type <- factor(thirdLevel$Type, 
-                          levels = rev(sub(" \\(.+\\)","",seasons_by_cat$Type)))
+                          levels = rev(sub("\n\\(.+\\)","",seasons_by_cat$Type)))
 
 counts <- ggplot() +
   #geom_bar(data=thirdLevel,
@@ -991,30 +592,60 @@ counts <- ggplot() +
   )+
   facet_wrap(~Country, scales = "free_y")
 
-jpeg("../03a_Figures/Sunburst_by_country_comb_with_timeline.jpg", res = 300, width = 7, height = 6, units = "in")
-ggpubr::ggarrange(ggpubr::ggarrange(og+
-                                      guides(fill = guide_legend(title = NULL, ncol = 2))+ 
-                                      theme(
-                                        plot.title = element_text(hjust = 0.5, vjust = 1, size = 16),
-                                        legend.position = "bottom",
-                                        legend.box.margin = margin(t = -5),
-                                        legend.margin = margin(t = 0),
-                                        legend.spacing.y = unit(0, "pt"),
-                                        plot.margin = margin(0, 0, 0, 0)
-                                      )+
+og_comb <- og+
+  guides(fill = guide_legend(title = NULL, ncol = 2))+ 
+  theme(
+    plot.title = element_text(hjust = 0.5, vjust = 1, size = 16),
+    legend.position = "bottom",
+    legend.box.margin = margin(t = -5),
+    legend.margin = margin(t = 0),
+    legend.spacing.y = unit(0, "pt"),
+    plot.margin = margin(5, 0, 0, 0)
+  )
+
+jpeg("../03a_Figures/Sunburst_by_country_comb_with_timeline.jpg", res = 300, width = 6.5, height = 7, units = "in")
+ggpubr::ggarrange(ggpubr::ggarrange(og_comb+
                                       theme(legend.position = "none"), 
-                                    counts +
-                                      facet_wrap(~Country, scales = "free_y", ncol = 3)+ 
+                                    timeline+
                                       theme(legend.position = "none"),
-                                    ncol = 1, nrow = 2),
+                                    ncol = 1, nrow = 2, labels = c("a)","c)"),
+                                    heights = c(1,.9)),
+                  ggpubr::ggarrange(counts +
+                                      facet_wrap(~Country, scales = "free_y", ncol = 2)+ 
+                                      theme(legend.position = "none"),
+                                    ggpubr::get_legend(og_comb),
+                                    ncol = 1, heights = c(1,.4), labels = c("b)","")),  
+                  ncol = 2, nrow = 1, widths = c(1,.7))
+dev.off()
+
+jpeg("../03a_Figures/Sunburst_by_country_comb_with_timeline_wide.jpg", res = 300, width = 9, height = 4.5, units = "in")
+ggpubr::ggarrange(og_comb +
+                    guides(fill = guide_legend(title = NULL, ncol = 3)),
+                  counts +
+                    facet_wrap(~Country, scales = "free_y", ncol = 2)+
+                    theme(legend.position = "none"),
                   timeline+
-                    theme(legend.position = "none"),  
-                  ncol = 2, nrow = 1, widths = c(1,.9))
+                    theme(legend.position = "none"),
+                  ncol = 3, nrow = 1, widths = c(1,.7,.8), labels = c("a)", "b)", "c)"))
+dev.off()
+
+jpeg("../03a_Figures/Sunburst_by_country_comb_with_timeline_wide2.jpg", res = 300, width = 9, height = 4.5, units = "in")
+ggpubr::ggarrange(og_comb +
+                    guides(fill = guide_legend(title = NULL, ncol = 3)),
+                  counts +
+                    facet_wrap(~Country, scales = "free_y", ncol = 2)+
+                    theme(legend.position = "none"),
+                  ggpubr::ggarrange(all_season_plot,
+                                    timeline+
+                                      theme(legend.position = "none"),
+                                    ncol = 1, nrow = 2, labels = c("c)", "d)"),
+                                    heights = c(.5,1)),
+                  ncol = 3, nrow = 1, widths = c(1,.7,.8), labels = c("a)", "b)", ""))
 dev.off()
 
 jpeg("../03a_Figures/Sunburst_by_country_comb_no_temperate.jpg", res = 300, width = 7, height = 6, units = "in")
 ggpubr::ggarrange(og+
-                    guides(fill = guide_legend(title = NULL, ncol = 2))+ 
+                    guides(fill = guide_legend(title = NULL, ncol = 3))+ 
                     theme(
                       plot.title = element_text(hjust = 0.5, vjust = 1, size = 16),
                       legend.position = "bottom",
