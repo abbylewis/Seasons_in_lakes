@@ -233,11 +233,11 @@ daylight_limits<-c(0,24)
     geom_rect(aes(xmin=(yday-1)*2*pi/365,xmax=yday*2*pi/365,ymin=2,ymax=3,fill=day_length, color = day_length),show.legend = FALSE)+ 
     scale_fill_gradientn(limits=c(0,24),
                          colors = daylight_colors,
-                         breaks=daylight_breaks,labels=daylight_breaks, name = "Day\nlength (hr)",
+                         breaks=daylight_breaks,labels=daylight_breaks, name = "Day\nlength (h)",
                          guide = "none")+
     scale_color_gradientn(limits=daylight_limits,
                           colors = daylight_colors,
-                          breaks=daylight_breaks,labels=daylight_breaks, name = "Day\nlength (hr)",
+                          breaks=daylight_breaks,labels=daylight_breaks, name = "Day\nlength (h)",
                           guide = "none")+
     geom_line(aes(x=yday*2*pi/365,y=1),color="black",size=0.2)+
     geom_line(aes(x=yday*2*pi/365,y=2),color="black",size=0.2)+ #inner and outer lines
@@ -294,6 +294,14 @@ daylight_limits<-c(0,24)
                aes(x=x,y=y),label="Mixed",size=9*(5/14),
                hjust = .8)+ #The size= in element_text is 14/5 of the size= in geom_text  
     
+    #Strat arrow2
+    geom_segment(data=tibble(x=(c(197))*2*pi/365,y=3.5)%>%mutate(xend=x,yend=y_limit_upper*0.9),aes(x=x,xend=xend,y=y,yend=yend),color="black")+  
+    
+    #Strat label2
+    geom_label(data=tibble(x=(c(197))*2*pi/365,y=y_limit_upper*.9),
+               aes(x=x,y=y),label="Stratified",size=9*(5/14),
+               hjust = .9)+ #The size= in element_text is 14/5 of the size= in geom_text 
+    
     #text at the top for label####
  geom_text(data=tibble(x=2*2*pi/365,y=y_limit_upper), aes(x=x,y=y), 
            label=deparse(bquote(Mohonk~Lake)),size = 4.2,parse=TRUE,
@@ -313,7 +321,7 @@ daylight_limits<-c(0,24)
           axis.title.y=element_blank(),
           axis.ticks.y=element_blank(),
           #legend.position="none", #get rid of legends
-          legend.title=element_text(size=10, color = "grey50"), #change the legend title size
+          legend.title=element_text(size=10, color = "grey30"), #change the legend title size
           legend.text=element_text(size=9, color = "grey50"), #change the legend text size
           legend.background = element_rect(color = NA, fill = NA), #make the background of the legend box blank
           legend.key.size = unit(1,"line"), #increase the size of the legend points
@@ -398,11 +406,11 @@ all_tanganyika<-all_tanganyika%>%
     scale_fill_gradientn(limits=daylight_limits,
                          colors = daylight_colors,
                          breaks=daylight_breaks,
-                         labels=daylight_breaks, name = "Day length (hr)",
+                         labels=daylight_breaks, name = "Day length (h)",
                          guide = "none")+
     scale_color_gradientn(limits=daylight_limits,
                           colors = daylight_colors,
-                          breaks=daylight_breaks,labels=daylight_breaks, name = "Day length (hr)",
+                          breaks=daylight_breaks,labels=daylight_breaks, name = "Day length (h)",
                           guide = "none")+
     #guides(fill = guide_colorbar(title.position="top", title.hjust = 0.5))+
     
@@ -420,8 +428,7 @@ all_tanganyika<-all_tanganyika%>%
                          values=scales::rescale(c(3.4, 1, strat_thresh, 0)),
                          breaks=c(strat_thresh,3.4),labels=c("Mixed","Stratified"), 
                          name = "Stratification",
-                         guide_colourbar(frame.colour="black",label.position="bottom")
-                         #guide_colourbar(frame.colour = "blue") #gets a frame around the gradient bar
+                         guide_colourbar(label.position="bottom")
                          
     )+
     scale_color_gradientn(limits=c(0,3.4),colors = c("#DB8080","#DB8080","white","#7CA2CB"),
@@ -429,10 +436,13 @@ all_tanganyika<-all_tanganyika%>%
                           breaks=c(strat_thresh,3.4),
                           labels=c("Mixed","Stratified"), 
                           name = "Stratification",
-                          guide_colourbar(frame.colour="black",label.position="bottom")
-                          #guide = "none"
+                          guide_colourbar(label.position="bottom")
     )+
-    guides(fill=guide_colorbar(title.position="top",title.hjust = 0.5,ticks.colour=NA))+
+    guides(fill=guide_colorbar(title.position="top",
+                               title.hjust = 0.5,
+                               frame.colour="grey50",
+                               frame.linewidth = 0.1,
+                               ticks.colour=NA))+
     
     #circles overtop
     geom_segment(data=tibble(x=0*2*pi/365,xend=366*2*pi/365,y=1,yend=1),aes(x=x,xend=xend,y=y,yend=yend),color="black", size = 1)+
@@ -447,10 +457,15 @@ all_tanganyika<-all_tanganyika%>%
     geom_text(data=tibble(x=(c(1,32,60,91,121,152,182,213,244,274,305,335))*2*pi/365,label=month.abb),aes(x=x,y=4.8,label=label), color = "black", size = 2.8)+
     
     #Daylength arrow
-    geom_segment(data=tibble(x=(c(80))*2*pi/365,y=2.5)%>%mutate(xend=x,yend=y_limit_upper*0.9),aes(x=x,xend=xend,y=y,yend=yend),color="black")+  
+    geom_segment(data=tibble(x=(c(75))*2*pi/365,y=2.5)%>%
+                    mutate(xend=x,yend=y_limit_upper*.9),
+                 aes(x=x,xend=xend,y=y,yend=yend),color="black")+  
     
     #Daylength label
-    geom_label(data=tibble(x=(c(80))*2*pi/365,y=y_limit_upper),aes(x=x,y=y),label="Day length",size=9*(5/14))+ #The size= in element_text is 14/5 of the size= in geom_text 
+    geom_label(data=tibble(x=(c(75))*2*pi/365,y=y_limit_upper*.9),
+               aes(x=x,y=y),
+               label="Day length", vjust = 0.5, hjust = 0,
+               size=9*(5/14))+ #The size= in element_text is 14/5 of the size= in geom_text 
     
     
     #text at the top for label####
@@ -464,7 +479,8 @@ all_tanganyika<-all_tanganyika%>%
     #text at the top for label####
  geom_text(data=tibble(x=2*2*pi/365,y=y_limit_upper),aes(x=x,y=y),
            label=deparse(bquote(Lake~Tanganyika)),
-           size = 4.2, parse=TRUE)+
+           size = 4.2, parse=TRUE,
+           vjust = 1)+
     
     theme_bw()+
     theme(panel.grid.major = element_blank(),
@@ -475,7 +491,7 @@ all_tanganyika<-all_tanganyika%>%
           axis.title.y=element_blank(),
           axis.ticks.y=element_blank(),
           legend.position = "top",
-          legend.title=element_text(size=10, color = "grey50"), #change the legend title size
+          legend.title=element_text(size=10, color = "grey30"), #change the legend title size
           legend.text=element_text(size=9, color = "grey50"), #change the legend text size
           legend.background = element_rect(color = NA, fill = NA), #make the background of the legend box blank
           legend.key.size = unit(1,"line"), #increase the size of the legend points
@@ -587,15 +603,15 @@ all_wlb<-all_wlb%>%
     scale_fill_gradientn(limits=daylight_limits,
                          colors = daylight_colors,
                          breaks=daylight_breaks,
-                         labels=daylight_breaks, name = "Day length (hr)",
-                         guide_colorbar(frame.colour="black") #gets a grame around the gradient bar
-    )+
+                         labels=daylight_breaks, name = "Day length (h)")+
     scale_color_gradientn(limits=daylight_limits,
                           colors = daylight_colors,
-                          breaks=daylight_breaks,labels=daylight_breaks, name = "Day length (hr)",
-                          guide_colorbar(frame.colour="black") #gets a grame around the gradient bar
-    )+
-    guides(fill = guide_colorbar(title.position="top", title.hjust = 0.5))+
+                          breaks=daylight_breaks,labels=daylight_breaks, name = "Day length (h)")+
+    guides(fill = guide_colorbar(title.position="top", 
+                                 title.hjust = 0.5, 
+                                 frame.colour="grey50",
+                                 frame.linewidth = 0.1,
+                                 ticks.colour = "grey50"))+
     
     geom_line(aes(x=yday*2*pi/365,y=1),color="black",size=0.2)+
     geom_line(aes(x=yday*2*pi/365,y=2),color="black",size=0.2)+ #inner and outer lines
@@ -646,7 +662,7 @@ all_wlb<-all_wlb%>%
           axis.title.y=element_blank(),
           axis.ticks.y=element_blank(),
           legend.position = "bottom", 
-          legend.title=element_text(size=10, color = "grey50"), #change the legend title size
+          legend.title=element_text(size=10, color = "grey30"), #change the legend title size
           legend.text=element_text(size=9, color = "grey50"), #change the legend text size
           legend.background = element_rect(color = NA, fill = NA), #make the background of the legend box blank
           legend.key.size = unit(1,"line"), #increase the size of the legend points
@@ -727,19 +743,19 @@ final_plot <- map %>%
                       height = 0.55,
                       vjust = .5, hjust = .5) +
    cowplot::draw_plot(leg1,
-                      x = .18, 
+                      x = .14, 
                       y = .1,
                       width = 0.3, 
                       height = 0.2,
                       vjust = .5, hjust = .5)+
    cowplot::draw_plot(leg2,
-                      x = .18, 
+                      x = .14, 
                       y = .26,
                       width = 0.3, 
                       height = 0.2,
                       vjust = .5, hjust = .5)+
    cowplot::draw_plot(leg3,
-                      x = .46, 
+                      x = .39, 
                       y = .1,
                       width = 0.3, 
                       height = 0.2,

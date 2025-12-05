@@ -469,12 +469,12 @@ ggsave(filename="03a_Figures/SeasonsWaikato_Clock_v2.jpg",plot=gg.clock.rere,wid
 
 
 #Make a composite figure
-gg.2panel<-wrap_plots(list(gg.clock.mohonk,gg.clock.rere),nrow=1, guides = "collect")&
-  theme(legend.position = "bottom",
+gg.2panel<-wrap_plots(list(gg.clock.mohonk,gg.clock.rere),nrow=1, guides = "collect")+
+   plot_annotation(theme = theme(legend.position = "bottom",
         legend.spacing.x = unit(3, "cm"),
         legend.box.margin=margin(-55, 0,-10,0),
         plot.margin = unit(c(-1,0,0,0),"cm") #spread out the plot a bit to minimize the white space
-  )
+  ))
 print(gg.2panel)
 ggsave(filename="03a_Figures/2panel_Clock_v2.jpg",plot=gg.2panel,width=6.6,height=3.3,units="in",dpi=300)
 
