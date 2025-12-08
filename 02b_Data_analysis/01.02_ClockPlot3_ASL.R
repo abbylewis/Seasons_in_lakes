@@ -210,11 +210,11 @@ daylight_limits<-c(0,24)
     
     #Weird points to establish the legend for the colors of the seasons#
     geom_point(data=tibble(x=c(1:4)*2*pi/365,y=y_limit_lower,color=c(winter_color,spring_color,summer_color,autumn_color)),
-               aes(x=x,y=y,fill=color), shape = 21, color = "black")+
+               aes(x=x,y=y,fill=color), shape = 22, color = "black")+
     scale_fill_manual(name = "Astronomical seasons", values = c(winter_color,spring_color,summer_color,autumn_color), labels = c("Winter", "Spring","Summer","Autumn"))+
     guides(fill = guide_legend(title.position="top", 
                                title.hjust = 0.5, ncol=2,
-                               override.aes = list(shape = 21, color = "black", size = 3)))+
+                               override.aes = list(shape = 22, color = "black", size = 3)))+
     
     #Seasons colors for each 1/4####
  geom_ribbon(data=tibble(rad=c(-1:80)*2*pi/365),aes(x=rad,ymin=1,ymax=2),color="black",fill=winter_color)+ #winter
@@ -270,41 +270,51 @@ daylight_limits<-c(0,24)
     geom_segment(data=tibble(x=0*2*pi/365,xend=366*2*pi/365,y=4,yend=4),aes(x=x,xend=xend,y=y,yend=yend),color="black", size = 1)+
     
     #Ice
-    geom_point(data=all_mohk%>%filter(Ice=="ice"),aes(x=yday*2*pi/365,y=(3+4)/2),shape=21,color="#8AB4E3",fill="#8AB4E3",size=1.1)+ #put blue dots for ice days in the outer ring
-    geom_point(data=all_mohk%>%filter(Ice=="ice"),aes(x=yday*2*pi/365,y=(3+4)/2),shape=21,color="white",fill="white",size=0.9)+ #put blue dots for ice days in the outer ring
+    geom_point(data=all_mohk%>%filter(Ice=="ice"),aes(x=yday*2*pi/365,y=(3+4)/2),
+               shape=21,color="black",fill="black",size=1.7)+ #put blue dots for ice days in the outer ring
+    geom_point(data=all_mohk%>%filter(Ice=="ice"),aes(x=yday*2*pi/365,y=(3+4)/2),
+               shape=21,color="white",fill="white",size=1.5)+ #put blue dots for ice days in the outer ring
     
     #Geometric segments for the months spindles coming out from the middle####
  geom_segment(data=tibble(x=(c(1,32,60,91,121,152,182,213,244,274,305,335))*2*pi/365,y=4)%>%mutate(xend=x,y=y_limit_lower,yend=4),aes(x=x,xend=xend,y=y,yend=yend),color="white", alpha = 0.3)+  
     
     #Month labels
-    geom_text(data=tibble(x=(c(1,32,60,91,121,152,182,213,244,274,305,335))*2*pi/365,label=month.abb),aes(x=x,y=4.8,label=label), color = "black", size = 2.8)+
+    geom_text(data=tibble(x=(c(1,32,60,91,121,152,182,213,244,274,305,335))*2*pi/365,label=month.abb),aes(x=x,y=4.7,label=label), color = "black", size = 2.8)+
     
     #arrows for labels####
  #Ice arrow
- geom_segment(data=tibble(x=(c(45))*2*pi/365,y=3.5)%>%mutate(xend=x,yend=y_limit_upper),aes(x=x,xend=xend,y=y,yend=yend),color="black")+  
+ geom_segment(data=tibble(x=(c(45))*2*pi/365,y=3.5)%>%
+                mutate(xend=x,yend=y_limit_upper*.8),
+              aes(x=x,xend=xend,y=y,yend=yend),color="black")+  
     
     #Ice label
-    geom_label(data=tibble(x=(c(45))*2*pi/365,y=y_limit_upper),aes(x=x,y=y),label="Ice",size=9*(5/14))+ #The size= in element_text is 14/5 of the size= in geom_text  
+    geom_label(data=tibble(x=(c(45))*2*pi/365,y=y_limit_upper*.8),
+               aes(x=x,y=y),label="Ice",size=9*(5/14),
+               hjust = 0, vjust = 0.2)+ #The size= in element_text is 14/5 of the size= in geom_text  
+    
+    #Mixed arrow
+    geom_segment(data=tibble(x=(c(347))*2*pi/365,y=3.5)%>%
+                   mutate(xend=x,yend=y_limit_upper*0.8),
+                 aes(x=x,xend=xend,y=y,yend=yend),color="black")+  
+    
+    #Mixed label
+    geom_label(data=tibble(x=(c(347))*2*pi/365,y=y_limit_upper*.8),
+               aes(x=x,y=y),label="Mixed",size=9*(5/14),
+               hjust = 0.8, vjust = 0)+ #The size= in element_text is 14/5 of the size= in geom_text  
     
     #Strat arrow
-    geom_segment(data=tibble(x=(c(347))*2*pi/365,y=3.5)%>%mutate(xend=x,yend=y_limit_upper*0.9),aes(x=x,xend=xend,y=y,yend=yend),color="black")+  
+    geom_segment(data=tibble(x=(c(197))*2*pi/365,y=3.5)%>%
+                   mutate(xend=x,yend=y_limit_upper*0.9),
+                 aes(x=x,xend=xend,y=y,yend=yend),color="black")+  
     
     #Strat label
-    geom_label(data=tibble(x=(c(347))*2*pi/365,y=y_limit_upper*.9),
-               aes(x=x,y=y),label="Mixed",size=9*(5/14),
-               hjust = .8)+ #The size= in element_text is 14/5 of the size= in geom_text  
-    
-    #Strat arrow2
-    geom_segment(data=tibble(x=(c(197))*2*pi/365,y=3.5)%>%mutate(xend=x,yend=y_limit_upper*0.9),aes(x=x,xend=xend,y=y,yend=yend),color="black")+  
-    
-    #Strat label2
     geom_label(data=tibble(x=(c(197))*2*pi/365,y=y_limit_upper*.9),
                aes(x=x,y=y),label="Stratified",size=9*(5/14),
                hjust = .9)+ #The size= in element_text is 14/5 of the size= in geom_text 
     
     #text at the top for label####
  geom_text(data=tibble(x=2*2*pi/365,y=y_limit_upper), aes(x=x,y=y), 
-           label=deparse(bquote(Mohonk~Lake)),size = 4.2,parse=TRUE,
+           label="a) Mohonk Lake",size = 4.2,
            vjust = 0)+
     
     #Letter label in middle
@@ -454,15 +464,17 @@ all_tanganyika<-all_tanganyika%>%
  geom_segment(data=tibble(x=(c(1,32,60,91,121,152,182,213,244,274,305,335))*2*pi/365,y=4)%>%mutate(xend=x,y=y_limit_lower,yend=4),aes(x=x,xend=xend,y=y,yend=yend),color="white", alpha = 0.3)+  
     
     #Month names
-    geom_text(data=tibble(x=(c(1,32,60,91,121,152,182,213,244,274,305,335))*2*pi/365,label=month.abb),aes(x=x,y=4.8,label=label), color = "black", size = 2.8)+
+    geom_text(data=tibble(x=(c(1,32,60,91,121,152,182,213,244,274,305,335))*2*pi/365,label=month.abb),
+              aes(x=x,y=4.7,label=label), 
+              color = "black", size = 2.8)+
     
     #Daylength arrow
     geom_segment(data=tibble(x=(c(75))*2*pi/365,y=2.5)%>%
-                    mutate(xend=x,yend=y_limit_upper*.9),
+                    mutate(xend=x,yend=y_limit_upper*.75),
                  aes(x=x,xend=xend,y=y,yend=yend),color="black")+  
     
     #Daylength label
-    geom_label(data=tibble(x=(c(75))*2*pi/365,y=y_limit_upper*.9),
+    geom_label(data=tibble(x=(c(75))*2*pi/365,y=y_limit_upper*.75),
                aes(x=x,y=y),
                label="Day length", vjust = 0.5, hjust = 0,
                size=9*(5/14))+ #The size= in element_text is 14/5 of the size= in geom_text 
@@ -478,8 +490,8 @@ all_tanganyika<-all_tanganyika%>%
  scale_y_continuous(limits=c(y_limit_lower,y_limit_upper))+
     #text at the top for label####
  geom_text(data=tibble(x=2*2*pi/365,y=y_limit_upper),aes(x=x,y=y),
-           label=deparse(bquote(Lake~Tanganyika)),
-           size = 4.2, parse=TRUE,
+           label="b) Tanganyika Lake",
+           size = 4.2, 
            vjust = 1)+
     
     theme_bw()+
@@ -617,8 +629,10 @@ all_wlb<-all_wlb%>%
     geom_line(aes(x=yday*2*pi/365,y=2),color="black",size=0.2)+ #inner and outer lines
     
     #Ice
-    geom_point(data=all_wlb%>%filter(Ice=="ice"),aes(x=yday*2*pi/365,y=(3+4)/2),shape=21,color="#8AB4E3",fill="#8AB4E3",size=1.1)+ #put blue dots for ice days in the outer ring
-    geom_point(data=all_wlb%>%filter(Ice=="ice"),aes(x=yday*2*pi/365,y=(3+4)/2),shape=21,color="white",fill="white",size=0.9)+ #put blue dots for ice days in the outer ring
+    geom_point(data=all_wlb%>%filter(Ice=="ice"),aes(x=yday*2*pi/365,y=(3+4)/2),
+               shape=21,color="black",fill="black",size=1.7)+ #put blue dots for ice days in the outer ring
+    geom_point(data=all_wlb%>%filter(Ice=="ice"),aes(x=yday*2*pi/365,y=(3+4)/2),
+               shape=21,color="white",fill="white",size=1.5)+ #put blue dots for ice days in the outer ring
     
     
     #circles overtop
@@ -631,21 +645,26 @@ all_wlb<-all_wlb%>%
  geom_segment(data=tibble(x=(c(1,32,60,91,121,152,182,213,244,274,305,335))*2*pi/365,y=4)%>%mutate(xend=x,y=y_limit_lower,yend=4),aes(x=x,xend=xend,y=y,yend=yend),color="white", alpha = 0.3)+  
     
     #Month names
-    geom_text(data=tibble(x=(c(1,32,60,91,121,152,182,213,244,274,305,335))*2*pi/365,label=month.abb),aes(x=x,y=4.8,label=label), color = "black", size = 2.8)+
+    geom_text(data=tibble(x=(c(1,32,60,91,121,152,182,213,244,274,305,335))*2*pi/365,
+                          label=month.abb),
+              aes(x=x,y=4.7,label=label), 
+              color = "black", size = 2.8)+
     
-    #Strat arrow
-    geom_segment(data=tibble(x=(c(290))*2*pi/365,y=3.5)%>%mutate(xend=x,yend=y_limit_upper*0.8),aes(x=x,xend=xend,y=y,yend=yend),color="black")+  
+    #Ice arrow
+    geom_segment(data=tibble(x=(c(259))*2*pi/365,y=3.5)%>%
+                   mutate(xend=x,yend=y_limit_upper*0.75),
+                 aes(x=x,xend=xend,y=y,yend=yend),color="black")+  
     
-    #Strat label
-    geom_label(data=tibble(x=(c(290))*2*pi/365,y=y_limit_upper*0.8),
+    #Ice label
+    geom_label(data=tibble(x=(c(259))*2*pi/365,y=y_limit_upper*0.75),
                aes(x=x,y=y),label="Ice",size=9*(5/14),
-               hjust = .8)+ #The size= in element_text is 14/5 of the size= in geom_text  
+               hjust = 1)+ #The size= in element_text is 14/5 of the size= in geom_text  
     
     
     
     #text at the top for label####
  geom_text(data=tibble(x=2*2*pi/365,y=y_limit_upper),aes(x=x,y=y), 
-           label=deparse(bquote(West~Lake~Bonney)), size = 4.2, parse=TRUE,
+           label="c) West Lake Bonney", size = 4.2, 
            vjust = 1)+
     
     #Letter label in middle
@@ -690,8 +709,13 @@ library(rnaturalearth)
       #geom_hline(yintercept = 0, lwd = 0.1, alpha = 0.2) +
       geom_point(data=tibble(Latitude=c(-77.720192,41.77,-6.243461),
                              Longitude=c(162.305069,-74.16, 29.545176)),
-                 aes(x=Longitude,y=Latitude),shape=21,size=3,fill="grey75", color = "grey50")+
-      coord_sf(expand = FALSE) +
+                 aes(x=Longitude,y=Latitude),shape=21,size=5,fill="grey98", color = "grey70")+
+    geom_text(data=tibble(Latitude=c(-77.720192,41.77,-6.243461),
+                           Longitude=c(162.305069,-74.16, 29.545176),
+                          Label = c("c","a","b")),
+               aes(x=Longitude,y=Latitude, label = Label), 
+              color = "grey70", hjust = 0.5, vjust = 0.5, size = 2.9)+
+    coord_sf(expand = FALSE) +
       theme_void()+
       theme(axis.title.x = element_blank(),
             axis.title.y = element_blank(),
