@@ -17,6 +17,18 @@ library(scales)
 library(patchwork)     # layout and wrap_elements()
 library(cowplot)       # get_legend()
 
+#For circle plots
+compute_angle = function(perc){
+  angle = -1
+  
+  if(perc < 0.5) # 1st half [90, -90]
+    angle = (180 - (perc/0.5) * 180) - 90
+  else # 2nd half [90, -90]
+    angle = (90 - ((perc - 0.5)/0.5) * 180)
+  
+  return(angle)
+}
+
 ## 1) Inputs (edit paths as needed) ----
 path_dt   <- "01a_Raw_data/DATA_dailymean_chlatemplevel_v2.csv"
 path_pts  <- "01a_Raw_data/HydroLAKES_points_v10.dbf"
@@ -247,7 +259,7 @@ p_wheel <- legend_df %>%
   labs(title = "DOY of max") +
   theme(
     plot.title = element_text(hjust = 0, 
-                              margin = margin(b = 0),
+                              margin = margin(b = 0, l = 5),
                               size = 11),
     plot.margin = margin(t = 0, r = 0, b = 0, l = 0),
     legend.position = "none"
@@ -260,14 +272,14 @@ p_map_final <- p_map+theme(legend.position = "none")
 final_plot <- p_map_final %>% 
   ggdraw() +
   draw_plot(leg_size_panel,
-            x = .75, 
+            x = .78, 
             y = .48,
             width = 0.2, 
             height = 0.4,
             vjust = 1, hjust = 0) +
   draw_plot(p_wheel_panel,
             x = .55, 
-            y = .4,
+            y = .41,
             width = 0.2, 
             height = 0.4,
             vjust = 1, hjust = 0)
