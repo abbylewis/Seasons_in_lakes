@@ -38,7 +38,7 @@ detect_country <- function(text) {
 
 detect_state <- function(text) {
   # Use a single regex per group, check for presence
-  us_found <- any(stri_detect_regex(text, paste0("\\b(", paste(tolower(state.name), collapse = "|"), ")\\b")))
+  us_found <- any(stri_detect_regex(text, paste0("\\b(", paste(c(tolower(state.name),"newmexico"), collapse = "|"), ")\\b")))
   ca_found <- any(stri_detect_regex(text, paste0("\\b(", paste(tolower(canadian_provinces), collapse = "|"), ")\\b")))
   uk_found <- any(stri_detect_regex(text, paste0("\\b(", paste(tolower(uk_countries), collapse = "|"), ")\\b")))
   ru_found <- any(stri_detect_regex(text, paste0("\\b(", paste(tolower(russia), collapse = "|"), ")\\b")))
