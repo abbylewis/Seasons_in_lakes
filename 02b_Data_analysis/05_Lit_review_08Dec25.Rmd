@@ -160,7 +160,7 @@ all_season_plot <- all_seas %>%
   pivot_longer(c(season, seasonality)) %>%
   mutate(name = paste0('"',name,'"')) %>%
   left_join(lake, by = c("PY" = "Year")) %>%
-  filter(PY >=1980, PY <= 2025) %>%
+  filter(PY >=1980, PY <= 2024) %>%
   ggplot(aes(x = PY, y = value/Count*100))+
   geom_point(alpha = 0.3)+
   ylab('Papers that mention "seasons" or\n"seasonality" (% of all lake papers in each year)')+
@@ -250,7 +250,7 @@ sums$AllSeasons <- factor(sums$AllSeasons, levels = unique(sums$AllSeasons))
 label_data <- sums %>%
   ungroup() %>%
   arrange(desc(AllSeasons)) %>%
-  filter(PY == 2025) %>%
+  filter(PY == 2024) %>%
   mutate(
     ymin = cumsum(lag(n, default = 0)),
     ymax = cumsum(n),
@@ -271,27 +271,29 @@ sums %>%
   scale_x_continuous(expand = expansion(mult = c(0, 0.1)))+
   geom_text(
     data = label_data,
-    aes(x = 2025.5, y = ymid, color = Type, label = AllSeasons),
+    aes(x = 2024.5, y = ymid, color = Type, label = AllSeasons),
     hjust = 0,
     size = 3
   )
 
 label_data_pct <- sums %>%
+  mutate(class = factor(Meta, levels = c("Temperate", "Other"))) %>%
+  filter(PY >= 1980,
+         PY <= 2024) %>%
   ungroup() %>%
-  arrange(desc(AllSeasons)) %>%
-  filter(PY == 2025) %>%
-  mutate(
-    ymin = cumsum(lag(pct_of_all_by_year, default = 0)),
-    ymax = cumsum(pct_of_all_by_year),
-    ymid = (ymin + ymax) / 2
+  group_by(AllSeasons) %>%
+  mutate(pct_of_all_by_year = predict(
+           mgcv::gam(pct_of_all_by_year ~ s(PY, bs = "tp")))
   ) %>%
+  arrange(desc(AllSeasons)) %>%
+  filter(PY == 2024) %>%
   ungroup()
 
 png("../03a_Figures/Total_prevalence.png", res = 300, width = 3.5, 
     height = 5, units = "in")
 timeline <- sums %>%
   filter(PY >= 1980, 
-         PY <= 2025) %>%
+         PY <= 2024) %>%
   mutate(class = factor(Meta, levels = c("Temperate", "Other"))) %>%
   ggplot(aes(x = PY, y = pct_of_all_by_year, color = Type))+
   geom_smooth(aes(group = AllSeasons), linewidth = 0.5, se = F, method = "gam")+
@@ -299,15 +301,14 @@ timeline <- sums %>%
   egg::theme_article()+
   ylab("Papers that mention this season\n(% of all lake papers in each year)")+
   xlab("Publication year")+
-  coord_cartesian(xlim = c(1980,2025),clip = "off", expand = c(0,0))+
+  coord_cartesian(xlim = c(1980,2024),clip = "off", expand = c(0,0))+
   geom_hline(yintercept = 0, alpha = .1)+
-  ggrepel::geom_text_repel(aes(x = 2026, label = AllSeasons), 
+  ggrepel::geom_text_repel(aes(x = 2025, label = AllSeasons), 
                            direction = "y",
                            hjust = 0,
-                           #vjust = 0.5,
+                           vjust = 0.5,
                            size = 3,
-                           data = label_data_pct %>%
-                             mutate(class = factor(Meta, levels = c("Temperate", "Other"))),
+                           data = label_data_pct,
                            max.time = 5,
                            max.iter = 1000000,
                            box.padding= 0,
@@ -316,7 +317,8 @@ timeline <- sums %>%
                            show.legend = F,
                            xlim = c(1980,2040),
                            min.segment.length = .1,
-                           seed = 47)+
+                           seed = 47
+                           )+
   guides(color = guide_legend(ncol = 3))+
   facet_wrap(~class, scales = "free_y", ncol = 1)+
   theme(legend.position = "bottom",

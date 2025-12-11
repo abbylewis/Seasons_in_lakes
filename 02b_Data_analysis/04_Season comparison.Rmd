@@ -113,7 +113,7 @@ for_plot %>%
   theme_bw(base_size = 9)+
   scale_shape_manual(name = "Significance of difference\nbetween definitions\nat each lake",
                      values = c(21,24))+
-  scale_fill_distiller(palette = "Spectral", name = "Absolute latitude")+
+  scale_fill_distiller(palette = "Spectral", name = "Absolute latitude", direction = 1)+
   theme(axis.text.x = element_text(angle = 20, hjust = 1),
         panel.grid.major.x = element_blank(),
         strip.text = element_text(size = 7),
@@ -244,7 +244,7 @@ for_plot %>%
   theme_bw(base_size = 9)+
   scale_shape_manual(name = "Significance of difference\nbetween definitions\nat each lake",
                      values = c(21,24))+
-  scale_fill_distiller(palette = "Spectral", name = "Absolute latitude")+
+  scale_fill_distiller(palette = "Spectral", name = "Absolute latitude", direction = 1)+
   theme(axis.text.x = element_text(angle = 20, hjust = 1),
         panel.grid.major.x = element_blank(),
         strip.text = element_text(size = 7),
