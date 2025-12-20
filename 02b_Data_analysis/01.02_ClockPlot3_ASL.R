@@ -711,12 +711,12 @@ library(rnaturalearth)
       #geom_hline(yintercept = 0, lwd = 0.1, alpha = 0.2) +
       geom_point(data=tibble(Latitude=c(-77.720192,41.77,-6.243461),
                              Longitude=c(162.305069,-74.16, 29.545176)),
-                 aes(x=Longitude,y=Latitude),shape=21,size=5,fill="grey98", color = "grey70")+
+                 aes(x=Longitude,y=Latitude),shape=21,size=5,fill="grey98", color = "grey60")+
     geom_text(data=tibble(Latitude=c(-77.720192,41.77,-6.243461),
                            Longitude=c(162.305069,-74.16, 29.545176),
                           Label = c("c","a","b")),
                aes(x=Longitude,y=Latitude, label = Label), 
-              color = "grey70", hjust = 0.5, vjust = 0.5, size = 2.9)+
+              color = "grey50", hjust = 0.5, vjust = 0.5, size = 2.9)+
     coord_sf(expand = FALSE) +
       theme_void()+
       theme(axis.title.x = element_blank(),

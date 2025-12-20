@@ -125,8 +125,8 @@ discrete_ice <- temperate %>%
                    xend = end, 
                    color = Season), 
                lwd = 3) +
-  scale_color_manual("Stratification", values = c("#fce6e6", "#F6A2A2", "#DB8080"),
-                     breaks = c("Inversely\nstratified", "Mixed", "Stratified")) +
+  scale_color_manual("Stratification", values = c("#efbebe", "#DB8080"),
+                     breaks = c("Mixed", "Stratified")) +
   guides(color = guide_legend(ncol = 1, title.position="top")) +
   ggnewscale::new_scale_color() +
   geom_segment(data = ice_format,

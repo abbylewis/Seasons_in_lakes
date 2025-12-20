@@ -12,6 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(ggpubr)
 library(ggnewscale) # For multiple color scales on the discrete panel
+library(ggtext)
 
 #The ../03a_Figures folder is not pushed to GitHub
 if(!file.exists("../03a_Figures")){dir.create("../03a_Figures")}
@@ -32,13 +33,13 @@ vars <- c("Surface temperature",
           "Bottom-water DO",
           "Solar radiation",
           "Surf-bot dens. difference")
-labels <- c("Surface~temperature~(ºC)", 
-            "Air~temperature~(ºC)",
-            "Surface~chlorophyll-italic(a)~(µg/L)",
-            "Surface~DO~(mg/L)",
-            "Bottom-water~DO~(mg/L)",
-            "Shortwave~radiation~(W/m^{2})",
-            "Surf-bot~density~difference~(kg/m^{3})")
+labels <- c("Surface temperature (ºC)", 
+            "Air temperature (ºC)",
+            "Surface chlorophyll-<i>a</i> (µg/L)",
+            "Surface dissolved oxygen (mg/L)",
+            "Bottom-water dissolved oxygen (mg/L)",
+            "Shortwave radiation (W/m<sup>2</sup>)",
+            "Surf-bot density difference (kg/m<sup>3</sup>)")
 ```
 
 # Continuous
@@ -107,23 +108,31 @@ for_plot %>%
   ylab("Difference in mean value between\nmonthly and astronomical definitions")+
   geom_boxplot(color = "grey80", outlier.shape = NA)+
   geom_jitter(aes(fill = abs(lats), shape = sig), width = 0.2, 
-              color = "black", stroke = 0.2, size = 1.5) +
+              color = "black", stroke = 0.2, size = 1.7) +
   geom_hline(yintercept = 0)+
-  facet_wrap(~Variable, scales = "free", ncol = 3, labeller = label_parsed)+
+  facet_wrap(~Variable, scales = "free_y", ncol = 3)+
   theme_bw(base_size = 9)+
   scale_shape_manual(name = "Significance of difference\nbetween definitions\nat each lake",
                      values = c(21,24))+
   scale_fill_distiller(palette = "Spectral", name = "Absolute latitude", direction = 1)+
-  theme(axis.text.x = element_text(angle = 20, hjust = 1),
+  egg::theme_article()+
+  theme(axis.text.x = element_text(angle = 30, hjust = 1, size = 8),
         panel.grid.major.x = element_blank(),
-        strip.text = element_text(size = 7),
         legend.title.position = "top",
         legend.position = c(.67,.08),
         legend.spacing.y = unit(0.1, "cm"),
         legend.direction = "horizontal",
         legend.box = "horizontal",
         legend.title = element_text(hjust = 0.5),
-        axis.title.x = element_blank())
+        axis.title.x = element_blank(),
+        panel.grid.minor.y = element_line(color = "grey90"),
+        strip.text = element_textbox_simple(
+          size = 8,
+          halign = 0.5, 
+          valign = 0.5,
+          padding = ggplot2::margin(5, 5, 3, 5), 
+          margin = ggplot2::margin(5, 5, 3, 5) 
+        ))
 dev.off()
 ```
 

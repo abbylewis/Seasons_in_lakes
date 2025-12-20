@@ -29,10 +29,12 @@ places <- fread("../01a_Raw_data/worldcities.csv") %>%
                               .default = country))
 
 #Load files
-files <- list.files("../05_Lit_review", full.names = T)
+files <- list.files("../05_Lit_review", full.names = T, pattern = ".xls")
 all <- read_delim(files, show_col_types = F, delim = "\t") %>%
   select(TI, AB, PY) %>%
   distinct()
+
+read_delim(files[40], delim = "\t")
 
 #Separate WoS search for just "lake" in title, abstract, and keywords
 lake <- read_delim("../01a_Raw_data/WoS_lake_24Nov25.txt", delim = "\t", 

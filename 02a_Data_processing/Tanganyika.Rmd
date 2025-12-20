@@ -77,7 +77,7 @@ strat_export_discrete <- strat_sum %>%
   filter(!is.na(Strat)) %>%
   ungroup() %>%
   filter(Strat != lag(Strat)) %>%
-  full_join(data.frame(Variable = "Diff_Dens_surf_bot", yday = 1, Strat = "Mixed")) %>%
+  full_join(data.frame(Variable = "Diff_Dens_surf_bot", yday = 1, Strat = "Stratified")) %>%
   arrange(yday) %>%
   mutate(end = lead(yday, default = 365)) %>%
   rename(start = yday, Season = Strat) %>%
