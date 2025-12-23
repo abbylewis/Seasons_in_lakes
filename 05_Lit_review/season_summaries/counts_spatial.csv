@@ -1,0 +1,2647 @@
+Type,SeasonWords,Country,Country_no_num,n
+Flora,growing,"United States
+(n = 1123)",United States,387
+Hydrology,dry,"China
+(n = 1010)",China,350
+Hydrology,wet,"China
+(n = 1010)",China,226
+Flora,growing,"Canada
+(n = 701)",Canada,197
+Flora,growing,"China
+(n = 1010)",China,132
+Hydrology,dry,"Brazil
+(n = 194)",Brazil,110
+Hydrology,rainy,"China
+(n = 1010)",China,109
+Fauna,breeding,"United States
+(n = 1123)",United States,101
+Fauna,spawning,"United States
+(n = 1123)",United States,95
+Hydrology,flood,"China
+(n = 1010)",China,91
+Hydrology,dry,"Ethiopia
+(n = 180)",Ethiopia,89
+Ice/Snow,ice-free,"Canada
+(n = 701)",Canada,73
+Hydrology,rainy,"Brazil
+(n = 194)",Brazil,66
+Hydrology,rainy,"Ethiopia
+(n = 180)",Ethiopia,65
+Ice/Snow,open-water,"Canada
+(n = 701)",Canada,64
+Hydrology,monsoon,"India
+(n = 187)",India,63
+Fauna,breeding,"Canada
+(n = 701)",Canada,62
+Ice/Snow,melt,"Greenland
+(n = 87)",Greenland,58
+Hydrology,wet,"Ethiopia
+(n = 180)",Ethiopia,54
+Ice/Snow,ice-free,"United States
+(n = 1123)",United States,52
+Hydrology,dry,"Mexico
+(n = 98)",Mexico,51
+Temperature,warm,"United States
+(n = 1123)",United States,50
+Temperature,warm,"China
+(n = 1010)",China,48
+Temperate,winter,"United States
+(n = 1123)",United States,46
+Hydrology,dry,"Kenya
+(n = 78)",Kenya,42
+Agriculture,rice,"China
+(n = 1010)",China,38
+Temperate,summer,"United States
+(n = 1123)",United States,38
+Temperate,winter,"Canada
+(n = 701)",Canada,38
+Hydrology,dry,"Tanzania
+(n = 65)",Tanzania,36
+Hydrology,dry,"United States
+(n = 1123)",United States,35
+Hydrology,wet,"United States
+(n = 1123)",United States,35
+Hydrology,post-monsoon,"India
+(n = 187)",India,34
+Hydrology,wet,"Brazil
+(n = 194)",Brazil,34
+Flora,bloom,"China
+(n = 1010)",China,32
+Hydrology,rainy,"Mexico
+(n = 98)",Mexico,32
+Temperature,cold,"China
+(n = 1010)",China,32
+Temperature,cold,"United States
+(n = 1123)",United States,32
+Hydrology,rainy,"Kenya
+(n = 78)",Kenya,30
+Ice/Snow,open-water,"United States
+(n = 1123)",United States,30
+Temperate,winter,"China
+(n = 1010)",China,30
+Temperate,summer,"China
+(n = 1010)",China,29
+Temperature,cool,"United States
+(n = 1123)",United States,29
+Fauna,spawning,"Canada
+(n = 701)",Canada,27
+Flora,growing,"Poland
+(n = 117)",Poland,27
+Hydrology,dry,"Cambodia
+(n = 57)",Cambodia,27
+Fauna,nesting,"United States
+(n = 1123)",United States,26
+Hydrology,dry,"Uganda
+(n = 44)",Uganda,26
+Temperate,summer,"Canada
+(n = 701)",Canada,26
+Hydrology,dry,"Nigeria
+(n = 34)",Nigeria,25
+Hydrology,rainy,"Malawi
+(n = 59)",Malawi,25
+Ice/Snow,open-water,"Finland
+(n = 100)",Finland,25
+Flora,growing,"Sweden
+(n = 81)",Sweden,24
+Flora,growing,"Russia
+(n = 79)",Russia,23
+Hydrology,dry,"Bolivia
+(n = 35)",Bolivia,22
+Hydrology,rainy,"India
+(n = 187)",India,22
+Hydrology,rainy,"Tanzania
+(n = 65)",Tanzania,22
+Hydrology,wet,"Kenya
+(n = 78)",Kenya,22
+Hydrology,dry,"Turkey
+(n = 97)",Turkey,21
+Hydrology,wet,"Uganda
+(n = 44)",Uganda,21
+Hydrology,dry,"Australia
+(n = 65)",Australia,20
+Hydrology,pre-monsoon,"India
+(n = 187)",India,20
+Temperature,cold,"Canada
+(n = 701)",Canada,20
+Flora,growing,"Finland
+(n = 100)",Finland,19
+Hydrology,dry,"Cameroon
+(n = 24)",Cameroon,19
+Ice/Snow,melt,"Canada
+(n = 701)",Canada,19
+Research,field,"Canada
+(n = 701)",Canada,19
+Research,field,"United States
+(n = 1123)",United States,19
+Temperate,spring,"United States
+(n = 1123)",United States,19
+Temperate,summer,"India
+(n = 187)",India,19
+Temperate,winter,"India
+(n = 187)",India,19
+Agriculture,wheat,"China
+(n = 1010)",China,18
+Hydrology,dry,"Chad
+(n = 28)",Chad,18
+Hydrology,dry,"India
+(n = 187)",India,18
+Hydrology,wet,"Australia
+(n = 65)",Australia,17
+Ice/Snow,ice,"Canada
+(n = 701)",Canada,17
+Fauna,spawning,"Japan
+(n = 85)",Japan,16
+Hydrology,rainy,"Nigeria
+(n = 34)",Nigeria,16
+Research,sampling,"United States
+(n = 1123)",United States,16
+Flora,growing,"Germany
+(n = 50)",Germany,15
+Hydrology,dry,"Indonesia
+(n = 27)",Indonesia,15
+Hydrology,dry,"Malawi
+(n = 59)",Malawi,15
+Hydrology,wet,"Bolivia
+(n = 35)",Bolivia,15
+Hydrology,wet,"Cambodia
+(n = 57)",Cambodia,15
+Fauna,breeding,"China
+(n = 1010)",China,14
+Flora,growing,"Netherlands
+(n = 30)",Netherlands,14
+Hydrology,dry,"Venezuela
+(n = 20)",Venezuela,14
+Hydrology,wet,"Mexico
+(n = 98)",Mexico,14
+Hydrology,wet,"Turkey
+(n = 97)",Turkey,14
+Ice/Snow,ice-free,"Norway
+(n = 89)",Norway,14
+Temperature,warm,"Canada
+(n = 701)",Canada,14
+Flora,fire,"Canada
+(n = 701)",Canada,13
+Flora,growing,"Norway
+(n = 89)",Norway,13
+Flora,growth,"China
+(n = 1010)",China,13
+Flora,vegetation,"Poland
+(n = 117)",Poland,13
+Hydrology,dry,"Philippines
+(n = 26)",Philippines,13
+Hydrology,rainy,"Cambodia
+(n = 57)",Cambodia,13
+Temperate,autumn,"China
+(n = 1010)",China,13
+Temperate,spring,"China
+(n = 1010)",China,13
+Temperate,winter,"Poland
+(n = 117)",Poland,13
+Agriculture,rice-growing,"China
+(n = 1010)",China,12
+Economic,fishing,"United States
+(n = 1123)",United States,12
+Economic,hunting,"Canada
+(n = 701)",Canada,12
+Fauna,non-breeding,"United States
+(n = 1123)",United States,12
+Fauna,reproductive,"United States
+(n = 1123)",United States,12
+Hydrology,dry,"Peru
+(n = 26)",Peru,12
+Hydrology,wet,"Tanzania
+(n = 65)",Tanzania,12
+Research,sampling,"Canada
+(n = 701)",Canada,12
+Temperate,fall,"United States
+(n = 1123)",United States,12
+Temperate,summer,"Poland
+(n = 117)",Poland,12
+Temperature,warmer,"China
+(n = 1010)",China,12
+Economic,hunting,"United States
+(n = 1123)",United States,11
+Fauna,nesting,"Canada
+(n = 701)",Canada,11
+Flora,bloom,"United States
+(n = 1123)",United States,11
+Flora,growth,"United States
+(n = 1123)",United States,11
+Hydrology,dry,"Argentina
+(n = 45)",Argentina,11
+Hydrology,dry,"Panama
+(n = 19)",Panama,11
+Hydrology,flooding,"China
+(n = 1010)",China,11
+Hydrology,rainy,"Indonesia
+(n = 27)",Indonesia,11
+Ice/Snow,melt,"United States
+(n = 1123)",United States,11
+Stratification,stratified,"United States
+(n = 1123)",United States,11
+Temperate,spring,"Turkey
+(n = 97)",Turkey,11
+Fauna,breeding,"Australia
+(n = 65)",Australia,10
+Fauna,breeding,"Turkey
+(n = 97)",Turkey,10
+Flora,growing,"Egypt
+(n = 47)",Egypt,10
+Flora,growth,"Canada
+(n = 701)",Canada,10
+Flora,non-growing,"China
+(n = 1010)",China,10
+Flora,non-growing,"United States
+(n = 1123)",United States,10
+Hydrology,dry,"Ghana
+(n = 16)",Ghana,10
+Hydrology,dry,"Iran
+(n = 35)",Iran,10
+Hydrology,low-water,"Brazil
+(n = 194)",Brazil,10
+Hydrology,rainy,"Uganda
+(n = 44)",Uganda,10
+Hydrology,wet,"Iran
+(n = 35)",Iran,10
+Hydrology,wet,"Malawi
+(n = 59)",Malawi,10
+Hydrology,wet,"Philippines
+(n = 26)",Philippines,10
+Ice/Snow,ice-cover,"Canada
+(n = 701)",Canada,10
+Stratification,stratified,"Canada
+(n = 701)",Canada,10
+Temperate,summer,"Russia
+(n = 79)",Russia,10
+Temperature,cold,"Russia
+(n = 79)",Russia,10
+Fauna,breeding,"Ethiopia
+(n = 180)",Ethiopia,9
+Fauna,breeding,"Finland
+(n = 100)",Finland,9
+Fauna,breeding,"Poland
+(n = 117)",Poland,9
+Fauna,spawning,"Norway
+(n = 89)",Norway,9
+Flora,dormant,"United States
+(n = 1123)",United States,9
+Flora,growth,"Norway
+(n = 89)",Norway,9
+Flora,growth,"Sweden
+(n = 81)",Sweden,9
+Flora,wintering,"China
+(n = 1010)",China,9
+Hydrology,hydrological,"China
+(n = 1010)",China,9
+Hydrology,non-flood,"China
+(n = 1010)",China,9
+Hydrology,rainy,"Senegal
+(n = 13)",Senegal,9
+Hydrology,wet,"Malaysia
+(n = 16)",Malaysia,9
+Temperate,summer,"Antarctica
+(n = 30)",Antarctica,9
+Temperate,summer,"Italy
+(n = 60)",Italy,9
+Temperate,summer,"Sweden
+(n = 81)",Sweden,9
+Temperature,warm,"Japan
+(n = 85)",Japan,9
+Agriculture,crop,"China
+(n = 1010)",China,8
+Economic,swimming,"United States
+(n = 1123)",United States,8
+Fauna,spawning,"Finland
+(n = 100)",Finland,8
+Flora,fire,"United States
+(n = 1123)",United States,8
+Flora,growing,"Georgia
+(n = 25)",Georgia,8
+Hydrology,dry,"Bangladesh
+(n = 14)",Bangladesh,8
+Hydrology,dry,"Malaysia
+(n = 16)",Malaysia,8
+Hydrology,post-monsoon,"Nepal
+(n = 30)",Nepal,8
+Hydrology,wet,"Peru
+(n = 26)",Peru,8
+Ice/Snow,melt,"Antarctica
+(n = 30)",Antarctica,8
+Research,sampling,"China
+(n = 1010)",China,8
+Temperate,autumn,"Turkey
+(n = 97)",Turkey,8
+Temperate,summer,"Egypt
+(n = 47)",Egypt,8
+Temperate,summer,"Japan
+(n = 85)",Japan,8
+Temperate,winter,"Turkey
+(n = 97)",Turkey,8
+Fauna,breeding,"Greece
+(n = 26)",Greece,7
+Fauna,breeding,"Spain
+(n = 43)",Spain,7
+Fauna,breeding,"United Kingdom
+(n = 25)",United Kingdom,7
+Fauna,non-breeding,"Canada
+(n = 701)",Canada,7
+Fauna,reproductive,"Canada
+(n = 701)",Canada,7
+Flora,growing,"Greenland
+(n = 87)",Greenland,7
+Flora,growing,"Japan
+(n = 85)",Japan,7
+Flora,growing,"Mongolia
+(n = 17)",Mongolia,7
+Flora,growing,"Romania
+(n = 16)",Romania,7
+Flora,growing,"United Kingdom
+(n = 25)",United Kingdom,7
+Hydrology,dry,"Canada
+(n = 701)",Canada,7
+Hydrology,dry,"Zimbabwe
+(n = 12)",Zimbabwe,7
+Hydrology,low-water,"China
+(n = 1010)",China,7
+Hydrology,monsoon,"China
+(n = 1010)",China,7
+Hydrology,non-monsoon,"India
+(n = 187)",India,7
+Hydrology,rainy,"Cameroon
+(n = 24)",Cameroon,7
+Hydrology,rainy,"Chad
+(n = 28)",Chad,7
+Hydrology,rainy,"Peru
+(n = 26)",Peru,7
+Hydrology,rainy,"United States
+(n = 1123)",United States,7
+Hydrology,wet,"Panama
+(n = 19)",Panama,7
+Ice/Snow,ice,"United States
+(n = 1123)",United States,7
+Ice/Snow,ice-free,"Finland
+(n = 100)",Finland,7
+Ice/Snow,ice-free,"Sweden
+(n = 81)",Sweden,7
+Ice/Snow,snowmelt,"United States
+(n = 1123)",United States,7
+Stratification,stratified,"Malawi
+(n = 59)",Malawi,7
+Temperate,spring,"Canada
+(n = 701)",Canada,7
+Temperate,summer,"Turkey
+(n = 97)",Turkey,7
+Agriculture,harvest,"United States
+(n = 1123)",United States,6
+Economic,fishing,"Canada
+(n = 701)",Canada,6
+Economic,fishing,"Turkey
+(n = 97)",Turkey,6
+Fauna,breeding,"Japan
+(n = 85)",Japan,6
+Fauna,spawning,"Argentina
+(n = 45)",Argentina,6
+Fauna,spawning,"Australia
+(n = 65)",Australia,6
+Fauna,spawning,"Poland
+(n = 117)",Poland,6
+Flora,growing,"Australia
+(n = 65)",Australia,6
+Flora,growing,"Estonia
+(n = 14)",Estonia,6
+Flora,growing,"Switzerland
+(n = 49)",Switzerland,6
+Flora,growing,"Turkey
+(n = 97)",Turkey,6
+Hydrology,dry,"French Guiana
+(n = 7)",French Guiana,6
+Hydrology,dry,"Madagascar
+(n = 19)",Madagascar,6
+Hydrology,dry,"Mozambique
+(n = 9)",Mozambique,6
+Hydrology,dry,"Spain
+(n = 43)",Spain,6
+Hydrology,dry,"Zambia
+(n = 9)",Zambia,6
+Hydrology,monsoon,"Nepal
+(n = 30)",Nepal,6
+Hydrology,pre-monsoon,"Nepal
+(n = 30)",Nepal,6
+Hydrology,rainy,"Bolivia
+(n = 35)",Bolivia,6
+Hydrology,rainy,"Turkey
+(n = 97)",Turkey,6
+Hydrology,runoff,"United States
+(n = 1123)",United States,6
+Hydrology,wet,"Ghana
+(n = 16)",Ghana,6
+Ice/Snow,ice,"Finland
+(n = 100)",Finland,6
+Ice/Snow,ice-free,"China
+(n = 1010)",China,6
+Ice/Snow,ice-free,"Italy
+(n = 60)",Italy,6
+Ice/Snow,melting,"Greenland
+(n = 87)",Greenland,6
+Stratification,mixing,"Malawi
+(n = 59)",Malawi,6
+Temperate,autumn,"Poland
+(n = 117)",Poland,6
+Temperate,fall,"Canada
+(n = 701)",Canada,6
+Temperate,summer,"Switzerland
+(n = 49)",Switzerland,6
+Temperate,winter,"Finland
+(n = 100)",Finland,6
+Temperate,winter,"Japan
+(n = 85)",Japan,6
+Temperature,cold,"Iran
+(n = 35)",Iran,6
+Temperature,cold,"Mexico
+(n = 98)",Mexico,6
+Temperature,cold,"Switzerland
+(n = 49)",Switzerland,6
+Temperature,warm,"Argentina
+(n = 45)",Argentina,6
+Temperature,warm,"Mexico
+(n = 98)",Mexico,6
+Fauna,active,"Canada
+(n = 701)",Canada,5
+Fauna,active,"United States
+(n = 1123)",United States,5
+Fauna,breeding,"Argentina
+(n = 45)",Argentina,5
+Fauna,breeding,"Hungary
+(n = 13)",Hungary,5
+Fauna,breeding,"India
+(n = 187)",India,5
+Fauna,breeding,"Madagascar
+(n = 19)",Madagascar,5
+Fauna,breeding,"Nicaragua
+(n = 11)",Nicaragua,5
+Fauna,breeding,"Switzerland
+(n = 49)",Switzerland,5
+Fauna,migration,"United States
+(n = 1123)",United States,5
+Fauna,spawning,"Egypt
+(n = 47)",Egypt,5
+Fauna,spawning,"Ethiopia
+(n = 180)",Ethiopia,5
+Flora,growing,"Austria
+(n = 15)",Austria,5
+Flora,growing,"Chile
+(n = 35)",Chile,5
+Flora,growing,"Italy
+(n = 60)",Italy,5
+Flora,growth,"Finland
+(n = 100)",Finland,5
+Flora,growth,"Poland
+(n = 117)",Poland,5
+Flora,non-growing,"Canada
+(n = 701)",Canada,5
+Hydrology,dry,"Congo (Kinshasa)
+(n = 11)",Congo (Kinshasa),5
+Hydrology,dry,"Nicaragua
+(n = 11)",Nicaragua,5
+Hydrology,dry,"Senegal
+(n = 13)",Senegal,5
+Hydrology,dry,"Thailand
+(n = 12)",Thailand,5
+Hydrology,dry,"Tunisia
+(n = 13)",Tunisia,5
+Hydrology,dry,"Vietnam
+(n = 11)",Vietnam,5
+Hydrology,monsoon,"Pakistan
+(n = 16)",Pakistan,5
+Hydrology,post-rainy,"Ethiopia
+(n = 180)",Ethiopia,5
+Hydrology,rainy,"Madagascar
+(n = 19)",Madagascar,5
+Hydrology,rainy,"South Africa
+(n = 14)",South Africa,5
+Hydrology,rainy,"Thailand
+(n = 12)",Thailand,5
+Hydrology,rainy,"Venezuela
+(n = 20)",Venezuela,5
+Hydrology,wet,"Argentina
+(n = 45)",Argentina,5
+Hydrology,wet,"Chad
+(n = 28)",Chad,5
+Hydrology,wet,"Indonesia
+(n = 27)",Indonesia,5
+Hydrology,wet,"Nigeria
+(n = 34)",Nigeria,5
+Hydrology,wet,"South Africa
+(n = 14)",South Africa,5
+Hydrology,wet,"Venezuela
+(n = 20)",Venezuela,5
+Ice/Snow,ablation,"Canada
+(n = 701)",Canada,5
+Ice/Snow,ablation,"Norway
+(n = 89)",Norway,5
+Ice/Snow,ice-free,"Spain
+(n = 43)",Spain,5
+Ice/Snow,snow,"Canada
+(n = 701)",Canada,5
+Ice/Snow,snow,"United States
+(n = 1123)",United States,5
+Ice/Snow,snow-free,"United States
+(n = 1123)",United States,5
+Ice/Snow,snowmelt,"Canada
+(n = 701)",Canada,5
+Temperate,summer,"Germany
+(n = 50)",Germany,5
+Temperate,summer,"Greenland
+(n = 87)",Greenland,5
+Temperate,summer,"Svalbard
+(n = 16)",Svalbard,5
+Temperate,winter,"Italy
+(n = 60)",Italy,5
+Temperate,winter,"Norway
+(n = 89)",Norway,5
+Temperature,cold,"Argentina
+(n = 45)",Argentina,5
+Temperature,cold,"Italy
+(n = 60)",Italy,5
+Temperature,cool,"Canada
+(n = 701)",Canada,5
+Temperature,warm,"Finland
+(n = 100)",Finland,5
+Temperature,warm,"Italy
+(n = 60)",Italy,5
+Temperature,warm,"Russia
+(n = 79)",Russia,5
+Temperature,warm,"Switzerland
+(n = 49)",Switzerland,5
+Economic,closed,"Malawi
+(n = 59)",Malawi,4
+Economic,fishing,"China
+(n = 1010)",China,4
+Fauna,breeding,"Mexico
+(n = 98)",Mexico,4
+Fauna,breeding,"Netherlands
+(n = 30)",Netherlands,4
+Fauna,breeding,"Sweden
+(n = 81)",Sweden,4
+Fauna,non-breeding,"Netherlands
+(n = 30)",Netherlands,4
+Fauna,reproductive,"Brazil
+(n = 194)",Brazil,4
+Fauna,reproductive,"Japan
+(n = 85)",Japan,4
+Fauna,spawning,"China
+(n = 1010)",China,4
+Fauna,spawning,"Turkey
+(n = 97)",Turkey,4
+Fauna,transmission,"China
+(n = 1010)",China,4
+Flora,blooming,"China
+(n = 1010)",China,4
+Flora,growing,"Czech Republic
+(n = 10)",Czech Republic,4
+Flora,growing,"Denmark
+(n = 14)",Denmark,4
+Flora,growing,"England
+(n = 5)",England,4
+Flora,growing,"France
+(n = 20)",France,4
+Flora,growing,"New Zealand
+(n = 12)",New Zealand,4
+Flora,growing,"Spain
+(n = 43)",Spain,4
+Flora,growth,"Denmark
+(n = 14)",Denmark,4
+Hydrology,dry,"Chile
+(n = 35)",Chile,4
+Hydrology,dry,"Colombia
+(n = 12)",Colombia,4
+Hydrology,dry,"Costa Rica
+(n = 8)",Costa Rica,4
+Hydrology,dry,"Guatemala
+(n = 7)",Guatemala,4
+Hydrology,dry,"Guinea
+(n = 6)",Guinea,4
+Hydrology,dry,"South Africa
+(n = 14)",South Africa,4
+Hydrology,dry,"Taiwan
+(n = 10)",Taiwan,4
+Hydrology,dry,"Togo
+(n = 4)",Togo,4
+Hydrology,high-water,"Cambodia
+(n = 57)",Cambodia,4
+Hydrology,high-water,"China
+(n = 1010)",China,4
+Hydrology,low-water,"Cambodia
+(n = 57)",Cambodia,4
+Hydrology,monsoon,"Cambodia
+(n = 57)",Cambodia,4
+Hydrology,post-monsoon,"Pakistan
+(n = 16)",Pakistan,4
+Hydrology,rainy,"Argentina
+(n = 45)",Argentina,4
+Hydrology,rainy,"Benin
+(n = 10)",Benin,4
+Hydrology,rainy,"Burkina Faso
+(n = 4)",Burkina Faso,4
+Hydrology,rainy,"Guatemala
+(n = 7)",Guatemala,4
+Hydrology,rainy,"Japan
+(n = 85)",Japan,4
+Hydrology,rainy,"Malaysia
+(n = 16)",Malaysia,4
+Hydrology,rainy,"Philippines
+(n = 26)",Philippines,4
+Hydrology,wet,"Benin
+(n = 10)",Benin,4
+Ice/Snow,ablation,"Greenland
+(n = 87)",Greenland,4
+Ice/Snow,ice,"China
+(n = 1010)",China,4
+Ice/Snow,ice,"Poland
+(n = 117)",Poland,4
+Ice/Snow,ice-cover,"United States
+(n = 1123)",United States,4
+Ice/Snow,ice-free,"Greenland
+(n = 87)",Greenland,4
+Ice/Snow,melt,"Svalbard
+(n = 16)",Svalbard,4
+Ice/Snow,open-water,"Sweden
+(n = 81)",Sweden,4
+Ice/Snow,snow-free,"Canada
+(n = 701)",Canada,4
+Ice/Snow,thaw,"Canada
+(n = 701)",Canada,4
+Temperate,autumn,"United States
+(n = 1123)",United States,4
+Temperate,summer,"Ethiopia
+(n = 180)",Ethiopia,4
+Temperate,summer,"Mexico
+(n = 98)",Mexico,4
+Temperate,summer,"Netherlands
+(n = 30)",Netherlands,4
+Temperate,summer,"Norway
+(n = 89)",Norway,4
+Temperate,summer,"Spain
+(n = 43)",Spain,4
+Temperate,winter,"Chile
+(n = 35)",Chile,4
+Temperate,winter,"Egypt
+(n = 47)",Egypt,4
+Temperate,winter,"Nepal
+(n = 30)",Nepal,4
+Temperate,winter,"Russia
+(n = 79)",Russia,4
+Temperature,cold,"Brazil
+(n = 194)",Brazil,4
+Temperature,cold,"Germany
+(n = 50)",Germany,4
+Temperature,cold,"Japan
+(n = 85)",Japan,4
+Temperature,cool,"Brazil
+(n = 194)",Brazil,4
+Temperature,hot,"Iran
+(n = 35)",Iran,4
+Temperature,warm,"Brazil
+(n = 194)",Brazil,4
+Temperature,warm,"Germany
+(n = 50)",Germany,4
+Temperature,warm,"India
+(n = 187)",India,4
+Temperature,warm,"Spain
+(n = 43)",Spain,4
+Agriculture,cropping,"Kenya
+(n = 78)",Kenya,3
+Agriculture,cropping,"United States
+(n = 1123)",United States,3
+Economic,tourist,"China
+(n = 1010)",China,3
+Economic,tourist,"Italy
+(n = 60)",Italy,3
+Economic,trapping,"United States
+(n = 1123)",United States,3
+Fauna,breeding,"Malawi
+(n = 59)",Malawi,3
+Fauna,breeding,"Norway
+(n = 89)",Norway,3
+Fauna,mating,"United States
+(n = 1123)",United States,3
+Fauna,migration,"China
+(n = 1010)",China,3
+Fauna,migratory,"China
+(n = 1010)",China,3
+Fauna,spawning,"Georgia
+(n = 25)",Georgia,3
+Fauna,spawning,"Germany
+(n = 50)",Germany,3
+Flora,dormant,"China
+(n = 1010)",China,3
+Flora,growing,"Argentina
+(n = 45)",Argentina,3
+Flora,growing,"Ethiopia
+(n = 180)",Ethiopia,3
+Flora,growing,"Hungary
+(n = 13)",Hungary,3
+Flora,growing,"Ireland
+(n = 11)",Ireland,3
+Flora,growing,"Montenegro
+(n = 4)",Montenegro,3
+Flora,growing,"Morocco
+(n = 9)",Morocco,3
+Flora,productive,"Egypt
+(n = 47)",Egypt,3
+Flora,vegetation,"Russia
+(n = 79)",Russia,3
+Flora,wintering,"Japan
+(n = 85)",Japan,3
+Hydrology,dry,"Benin
+(n = 10)",Benin,3
+Hydrology,dry,"Burundi
+(n = 4)",Burundi,3
+Hydrology,dry,"Croatia
+(n = 14)",Croatia,3
+Hydrology,dry,"Germany
+(n = 50)",Germany,3
+Hydrology,dry,"Italy
+(n = 60)",Italy,3
+Hydrology,dry,"Jordan
+(n = 7)",Jordan,3
+Hydrology,dry,"Myanmar
+(n = 5)",Myanmar,3
+Hydrology,dry,"South Korea
+(n = 16)",South Korea,3
+Hydrology,dry,"Sudan
+(n = 3)",Sudan,3
+Hydrology,flood,"Egypt
+(n = 47)",Egypt,3
+Hydrology,high-water,"Brazil
+(n = 194)",Brazil,3
+Hydrology,hydrological,"Brazil
+(n = 194)",Brazil,3
+Hydrology,low-flow,"Canada
+(n = 701)",Canada,3
+Hydrology,monsoon,"Bangladesh
+(n = 14)",Bangladesh,3
+Hydrology,monsoon,"South Korea
+(n = 16)",South Korea,3
+Hydrology,pre-monsoon,"Pakistan
+(n = 16)",Pakistan,3
+Hydrology,rainy,"Bangladesh
+(n = 14)",Bangladesh,3
+Hydrology,rainy,"Colombia
+(n = 12)",Colombia,3
+Hydrology,rainy,"Ghana
+(n = 16)",Ghana,3
+Hydrology,rainy,"Israel
+(n = 17)",Israel,3
+Hydrology,rainy,"Panama
+(n = 19)",Panama,3
+Hydrology,rainy,"Rwanda
+(n = 3)",Rwanda,3
+Hydrology,rainy,"Togo
+(n = 4)",Togo,3
+Hydrology,rainy,"Tunisia
+(n = 13)",Tunisia,3
+Hydrology,rainy,"Vietnam
+(n = 11)",Vietnam,3
+Hydrology,runoff,"Greenland
+(n = 87)",Greenland,3
+Hydrology,wet,"Colombia
+(n = 12)",Colombia,3
+Hydrology,wet,"Costa Rica
+(n = 8)",Costa Rica,3
+Hydrology,wet,"French Guiana
+(n = 7)",French Guiana,3
+Hydrology,wet,"Greece
+(n = 26)",Greece,3
+Hydrology,wet,"India
+(n = 187)",India,3
+Hydrology,wet,"Mozambique
+(n = 9)",Mozambique,3
+Hydrology,wet,"South Korea
+(n = 16)",South Korea,3
+Hydrology,wet,"Spain
+(n = 43)",Spain,3
+Hydrology,wet,"Taiwan
+(n = 10)",Taiwan,3
+Hydrology,wet,"Zambia
+(n = 9)",Zambia,3
+Hydrology,wet,"Zimbabwe
+(n = 12)",Zimbabwe,3
+Ice/Snow,ice-cover,"Japan
+(n = 85)",Japan,3
+Ice/Snow,ice-cover,"Sweden
+(n = 81)",Sweden,3
+Ice/Snow,ice-free,"Austria
+(n = 15)",Austria,3
+Ice/Snow,melt,"Nepal
+(n = 30)",Nepal,3
+Ice/Snow,melt,"Switzerland
+(n = 49)",Switzerland,3
+Ice/Snow,melting,"Finland
+(n = 100)",Finland,3
+Ice/Snow,open-water,"Russia
+(n = 79)",Russia,3
+Ice/Snow,thaw,"Russia
+(n = 79)",Russia,3
+Research,field,"Antarctica
+(n = 30)",Antarctica,3
+Research,field,"Russia
+(n = 79)",Russia,3
+Research,sampling,"Finland
+(n = 100)",Finland,3
+Stratification,stratified,"Switzerland
+(n = 49)",Switzerland,3
+Temperate,spring,"Ethiopia
+(n = 180)",Ethiopia,3
+Temperate,spring,"Germany
+(n = 50)",Germany,3
+Temperate,summer,"Algeria
+(n = 11)",Algeria,3
+Temperate,summer,"Georgia
+(n = 25)",Georgia,3
+Temperate,summer,"Kazakhstan
+(n = 8)",Kazakhstan,3
+Temperate,winter,"Croatia
+(n = 14)",Croatia,3
+Temperate,winter,"Germany
+(n = 50)",Germany,3
+Temperate,winter,"Pakistan
+(n = 16)",Pakistan,3
+Temperate,winter,"South Africa
+(n = 14)",South Africa,3
+Temperate,winter,"South Korea
+(n = 16)",South Korea,3
+Temperate,winter,"Sweden
+(n = 81)",Sweden,3
+Temperate,winter-spring,"Poland
+(n = 117)",Poland,3
+Temperature,cold,"Finland
+(n = 100)",Finland,3
+Temperature,cold,"Romania
+(n = 16)",Romania,3
+Temperature,cold,"Turkey
+(n = 97)",Turkey,3
+Temperature,cool,"China
+(n = 1010)",China,3
+Temperature,heating,"China
+(n = 1010)",China,3
+Temperature,hot,"China
+(n = 1010)",China,3
+Temperature,warm,"Australia
+(n = 65)",Australia,3
+Temperature,warm,"Chile
+(n = 35)",Chile,3
+Temperature,warm,"Estonia
+(n = 14)",Estonia,3
+Temperature,warm,"Poland
+(n = 117)",Poland,3
+Temperature,warm,"Turkey
+(n = 97)",Turkey,3
+Agriculture,cropping,"Egypt
+(n = 47)",Egypt,2
+Agriculture,harvest,"Turkey
+(n = 97)",Turkey,2
+Agriculture,irrigation,"Ethiopia
+(n = 180)",Ethiopia,2
+Agriculture,irrigation,"Turkey
+(n = 97)",Turkey,2
+Agriculture,irrigation,"United States
+(n = 1123)",United States,2
+Agriculture,planting,"United States
+(n = 1123)",United States,2
+Economic,angling,"Canada
+(n = 701)",Canada,2
+Economic,angling,"United States
+(n = 1123)",United States,2
+Economic,bathing,"Poland
+(n = 117)",Poland,2
+Economic,closed,"Canada
+(n = 701)",Canada,2
+Economic,closed,"Ethiopia
+(n = 180)",Ethiopia,2
+Economic,closed,"Kenya
+(n = 78)",Kenya,2
+Economic,closed,"United States
+(n = 1123)",United States,2
+Economic,fishing,"Australia
+(n = 65)",Australia,2
+Economic,fishing,"Finland
+(n = 100)",Finland,2
+Economic,fishing,"Japan
+(n = 85)",Japan,2
+Economic,fishing,"Norway
+(n = 89)",Norway,2
+Economic,swimming,"Canada
+(n = 701)",Canada,2
+Fauna,breeding,"Algeria
+(n = 11)",Algeria,2
+Fauna,breeding,"Austria
+(n = 15)",Austria,2
+Fauna,breeding,"Brazil
+(n = 194)",Brazil,2
+Fauna,breeding,"Bulgaria
+(n = 3)",Bulgaria,2
+Fauna,breeding,"Cambodia
+(n = 57)",Cambodia,2
+Fauna,breeding,"Chile
+(n = 35)",Chile,2
+Fauna,breeding,"France
+(n = 20)",France,2
+Fauna,breeding,"Germany
+(n = 50)",Germany,2
+Fauna,breeding,"Iceland
+(n = 10)",Iceland,2
+Fauna,breeding,"Iran
+(n = 35)",Iran,2
+Fauna,breeding,"Italy
+(n = 60)",Italy,2
+Fauna,breeding,"Kenya
+(n = 78)",Kenya,2
+Fauna,breeding,"Nigeria
+(n = 34)",Nigeria,2
+Fauna,breeding,"Peru
+(n = 26)",Peru,2
+Fauna,breeding,"Russia
+(n = 79)",Russia,2
+Fauna,breeding,"Uruguay
+(n = 2)",Uruguay,2
+Fauna,mating,"Canada
+(n = 701)",Canada,2
+Fauna,mating,"China
+(n = 1010)",China,2
+Fauna,migration,"Egypt
+(n = 47)",Egypt,2
+Fauna,migration,"Japan
+(n = 85)",Japan,2
+Fauna,migration,"Turkey
+(n = 97)",Turkey,2
+Fauna,nesting,"Mexico
+(n = 98)",Mexico,2
+Fauna,nesting,"Norway
+(n = 89)",Norway,2
+Fauna,non-breeding,"Australia
+(n = 65)",Australia,2
+Fauna,non-breeding,"Poland
+(n = 117)",Poland,2
+Fauna,reproductive,"Italy
+(n = 60)",Italy,2
+Fauna,reproductive,"Poland
+(n = 117)",Poland,2
+Fauna,reproductive,"Turkey
+(n = 97)",Turkey,2
+Fauna,spawning,"Brazil
+(n = 194)",Brazil,2
+Fauna,spawning,"Chile
+(n = 35)",Chile,2
+Fauna,spawning,"Greece
+(n = 26)",Greece,2
+Fauna,spawning,"Indonesia
+(n = 27)",Indonesia,2
+Fauna,spawning,"Mexico
+(n = 98)",Mexico,2
+Fauna,spawning,"Switzerland
+(n = 49)",Switzerland,2
+Fauna,transmission,"Ethiopia
+(n = 180)",Ethiopia,2
+Flora,bloom,"Israel
+(n = 17)",Israel,2
+Flora,growing,"Anguilla
+(n = 3)",Anguilla,2
+Flora,growing,"Antarctica
+(n = 30)",Antarctica,2
+Flora,growing,"Armenia
+(n = 8)",Armenia,2
+Flora,growing,"Belgium
+(n = 4)",Belgium,2
+Flora,growing,"Bolivia
+(n = 35)",Bolivia,2
+Flora,growing,"Brazil
+(n = 194)",Brazil,2
+Flora,growing,"Greece
+(n = 26)",Greece,2
+Flora,growing,"India
+(n = 187)",India,2
+Flora,growing,"Jersey
+(n = 4)",Jersey,2
+Flora,growing,"Kazakhstan
+(n = 8)",Kazakhstan,2
+Flora,growing,"Kenya
+(n = 78)",Kenya,2
+Flora,growing,"Madagascar
+(n = 19)",Madagascar,2
+Flora,growing,"Malta
+(n = 2)",Malta,2
+Flora,growing,"Slovenia
+(n = 5)",Slovenia,2
+Flora,growing,"Svalbard
+(n = 16)",Svalbard,2
+Flora,growth,"Czech Republic
+(n = 10)",Czech Republic,2
+Flora,growth,"Germany
+(n = 50)",Germany,2
+Flora,growth,"Greenland
+(n = 87)",Greenland,2
+Flora,growth,"Italy
+(n = 60)",Italy,2
+Flora,growth,"Japan
+(n = 85)",Japan,2
+Flora,growth,"Netherlands
+(n = 30)",Netherlands,2
+Flora,growth,"Turkey
+(n = 97)",Turkey,2
+Flora,productive,"Switzerland
+(n = 49)",Switzerland,2
+Flora,vegetative,"Poland
+(n = 117)",Poland,2
+Flora,wintering,"Algeria
+(n = 11)",Algeria,2
+Flora,wintering,"France
+(n = 20)",France,2
+Hydrology,drought,"China
+(n = 1010)",China,2
+Hydrology,dry,"Botswana
+(n = 5)",Botswana,2
+Hydrology,dry,"Burkina Faso
+(n = 4)",Burkina Faso,2
+Hydrology,dry,"Dominican Republic
+(n = 2)",Dominican Republic,2
+Hydrology,dry,"Ecuador
+(n = 5)",Ecuador,2
+Hydrology,dry,"Egypt
+(n = 47)",Egypt,2
+Hydrology,dry,"France
+(n = 20)",France,2
+Hydrology,dry,"Georgia
+(n = 25)",Georgia,2
+Hydrology,dry,"Greece
+(n = 26)",Greece,2
+Hydrology,dry,"Mali
+(n = 4)",Mali,2
+Hydrology,dry,"Norway
+(n = 89)",Norway,2
+Hydrology,dry,"Russia
+(n = 79)",Russia,2
+Hydrology,dry,"Rwanda
+(n = 3)",Rwanda,2
+Hydrology,dry,"Sierra Leone
+(n = 2)",Sierra Leone,2
+Hydrology,dry,"Sri Lanka
+(n = 4)",Sri Lanka,2
+Hydrology,dry,"Timor-Leste
+(n = 2)",Timor-Leste,2
+Hydrology,flood,"Australia
+(n = 65)",Australia,2
+Hydrology,flood,"Germany
+(n = 50)",Germany,2
+Hydrology,flood,"Guinea
+(n = 6)",Guinea,2
+Hydrology,flood,"Nigeria
+(n = 34)",Nigeria,2
+Hydrology,high-flow,"Canada
+(n = 701)",Canada,2
+Hydrology,high-flow,"China
+(n = 1010)",China,2
+Hydrology,high-water,"Argentina
+(n = 45)",Argentina,2
+Hydrology,hydrological,"Bolivia
+(n = 35)",Bolivia,2
+Hydrology,hydrological,"Venezuela
+(n = 20)",Venezuela,2
+Hydrology,low-flow,"United States
+(n = 1123)",United States,2
+Hydrology,low-water,"Argentina
+(n = 45)",Argentina,2
+Hydrology,monsoon,"Chad
+(n = 28)",Chad,2
+Hydrology,monsoon,"Philippines
+(n = 26)",Philippines,2
+Hydrology,monsoon,"Thailand
+(n = 12)",Thailand,2
+Hydrology,monsoon,"United States
+(n = 1123)",United States,2
+Hydrology,post-monsoon,"Cambodia
+(n = 57)",Cambodia,2
+Hydrology,pre-monsoon,"Cambodia
+(n = 57)",Cambodia,2
+Hydrology,rainfall,"Chad
+(n = 28)",Chad,2
+Hydrology,rainfall,"Jordan
+(n = 7)",Jordan,2
+Hydrology,rainfall,"Malawi
+(n = 59)",Malawi,2
+Hydrology,rainy,"Congo (Kinshasa)
+(n = 11)",Congo (Kinshasa),2
+Hydrology,rainy,"Costa Rica
+(n = 8)",Costa Rica,2
+Hydrology,rainy,"Georgia
+(n = 25)",Georgia,2
+Hydrology,rainy,"Mali
+(n = 4)",Mali,2
+Hydrology,rainy,"Mozambique
+(n = 9)",Mozambique,2
+Hydrology,rainy,"Nicaragua
+(n = 11)",Nicaragua,2
+Hydrology,rainy,"South Korea
+(n = 16)",South Korea,2
+Hydrology,rainy,"Spain
+(n = 43)",Spain,2
+Hydrology,rainy,"Sri Lanka
+(n = 4)",Sri Lanka,2
+Hydrology,rainy,"Taiwan
+(n = 10)",Taiwan,2
+Hydrology,rainy,"Zambia
+(n = 9)",Zambia,2
+Hydrology,rainy,"Zimbabwe
+(n = 12)",Zimbabwe,2
+Hydrology,runoff,"Canada
+(n = 701)",Canada,2
+Hydrology,runoff,"Sweden
+(n = 81)",Sweden,2
+Hydrology,wet,"Bangladesh
+(n = 14)",Bangladesh,2
+Hydrology,wet,"Botswana
+(n = 5)",Botswana,2
+Hydrology,wet,"Chile
+(n = 35)",Chile,2
+Hydrology,wet,"Dominica
+(n = 3)",Dominica,2
+Hydrology,wet,"Georgia
+(n = 25)",Georgia,2
+Hydrology,wet,"Liechtenstein
+(n = 4)",Liechtenstein,2
+Hydrology,wet,"Myanmar
+(n = 5)",Myanmar,2
+Hydrology,wet,"Senegal
+(n = 13)",Senegal,2
+Hydrology,wet,"Tunisia
+(n = 13)",Tunisia,2
+Hydrology,wet,"Vietnam
+(n = 11)",Vietnam,2
+Ice/Snow,ablation,"Svalbard
+(n = 16)",Svalbard,2
+Ice/Snow,ice,"Norway
+(n = 89)",Norway,2
+Ice/Snow,ice-cover,"Finland
+(n = 100)",Finland,2
+Ice/Snow,ice-free,"Chile
+(n = 35)",Chile,2
+Ice/Snow,ice-free,"France
+(n = 20)",France,2
+Ice/Snow,ice-free,"Slovakia
+(n = 6)",Slovakia,2
+Ice/Snow,ice-free,"Svalbard
+(n = 16)",Svalbard,2
+Ice/Snow,melt,"China
+(n = 1010)",China,2
+Ice/Snow,melt,"Sweden
+(n = 81)",Sweden,2
+Ice/Snow,open-water,"China
+(n = 1010)",China,2
+Ice/Snow,open-water,"Norway
+(n = 89)",Norway,2
+Ice/Snow,snow-free,"Italy
+(n = 60)",Italy,2
+Ice/Snow,thaw,"Antarctica
+(n = 30)",Antarctica,2
+Ice/Snow,thawing,"China
+(n = 1010)",China,2
+Ice/Snow,thawing,"United States
+(n = 1123)",United States,2
+Research,field,"Greece
+(n = 26)",Greece,2
+Research,field,"Sweden
+(n = 81)",Sweden,2
+Research,field,"Tanzania
+(n = 65)",Tanzania,2
+Research,sampling,"Argentina
+(n = 45)",Argentina,2
+Research,sampling,"Chile
+(n = 35)",Chile,2
+Research,sampling,"Croatia
+(n = 14)",Croatia,2
+Research,sampling,"Ethiopia
+(n = 180)",Ethiopia,2
+Research,sampling,"Norway
+(n = 89)",Norway,2
+Research,sampling,"Philippines
+(n = 26)",Philippines,2
+Research,sampling,"Sweden
+(n = 81)",Sweden,2
+Research,sampling,"Switzerland
+(n = 49)",Switzerland,2
+Stratification,stratified,"Japan
+(n = 85)",Japan,2
+Temperate,autumn,"Egypt
+(n = 47)",Egypt,2
+Temperate,autumn,"Germany
+(n = 50)",Germany,2
+Temperate,autumn,"India
+(n = 187)",India,2
+Temperate,autumn,"Iran
+(n = 35)",Iran,2
+Temperate,autumn,"Iraq
+(n = 8)",Iraq,2
+Temperate,autumn,"Spain
+(n = 43)",Spain,2
+Temperate,spring,"Egypt
+(n = 47)",Egypt,2
+Temperate,spring,"India
+(n = 187)",India,2
+Temperate,spring,"Norway
+(n = 89)",Norway,2
+Temperate,spring,"Pakistan
+(n = 16)",Pakistan,2
+Temperate,spring,"Poland
+(n = 117)",Poland,2
+Temperate,spring,"Russia
+(n = 79)",Russia,2
+Temperate,summer,"Argentina
+(n = 45)",Argentina,2
+Temperate,summer,"Australia
+(n = 65)",Australia,2
+Temperate,summer,"Austria
+(n = 15)",Austria,2
+Temperate,summer,"Chile
+(n = 35)",Chile,2
+Temperate,summer,"Croatia
+(n = 14)",Croatia,2
+Temperate,summer,"Nepal
+(n = 30)",Nepal,2
+Temperate,summer,"Romania
+(n = 16)",Romania,2
+Temperate,summer,"South Korea
+(n = 16)",South Korea,2
+Temperate,winter,"Australia
+(n = 65)",Australia,2
+Temperate,winter,"Denmark
+(n = 14)",Denmark,2
+Temperate,winter,"Ethiopia
+(n = 180)",Ethiopia,2
+Temperate,winter,"Israel
+(n = 17)",Israel,2
+Temperate,winter,"Spain
+(n = 43)",Spain,2
+Temperature,cold,"Austria
+(n = 15)",Austria,2
+Temperature,cold,"Iceland
+(n = 10)",Iceland,2
+Temperature,cold,"Mongolia
+(n = 17)",Mongolia,2
+Temperature,colder,"China
+(n = 1010)",China,2
+Temperature,cool,"Armenia
+(n = 8)",Armenia,2
+Temperature,cool,"Australia
+(n = 65)",Australia,2
+Temperature,heating,"Canada
+(n = 701)",Canada,2
+Temperature,hot,"Morocco
+(n = 9)",Morocco,2
+Temperature,warm,"Georgia
+(n = 25)",Georgia,2
+Temperature,warm,"Hungary
+(n = 13)",Hungary,2
+Temperature,warm,"Iran
+(n = 35)",Iran,2
+Temperature,warm,"Lithuania
+(n = 5)",Lithuania,2
+Temperature,warm,"Malawi
+(n = 59)",Malawi,2
+Temperature,warmer,"Japan
+(n = 85)",Japan,2
+Temperature,warmer,"Switzerland
+(n = 49)",Switzerland,2
+Temperature,warmer,"United States
+(n = 1123)",United States,2
+Agriculture,crop,"Ethiopia
+(n = 180)",Ethiopia,1
+Agriculture,crop,"Uganda
+(n = 44)",Uganda,1
+Agriculture,crop,"United States
+(n = 1123)",United States,1
+Agriculture,cropping,"Australia
+(n = 65)",Australia,1
+Agriculture,cropping,"Cambodia
+(n = 57)",Cambodia,1
+Agriculture,cropping,"China
+(n = 1010)",China,1
+Agriculture,cropping,"Greece
+(n = 26)",Greece,1
+Agriculture,cropping,"Madagascar
+(n = 19)",Madagascar,1
+Agriculture,cropping,"Malawi
+(n = 59)",Malawi,1
+Agriculture,cropping,"Sweden
+(n = 81)",Sweden,1
+Agriculture,cropping,"Tanzania
+(n = 65)",Tanzania,1
+Agriculture,cropping,"Uganda
+(n = 44)",Uganda,1
+Agriculture,cropping,"Zambia
+(n = 9)",Zambia,1
+Agriculture,farming,"Tanzania
+(n = 65)",Tanzania,1
+Agriculture,farming,"Thailand
+(n = 12)",Thailand,1
+Agriculture,harvest,"Ethiopia
+(n = 180)",Ethiopia,1
+Agriculture,harvest,"Iceland
+(n = 10)",Iceland,1
+Agriculture,harvest,"Italy
+(n = 60)",Italy,1
+Agriculture,harvest,"New Zealand
+(n = 12)",New Zealand,1
+Agriculture,harvest,"Norway
+(n = 89)",Norway,1
+Agriculture,harvest,"Switzerland
+(n = 49)",Switzerland,1
+Agriculture,irrigation,"Australia
+(n = 65)",Australia,1
+Agriculture,irrigation,"Chile
+(n = 35)",Chile,1
+Agriculture,irrigation,"China
+(n = 1010)",China,1
+Agriculture,irrigation,"Iran
+(n = 35)",Iran,1
+Agriculture,irrigation,"Italy
+(n = 60)",Italy,1
+Agriculture,irrigation,"Japan
+(n = 85)",Japan,1
+Agriculture,planting,"Kenya
+(n = 78)",Kenya,1
+Agriculture,planting,"Uganda
+(n = 44)",Uganda,1
+Agriculture,rice,"Saint Lucia
+(n = 2)",Saint Lucia,1
+Economic,angling,"Ireland
+(n = 11)",Ireland,1
+Economic,angling,"Japan
+(n = 85)",Japan,1
+Economic,bathing,"Belgium
+(n = 4)",Belgium,1
+Economic,bathing,"Canada
+(n = 701)",Canada,1
+Economic,bathing,"Germany
+(n = 50)",Germany,1
+Economic,bathing,"Hong Kong
+(n = 1)",Hong Kong,1
+Economic,bathing,"Israel
+(n = 17)",Israel,1
+Economic,bathing,"Romania
+(n = 16)",Romania,1
+Economic,bathing,"Slovakia
+(n = 6)",Slovakia,1
+Economic,bathing,"Switzerland
+(n = 49)",Switzerland,1
+Economic,bathing,"United Kingdom
+(n = 25)",United Kingdom,1
+Economic,closed,"Bangladesh
+(n = 14)",Bangladesh,1
+Economic,closed,"China
+(n = 1010)",China,1
+Economic,closed,"Mexico
+(n = 98)",Mexico,1
+Economic,closed,"Mozambique
+(n = 9)",Mozambique,1
+Economic,closed,"Tanzania
+(n = 65)",Tanzania,1
+Economic,fishing,"Argentina
+(n = 45)",Argentina,1
+Economic,fishing,"Bangladesh
+(n = 14)",Bangladesh,1
+Economic,fishing,"Bosnia and Herzegovina
+(n = 3)",Bosnia and Herzegovina,1
+Economic,fishing,"Chile
+(n = 35)",Chile,1
+Economic,fishing,"Egypt
+(n = 47)",Egypt,1
+Economic,fishing,"Georgia
+(n = 25)",Georgia,1
+Economic,fishing,"Ghana
+(n = 16)",Ghana,1
+Economic,fishing,"India
+(n = 187)",India,1
+Economic,fishing,"Indonesia
+(n = 27)",Indonesia,1
+Economic,fishing,"Madagascar
+(n = 19)",Madagascar,1
+Economic,fishing,"United Kingdom
+(n = 25)",United Kingdom,1
+Economic,fishing,"Zambia
+(n = 9)",Zambia,1
+Economic,hunting,"Australia
+(n = 65)",Australia,1
+Economic,hunting,"Finland
+(n = 100)",Finland,1
+Economic,hunting,"Guam
+(n = 1)",Guam,1
+Economic,hunting,"Norway
+(n = 89)",Norway,1
+Economic,hunting,"Poland
+(n = 117)",Poland,1
+Economic,swimming,"Poland
+(n = 117)",Poland,1
+Economic,swimming,"Serbia
+(n = 2)",Serbia,1
+Economic,tourist,"Croatia
+(n = 14)",Croatia,1
+Economic,tourist,"France
+(n = 20)",France,1
+Economic,tourist,"Germany
+(n = 50)",Germany,1
+Economic,tourist,"India
+(n = 187)",India,1
+Economic,tourist,"Poland
+(n = 117)",Poland,1
+Economic,trapping,"Italy
+(n = 60)",Italy,1
+Economic,trapping,"Turkey
+(n = 97)",Turkey,1
+Fauna,active,"Georgia
+(n = 25)",Georgia,1
+Fauna,active,"Russia
+(n = 79)",Russia,1
+Fauna,active,"Sweden
+(n = 81)",Sweden,1
+Fauna,breeding,"Albania
+(n = 2)",Albania,1
+Fauna,breeding,"Bolivia
+(n = 35)",Bolivia,1
+Fauna,breeding,"Burundi
+(n = 4)",Burundi,1
+Fauna,breeding,"Chad
+(n = 28)",Chad,1
+Fauna,breeding,"Denmark
+(n = 14)",Denmark,1
+Fauna,breeding,"Djibouti
+(n = 1)",Djibouti,1
+Fauna,breeding,"Egypt
+(n = 47)",Egypt,1
+Fauna,breeding,"Greenland
+(n = 87)",Greenland,1
+Fauna,breeding,"Ireland
+(n = 11)",Ireland,1
+Fauna,breeding,"Israel
+(n = 17)",Israel,1
+Fauna,breeding,"Jersey
+(n = 4)",Jersey,1
+Fauna,breeding,"Jordan
+(n = 7)",Jordan,1
+Fauna,breeding,"Latvia
+(n = 1)",Latvia,1
+Fauna,breeding,"Mongolia
+(n = 17)",Mongolia,1
+Fauna,breeding,"Montenegro
+(n = 4)",Montenegro,1
+Fauna,breeding,"Nepal
+(n = 30)",Nepal,1
+Fauna,breeding,"New Zealand
+(n = 12)",New Zealand,1
+Fauna,breeding,"Niger
+(n = 6)",Niger,1
+Fauna,breeding,"Panama
+(n = 19)",Panama,1
+Fauna,breeding,"Slovenia
+(n = 5)",Slovenia,1
+Fauna,breeding,"Tanzania
+(n = 65)",Tanzania,1
+Fauna,breeding,"The Bahamas
+(n = 2)",The Bahamas,1
+Fauna,breeding,"Tunisia
+(n = 13)",Tunisia,1
+Fauna,breeding,"Zimbabwe
+(n = 12)",Zimbabwe,1
+Fauna,mating,"Brazil
+(n = 194)",Brazil,1
+Fauna,mating,"Greece
+(n = 26)",Greece,1
+Fauna,mating,"Ireland
+(n = 11)",Ireland,1
+Fauna,mating,"Sweden
+(n = 81)",Sweden,1
+Fauna,migration,"Anguilla
+(n = 3)",Anguilla,1
+Fauna,migration,"Canada
+(n = 701)",Canada,1
+Fauna,migration,"Iceland
+(n = 10)",Iceland,1
+Fauna,migration,"Mongolia
+(n = 17)",Mongolia,1
+Fauna,migration,"Myanmar
+(n = 5)",Myanmar,1
+Fauna,migration,"Norway
+(n = 89)",Norway,1
+Fauna,migration,"Russia
+(n = 79)",Russia,1
+Fauna,migratory,"Anguilla
+(n = 3)",Anguilla,1
+Fauna,migratory,"Italy
+(n = 60)",Italy,1
+Fauna,migratory,"United States
+(n = 1123)",United States,1
+Fauna,nesting,"Brazil
+(n = 194)",Brazil,1
+Fauna,nesting,"Finland
+(n = 100)",Finland,1
+Fauna,nesting,"Georgia
+(n = 25)",Georgia,1
+Fauna,nesting,"Italy
+(n = 60)",Italy,1
+Fauna,nesting,"Panama
+(n = 19)",Panama,1
+Fauna,non-breeding,"Argentina
+(n = 45)",Argentina,1
+Fauna,non-breeding,"Cambodia
+(n = 57)",Cambodia,1
+Fauna,non-breeding,"Chad
+(n = 28)",Chad,1
+Fauna,non-breeding,"China
+(n = 1010)",China,1
+Fauna,non-breeding,"Dominica
+(n = 3)",Dominica,1
+Fauna,non-breeding,"Ethiopia
+(n = 180)",Ethiopia,1
+Fauna,non-breeding,"Mongolia
+(n = 17)",Mongolia,1
+Fauna,non-breeding,"Norway
+(n = 89)",Norway,1
+Fauna,non-breeding,"Switzerland
+(n = 49)",Switzerland,1
+Fauna,non-breeding,"Turkey
+(n = 97)",Turkey,1
+Fauna,reproductive,"Argentina
+(n = 45)",Argentina,1
+Fauna,reproductive,"Chile
+(n = 35)",Chile,1
+Fauna,reproductive,"China
+(n = 1010)",China,1
+Fauna,reproductive,"Finland
+(n = 100)",Finland,1
+Fauna,reproductive,"Greece
+(n = 26)",Greece,1
+Fauna,reproductive,"Indonesia
+(n = 27)",Indonesia,1
+Fauna,reproductive,"Iran
+(n = 35)",Iran,1
+Fauna,reproductive,"Israel
+(n = 17)",Israel,1
+Fauna,reproductive,"Lithuania
+(n = 5)",Lithuania,1
+Fauna,reproductive,"Mexico
+(n = 98)",Mexico,1
+Fauna,reproductive,"Slovakia
+(n = 6)",Slovakia,1
+Fauna,reproductive,"South Africa
+(n = 14)",South Africa,1
+Fauna,reproductive,"Tanzania
+(n = 65)",Tanzania,1
+Fauna,reproductive,"United Kingdom
+(n = 25)",United Kingdom,1
+Fauna,spawning,"Armenia
+(n = 8)",Armenia,1
+Fauna,spawning,"Bangladesh
+(n = 14)",Bangladesh,1
+Fauna,spawning,"Bermuda
+(n = 1)",Bermuda,1
+Fauna,spawning,"Comoros
+(n = 2)",Comoros,1
+Fauna,spawning,"Congo (Kinshasa)
+(n = 11)",Congo (Kinshasa),1
+Fauna,spawning,"Cuba
+(n = 3)",Cuba,1
+Fauna,spawning,"Czech Republic
+(n = 10)",Czech Republic,1
+Fauna,spawning,"Estonia
+(n = 14)",Estonia,1
+Fauna,spawning,"Ghana
+(n = 16)",Ghana,1
+Fauna,spawning,"Hungary
+(n = 13)",Hungary,1
+Fauna,spawning,"Italy
+(n = 60)",Italy,1
+Fauna,spawning,"Kenya
+(n = 78)",Kenya,1
+Fauna,spawning,"Malawi
+(n = 59)",Malawi,1
+Fauna,spawning,"Mongolia
+(n = 17)",Mongolia,1
+Fauna,spawning,"Netherlands
+(n = 30)",Netherlands,1
+Fauna,spawning,"New Zealand
+(n = 12)",New Zealand,1
+Fauna,spawning,"Nicaragua
+(n = 11)",Nicaragua,1
+Fauna,spawning,"Niger
+(n = 6)",Niger,1
+Fauna,spawning,"Nigeria
+(n = 34)",Nigeria,1
+Fauna,spawning,"Philippines
+(n = 26)",Philippines,1
+Fauna,spawning,"United Kingdom
+(n = 25)",United Kingdom,1
+Fauna,transmission,"Greece
+(n = 26)",Greece,1
+Fauna,transmission,"Mali
+(n = 4)",Mali,1
+Fauna,transmission,"Zambia
+(n = 9)",Zambia,1
+Flora,bloom,"Algeria
+(n = 11)",Algeria,1
+Flora,bloom,"Canada
+(n = 701)",Canada,1
+Flora,bloom,"Chile
+(n = 35)",Chile,1
+Flora,bloom,"Finland
+(n = 100)",Finland,1
+Flora,bloom,"Italy
+(n = 60)",Italy,1
+Flora,bloom,"Japan
+(n = 85)",Japan,1
+Flora,bloom,"Mozambique
+(n = 9)",Mozambique,1
+Flora,blooming,"Japan
+(n = 85)",Japan,1
+Flora,blooming,"Turkey
+(n = 97)",Turkey,1
+Flora,dormant,"Canada
+(n = 701)",Canada,1
+Flora,dormant,"Finland
+(n = 100)",Finland,1
+Flora,dormant,"Georgia
+(n = 25)",Georgia,1
+Flora,fire,"China
+(n = 1010)",China,1
+Flora,fire,"France
+(n = 20)",France,1
+Flora,fire,"New Zealand
+(n = 12)",New Zealand,1
+Flora,growing,"Bulgaria
+(n = 3)",Bulgaria,1
+Flora,growing,"Croatia
+(n = 14)",Croatia,1
+Flora,growing,"Ecuador
+(n = 5)",Ecuador,1
+Flora,growing,"Iceland
+(n = 10)",Iceland,1
+Flora,growing,"Iraq
+(n = 8)",Iraq,1
+Flora,growing,"Israel
+(n = 17)",Israel,1
+Flora,growing,"Kyrgyzstan
+(n = 4)",Kyrgyzstan,1
+Flora,growing,"Liechtenstein
+(n = 4)",Liechtenstein,1
+Flora,growing,"Namibia
+(n = 6)",Namibia,1
+Flora,growing,"Panama
+(n = 19)",Panama,1
+Flora,growing,"Saint Lucia
+(n = 2)",Saint Lucia,1
+Flora,growing,"Somalia
+(n = 1)",Somalia,1
+Flora,growing,"South Africa
+(n = 14)",South Africa,1
+Flora,growing,"South Korea
+(n = 16)",South Korea,1
+Flora,growing,"Sri Lanka
+(n = 4)",Sri Lanka,1
+Flora,growing,"Suriname
+(n = 3)",Suriname,1
+Flora,growing,"Taiwan
+(n = 10)",Taiwan,1
+Flora,growing,"Tonga
+(n = 1)",Tonga,1
+Flora,growing,"Uganda
+(n = 44)",Uganda,1
+Flora,growing,"Venezuela
+(n = 20)",Venezuela,1
+Flora,growth,"Antarctica
+(n = 30)",Antarctica,1
+Flora,growth,"Belgium
+(n = 4)",Belgium,1
+Flora,growth,"Egypt
+(n = 47)",Egypt,1
+Flora,growth,"England
+(n = 5)",England,1
+Flora,growth,"Estonia
+(n = 14)",Estonia,1
+Flora,growth,"Georgia
+(n = 25)",Georgia,1
+Flora,growth,"Greece
+(n = 26)",Greece,1
+Flora,growth,"India
+(n = 187)",India,1
+Flora,growth,"Ireland
+(n = 11)",Ireland,1
+Flora,growth,"Israel
+(n = 17)",Israel,1
+Flora,growth,"Svalbard
+(n = 16)",Svalbard,1
+Flora,growth,"Tunisia
+(n = 13)",Tunisia,1
+Flora,non-growing,"Czech Republic
+(n = 10)",Czech Republic,1
+Flora,non-growing,"Liechtenstein
+(n = 4)",Liechtenstein,1
+Flora,non-growing,"Mexico
+(n = 98)",Mexico,1
+Flora,productive,"China
+(n = 1010)",China,1
+Flora,productive,"Estonia
+(n = 14)",Estonia,1
+Flora,productive,"Georgia
+(n = 25)",Georgia,1
+Flora,productive,"India
+(n = 187)",India,1
+Flora,productive,"Japan
+(n = 85)",Japan,1
+Flora,productive,"Russia
+(n = 79)",Russia,1
+Flora,vegetation,"Croatia
+(n = 14)",Croatia,1
+Flora,vegetation,"Czech Republic
+(n = 10)",Czech Republic,1
+Flora,vegetation,"Serbia
+(n = 2)",Serbia,1
+Flora,vegetation,"Slovakia
+(n = 6)",Slovakia,1
+Flora,vegetation,"Slovenia
+(n = 5)",Slovenia,1
+Flora,vegetation,"Spain
+(n = 43)",Spain,1
+Flora,vegetation,"Sweden
+(n = 81)",Sweden,1
+Flora,vegetation,"Switzerland
+(n = 49)",Switzerland,1
+Flora,vegetation,"Ukraine
+(n = 2)",Ukraine,1
+Flora,vegetative,"Belarus
+(n = 2)",Belarus,1
+Flora,vegetative,"Congo (Kinshasa)
+(n = 11)",Congo (Kinshasa),1
+Flora,vegetative,"Czech Republic
+(n = 10)",Czech Republic,1
+Flora,vegetative,"Niger
+(n = 6)",Niger,1
+Flora,vegetative,"Norway
+(n = 89)",Norway,1
+Flora,vegetative,"Russia
+(n = 79)",Russia,1
+Flora,vegetative,"United States
+(n = 1123)",United States,1
+Flora,wintering,"Canada
+(n = 701)",Canada,1
+Flora,wintering,"Morocco
+(n = 9)",Morocco,1
+Hydrology,drought,"Egypt
+(n = 47)",Egypt,1
+Hydrology,drought,"Mexico
+(n = 98)",Mexico,1
+Hydrology,drought,"Turkey
+(n = 97)",Turkey,1
+Hydrology,dry,"Algeria
+(n = 11)",Algeria,1
+Hydrology,dry,"Armenia
+(n = 8)",Armenia,1
+Hydrology,dry,"Cuba
+(n = 3)",Cuba,1
+Hydrology,dry,"Czech Republic
+(n = 10)",Czech Republic,1
+Hydrology,dry,"Dominica
+(n = 3)",Dominica,1
+Hydrology,dry,"El Salvador
+(n = 1)",El Salvador,1
+Hydrology,dry,"Gabon
+(n = 2)",Gabon,1
+Hydrology,dry,"Iraq
+(n = 8)",Iraq,1
+Hydrology,dry,"Japan
+(n = 85)",Japan,1
+Hydrology,dry,"Laos
+(n = 1)",Laos,1
+Hydrology,dry,"Liechtenstein
+(n = 4)",Liechtenstein,1
+Hydrology,dry,"Mayotte
+(n = 1)",Mayotte,1
+Hydrology,dry,"Morocco
+(n = 9)",Morocco,1
+Hydrology,dry,"Namibia
+(n = 6)",Namibia,1
+Hydrology,dry,"Nepal
+(n = 30)",Nepal,1
+Hydrology,dry,"Niger
+(n = 6)",Niger,1
+Hydrology,dry,"North Korea
+(n = 1)",North Korea,1
+Hydrology,dry,"Pakistan
+(n = 16)",Pakistan,1
+Hydrology,dry,"Poland
+(n = 117)",Poland,1
+Hydrology,dry,"Romania
+(n = 16)",Romania,1
+Hydrology,dry,"Slovakia
+(n = 6)",Slovakia,1
+Hydrology,dry,"Slovenia
+(n = 5)",Slovenia,1
+Hydrology,dry,"Sweden
+(n = 81)",Sweden,1
+Hydrology,dry,"Syria
+(n = 1)",Syria,1
+Hydrology,dry,"The Bahamas
+(n = 2)",The Bahamas,1
+Hydrology,dry,"United Kingdom
+(n = 25)",United Kingdom,1
+Hydrology,flood,"Benin
+(n = 10)",Benin,1
+Hydrology,flood,"Botswana
+(n = 5)",Botswana,1
+Hydrology,flood,"Brazil
+(n = 194)",Brazil,1
+Hydrology,flood,"Cambodia
+(n = 57)",Cambodia,1
+Hydrology,flood,"Georgia
+(n = 25)",Georgia,1
+Hydrology,flood,"Ghana
+(n = 16)",Ghana,1
+Hydrology,flood,"Iran
+(n = 35)",Iran,1
+Hydrology,flood,"Japan
+(n = 85)",Japan,1
+Hydrology,flood,"Mexico
+(n = 98)",Mexico,1
+Hydrology,flood,"Sudan
+(n = 3)",Sudan,1
+Hydrology,flood,"Switzerland
+(n = 49)",Switzerland,1
+Hydrology,flood,"Taiwan
+(n = 10)",Taiwan,1
+Hydrology,flood,"United States
+(n = 1123)",United States,1
+Hydrology,flood,"Wallis and Futuna
+(n = 1)",Wallis and Futuna,1
+Hydrology,flooding,"Argentina
+(n = 45)",Argentina,1
+Hydrology,flooding,"Benin
+(n = 10)",Benin,1
+Hydrology,flooding,"Brazil
+(n = 194)",Brazil,1
+Hydrology,flooding,"Egypt
+(n = 47)",Egypt,1
+Hydrology,flooding,"Ireland
+(n = 11)",Ireland,1
+Hydrology,flooding,"Norway
+(n = 89)",Norway,1
+Hydrology,high-flow,"Cambodia
+(n = 57)",Cambodia,1
+Hydrology,high-flow,"Egypt
+(n = 47)",Egypt,1
+Hydrology,high-flow,"Ethiopia
+(n = 180)",Ethiopia,1
+Hydrology,high-flow,"Germany
+(n = 50)",Germany,1
+Hydrology,high-water,"Bolivia
+(n = 35)",Bolivia,1
+Hydrology,high-water,"Colombia
+(n = 12)",Colombia,1
+Hydrology,high-water,"Iran
+(n = 35)",Iran,1
+Hydrology,high-water,"United Kingdom
+(n = 25)",United Kingdom,1
+Hydrology,hydrological,"Argentina
+(n = 45)",Argentina,1
+Hydrology,hydrological,"Canada
+(n = 701)",Canada,1
+Hydrology,hydrological,"Colombia
+(n = 12)",Colombia,1
+Hydrology,hydrological,"Croatia
+(n = 14)",Croatia,1
+Hydrology,hydrological,"India
+(n = 187)",India,1
+Hydrology,hydrological,"Mali
+(n = 4)",Mali,1
+Hydrology,hydrological,"Mongolia
+(n = 17)",Mongolia,1
+Hydrology,hydrological,"Russia
+(n = 79)",Russia,1
+Hydrology,low-flow,"Australia
+(n = 65)",Australia,1
+Hydrology,low-flow,"Cambodia
+(n = 57)",Cambodia,1
+Hydrology,low-flow,"China
+(n = 1010)",China,1
+Hydrology,low-flow,"Ethiopia
+(n = 180)",Ethiopia,1
+Hydrology,low-flow,"Finland
+(n = 100)",Finland,1
+Hydrology,low-flow,"Greece
+(n = 26)",Greece,1
+Hydrology,low-flow,"Japan
+(n = 85)",Japan,1
+Hydrology,low-flow,"Norway
+(n = 89)",Norway,1
+Hydrology,low-water,"Bolivia
+(n = 35)",Bolivia,1
+Hydrology,low-water,"Colombia
+(n = 12)",Colombia,1
+Hydrology,low-water,"Congo (Kinshasa)
+(n = 11)",Congo (Kinshasa),1
+Hydrology,low-water,"Iran
+(n = 35)",Iran,1
+Hydrology,low-water,"Mexico
+(n = 98)",Mexico,1
+Hydrology,low-water,"Russia
+(n = 79)",Russia,1
+Hydrology,monsoon,"Australia
+(n = 65)",Australia,1
+Hydrology,monsoon,"Cameroon
+(n = 24)",Cameroon,1
+Hydrology,monsoon,"Chile
+(n = 35)",Chile,1
+Hydrology,monsoon,"Namibia
+(n = 6)",Namibia,1
+Hydrology,monsoon,"Singapore
+(n = 1)",Singapore,1
+Hydrology,monsoon,"Vietnam
+(n = 11)",Vietnam,1
+Hydrology,non-flood,"Wallis and Futuna
+(n = 1)",Wallis and Futuna,1
+Hydrology,non-monsoon,"China
+(n = 1010)",China,1
+Hydrology,post-monsoon,"Chad
+(n = 28)",Chad,1
+Hydrology,post-monsoon,"China
+(n = 1010)",China,1
+Hydrology,post-monsoon,"Congo (Kinshasa)
+(n = 11)",Congo (Kinshasa),1
+Hydrology,post-rainy,"Argentina
+(n = 45)",Argentina,1
+Hydrology,post-rainy,"Chad
+(n = 28)",Chad,1
+Hydrology,post-rainy,"India
+(n = 187)",India,1
+Hydrology,rainfall,"Australia
+(n = 65)",Australia,1
+Hydrology,rainfall,"Bolivia
+(n = 35)",Bolivia,1
+Hydrology,rainfall,"Canada
+(n = 701)",Canada,1
+Hydrology,rainfall,"China
+(n = 1010)",China,1
+Hydrology,rainfall,"Iraq
+(n = 8)",Iraq,1
+Hydrology,rainfall,"Japan
+(n = 85)",Japan,1
+Hydrology,rainfall,"Kenya
+(n = 78)",Kenya,1
+Hydrology,rainfall,"Mexico
+(n = 98)",Mexico,1
+Hydrology,rainfall,"Uganda
+(n = 44)",Uganda,1
+Hydrology,rainy,"Armenia
+(n = 8)",Armenia,1
+Hydrology,rainy,"Australia
+(n = 65)",Australia,1
+Hydrology,rainy,"Botswana
+(n = 5)",Botswana,1
+Hydrology,rainy,"Burundi
+(n = 4)",Burundi,1
+Hydrology,rainy,"Canada
+(n = 701)",Canada,1
+Hydrology,rainy,"Croatia
+(n = 14)",Croatia,1
+Hydrology,rainy,"Cuba
+(n = 3)",Cuba,1
+Hydrology,rainy,"Egypt
+(n = 47)",Egypt,1
+Hydrology,rainy,"Gabon
+(n = 2)",Gabon,1
+Hydrology,rainy,"Guinea
+(n = 6)",Guinea,1
+Hydrology,rainy,"Hungary
+(n = 13)",Hungary,1
+Hydrology,rainy,"Iran
+(n = 35)",Iran,1
+Hydrology,rainy,"Iraq
+(n = 8)",Iraq,1
+Hydrology,rainy,"Italy
+(n = 60)",Italy,1
+Hydrology,rainy,"Kyrgyzstan
+(n = 4)",Kyrgyzstan,1
+Hydrology,rainy,"Myanmar
+(n = 5)",Myanmar,1
+Hydrology,rainy,"Namibia
+(n = 6)",Namibia,1
+Hydrology,rainy,"Nepal
+(n = 30)",Nepal,1
+Hydrology,rainy,"Niger
+(n = 6)",Niger,1
+Hydrology,rainy,"Norway
+(n = 89)",Norway,1
+Hydrology,rainy,"Paraguay
+(n = 1)",Paraguay,1
+Hydrology,rainy,"Russia
+(n = 79)",Russia,1
+Hydrology,rainy,"Sierra Leone
+(n = 2)",Sierra Leone,1
+Hydrology,rainy,"United Kingdom
+(n = 25)",United Kingdom,1
+Hydrology,wet,"Albania
+(n = 2)",Albania,1
+Hydrology,wet,"Armenia
+(n = 8)",Armenia,1
+Hydrology,wet,"British Indian Ocean Territory
+(n = 1)",British Indian Ocean Territory,1
+Hydrology,wet,"Cameroon
+(n = 24)",Cameroon,1
+Hydrology,wet,"Canada
+(n = 701)",Canada,1
+Hydrology,wet,"Congo (Kinshasa)
+(n = 11)",Congo (Kinshasa),1
+Hydrology,wet,"Cuba
+(n = 3)",Cuba,1
+Hydrology,wet,"Dominican Republic
+(n = 2)",Dominican Republic,1
+Hydrology,wet,"Ecuador
+(n = 5)",Ecuador,1
+Hydrology,wet,"Egypt
+(n = 47)",Egypt,1
+Hydrology,wet,"Guatemala
+(n = 7)",Guatemala,1
+Hydrology,wet,"Guinea
+(n = 6)",Guinea,1
+Hydrology,wet,"Iraq
+(n = 8)",Iraq,1
+Hydrology,wet,"Israel
+(n = 17)",Israel,1
+Hydrology,wet,"Italy
+(n = 60)",Italy,1
+Hydrology,wet,"Madagascar
+(n = 19)",Madagascar,1
+Hydrology,wet,"Mali
+(n = 4)",Mali,1
+Hydrology,wet,"Morocco
+(n = 9)",Morocco,1
+Hydrology,wet,"Nicaragua
+(n = 11)",Nicaragua,1
+Hydrology,wet,"Norway
+(n = 89)",Norway,1
+Hydrology,wet,"Pakistan
+(n = 16)",Pakistan,1
+Hydrology,wet,"Poland
+(n = 117)",Poland,1
+Hydrology,wet,"Portugal
+(n = 3)",Portugal,1
+Hydrology,wet,"Rwanda
+(n = 3)",Rwanda,1
+Hydrology,wet,"Saudi Arabia
+(n = 2)",Saudi Arabia,1
+Hydrology,wet,"Sierra Leone
+(n = 2)",Sierra Leone,1
+Hydrology,wet,"Sri Lanka
+(n = 4)",Sri Lanka,1
+Hydrology,wet,"Syria
+(n = 1)",Syria,1
+Hydrology,wet,"Thailand
+(n = 12)",Thailand,1
+Ice/Snow,ablation,"Antarctica
+(n = 30)",Antarctica,1
+Ice/Snow,ablation,"India
+(n = 187)",India,1
+Ice/Snow,ablation,"Italy
+(n = 60)",Italy,1
+Ice/Snow,ablation,"Switzerland
+(n = 49)",Switzerland,1
+Ice/Snow,ablation,"United Kingdom
+(n = 25)",United Kingdom,1
+Ice/Snow,ice,"Antarctica
+(n = 30)",Antarctica,1
+Ice/Snow,ice,"Mongolia
+(n = 17)",Mongolia,1
+Ice/Snow,ice,"Russia
+(n = 79)",Russia,1
+Ice/Snow,ice,"Sweden
+(n = 81)",Sweden,1
+Ice/Snow,ice-cover,"Italy
+(n = 60)",Italy,1
+Ice/Snow,ice-cover,"Norway
+(n = 89)",Norway,1
+Ice/Snow,ice-free,"Bosnia and Herzegovina
+(n = 3)",Bosnia and Herzegovina,1
+Ice/Snow,ice-free,"Croatia
+(n = 14)",Croatia,1
+Ice/Snow,ice-free,"Estonia
+(n = 14)",Estonia,1
+Ice/Snow,ice-free,"Iceland
+(n = 10)",Iceland,1
+Ice/Snow,ice-free,"Jamaica
+(n = 2)",Jamaica,1
+Ice/Snow,ice-free,"Lithuania
+(n = 5)",Lithuania,1
+Ice/Snow,ice-free,"Luxembourg
+(n = 1)",Luxembourg,1
+Ice/Snow,ice-free,"Nepal
+(n = 30)",Nepal,1
+Ice/Snow,ice-free,"New Zealand
+(n = 12)",New Zealand,1
+Ice/Snow,ice-free,"Philippines
+(n = 26)",Philippines,1
+Ice/Snow,ice-free,"Turkey
+(n = 97)",Turkey,1
+Ice/Snow,melt,"Austria
+(n = 15)",Austria,1
+Ice/Snow,melt,"Chile
+(n = 35)",Chile,1
+Ice/Snow,melt,"Germany
+(n = 50)",Germany,1
+Ice/Snow,melt,"Italy
+(n = 60)",Italy,1
+Ice/Snow,melt,"Japan
+(n = 85)",Japan,1
+Ice/Snow,melt,"New Zealand
+(n = 12)",New Zealand,1
+Ice/Snow,melt,"Norway
+(n = 89)",Norway,1
+Ice/Snow,melting,"Canada
+(n = 701)",Canada,1
+Ice/Snow,melting,"Chile
+(n = 35)",Chile,1
+Ice/Snow,melting,"China
+(n = 1010)",China,1
+Ice/Snow,melting,"Germany
+(n = 50)",Germany,1
+Ice/Snow,melting,"India
+(n = 187)",India,1
+Ice/Snow,melting,"Pakistan
+(n = 16)",Pakistan,1
+Ice/Snow,melting,"Russia
+(n = 79)",Russia,1
+Ice/Snow,melting,"Switzerland
+(n = 49)",Switzerland,1
+Ice/Snow,open-water,"Denmark
+(n = 14)",Denmark,1
+Ice/Snow,open-water,"France
+(n = 20)",France,1
+Ice/Snow,open-water,"India
+(n = 187)",India,1
+Ice/Snow,open-water,"Jamaica
+(n = 2)",Jamaica,1
+Ice/Snow,open-water,"Suriname
+(n = 3)",Suriname,1
+Ice/Snow,open-water,"Switzerland
+(n = 49)",Switzerland,1
+Ice/Snow,snow,"China
+(n = 1010)",China,1
+Ice/Snow,snow,"France
+(n = 20)",France,1
+Ice/Snow,snow,"Japan
+(n = 85)",Japan,1
+Ice/Snow,snow,"Norway
+(n = 89)",Norway,1
+Ice/Snow,snow-free,"Spain
+(n = 43)",Spain,1
+Ice/Snow,snowmelt,"Italy
+(n = 60)",Italy,1
+Ice/Snow,snowmelt,"Japan
+(n = 85)",Japan,1
+Ice/Snow,snowmelt,"Russia
+(n = 79)",Russia,1
+Ice/Snow,thaw,"China
+(n = 1010)",China,1
+Ice/Snow,thaw,"Italy
+(n = 60)",Italy,1
+Ice/Snow,thawing,"Antarctica
+(n = 30)",Antarctica,1
+Ice/Snow,thawing,"Canada
+(n = 701)",Canada,1
+Ice/Snow,thawing,"Russia
+(n = 79)",Russia,1
+Research,field,"Cameroon
+(n = 24)",Cameroon,1
+Research,field,"Chile
+(n = 35)",Chile,1
+Research,field,"China
+(n = 1010)",China,1
+Research,field,"France
+(n = 20)",France,1
+Research,field,"Iceland
+(n = 10)",Iceland,1
+Research,field,"India
+(n = 187)",India,1
+Research,field,"Indonesia
+(n = 27)",Indonesia,1
+Research,field,"Mongolia
+(n = 17)",Mongolia,1
+Research,field,"Norway
+(n = 89)",Norway,1
+Research,field,"Peru
+(n = 26)",Peru,1
+Research,field,"Uganda
+(n = 44)",Uganda,1
+Research,sampling,"Antarctica
+(n = 30)",Antarctica,1
+Research,sampling,"Australia
+(n = 65)",Australia,1
+Research,sampling,"Cyprus
+(n = 1)",Cyprus,1
+Research,sampling,"France
+(n = 20)",France,1
+Research,sampling,"Germany
+(n = 50)",Germany,1
+Research,sampling,"India
+(n = 187)",India,1
+Research,sampling,"Iran
+(n = 35)",Iran,1
+Research,sampling,"Ireland
+(n = 11)",Ireland,1
+Research,sampling,"Italy
+(n = 60)",Italy,1
+Research,sampling,"Japan
+(n = 85)",Japan,1
+Research,sampling,"Mexico
+(n = 98)",Mexico,1
+Research,sampling,"Namibia
+(n = 6)",Namibia,1
+Research,sampling,"Netherlands
+(n = 30)",Netherlands,1
+Research,sampling,"Poland
+(n = 117)",Poland,1
+Research,sampling,"Romania
+(n = 16)",Romania,1
+Research,sampling,"Russia
+(n = 79)",Russia,1
+Research,sampling,"Uganda
+(n = 44)",Uganda,1
+Research,sampling,"United Kingdom
+(n = 25)",United Kingdom,1
+Stratification,mixing,"United States
+(n = 1123)",United States,1
+Stratification,mixing,"Venezuela
+(n = 20)",Venezuela,1
+Stratification,stratified,"Israel
+(n = 17)",Israel,1
+Stratification,stratified,"Italy
+(n = 60)",Italy,1
+Stratification,stratified,"Nepal
+(n = 30)",Nepal,1
+Stratification,stratified,"Norway
+(n = 89)",Norway,1
+Stratification,stratified,"United Kingdom
+(n = 25)",United Kingdom,1
+Temperate,autumn,"Algeria
+(n = 11)",Algeria,1
+Temperate,autumn,"Brazil
+(n = 194)",Brazil,1
+Temperate,autumn,"Canada
+(n = 701)",Canada,1
+Temperate,autumn,"Chile
+(n = 35)",Chile,1
+Temperate,autumn,"Congo (Kinshasa)
+(n = 11)",Congo (Kinshasa),1
+Temperate,autumn,"France
+(n = 20)",France,1
+Temperate,autumn,"Ireland
+(n = 11)",Ireland,1
+Temperate,autumn,"Kazakhstan
+(n = 8)",Kazakhstan,1
+Temperate,autumn,"Mongolia
+(n = 17)",Mongolia,1
+Temperate,autumn,"Nepal
+(n = 30)",Nepal,1
+Temperate,autumn,"Norway
+(n = 89)",Norway,1
+Temperate,autumn,"Romania
+(n = 16)",Romania,1
+Temperate,autumn,"Russia
+(n = 79)",Russia,1
+Temperate,autumn,"Saudi Arabia
+(n = 2)",Saudi Arabia,1
+Temperate,autumn,"Sweden
+(n = 81)",Sweden,1
+Temperate,autumn,"Vietnam
+(n = 11)",Vietnam,1
+Temperate,fall,"Chile
+(n = 35)",Chile,1
+Temperate,fall,"China
+(n = 1010)",China,1
+Temperate,fall,"Germany
+(n = 50)",Germany,1
+Temperate,fall,"Moldova
+(n = 1)",Moldova,1
+Temperate,fall,"Nepal
+(n = 30)",Nepal,1
+Temperate,fall,"Russia
+(n = 79)",Russia,1
+Temperate,spring,"Algeria
+(n = 11)",Algeria,1
+Temperate,spring,"Croatia
+(n = 14)",Croatia,1
+Temperate,spring,"Finland
+(n = 100)",Finland,1
+Temperate,spring,"France
+(n = 20)",France,1
+Temperate,spring,"Iceland
+(n = 10)",Iceland,1
+Temperate,spring,"Iran
+(n = 35)",Iran,1
+Temperate,spring,"Iraq
+(n = 8)",Iraq,1
+Temperate,spring,"Italy
+(n = 60)",Italy,1
+Temperate,spring,"Jordan
+(n = 7)",Jordan,1
+Temperate,spring,"Kazakhstan
+(n = 8)",Kazakhstan,1
+Temperate,spring,"New Zealand
+(n = 12)",New Zealand,1
+Temperate,spring,"Romania
+(n = 16)",Romania,1
+Temperate,spring,"Senegal
+(n = 13)",Senegal,1
+Temperate,spring,"Slovenia
+(n = 5)",Slovenia,1
+Temperate,spring,"South Korea
+(n = 16)",South Korea,1
+Temperate,spring,"Sweden
+(n = 81)",Sweden,1
+Temperate,spring,"Switzerland
+(n = 49)",Switzerland,1
+Temperate,summer,"Brazil
+(n = 194)",Brazil,1
+Temperate,summer,"Denmark
+(n = 14)",Denmark,1
+Temperate,summer,"Estonia
+(n = 14)",Estonia,1
+Temperate,summer,"Finland
+(n = 100)",Finland,1
+Temperate,summer,"Hungary
+(n = 13)",Hungary,1
+Temperate,summer,"Iceland
+(n = 10)",Iceland,1
+Temperate,summer,"Iran
+(n = 35)",Iran,1
+Temperate,summer,"Iraq
+(n = 8)",Iraq,1
+Temperate,summer,"Israel
+(n = 17)",Israel,1
+Temperate,summer,"Jersey
+(n = 4)",Jersey,1
+Temperate,summer,"Jordan
+(n = 7)",Jordan,1
+Temperate,summer,"Kenya
+(n = 78)",Kenya,1
+Temperate,summer,"Kyrgyzstan
+(n = 4)",Kyrgyzstan,1
+Temperate,summer,"Lebanon
+(n = 1)",Lebanon,1
+Temperate,summer,"Libya
+(n = 1)",Libya,1
+Temperate,summer,"Mauritania
+(n = 1)",Mauritania,1
+Temperate,summer,"Namibia
+(n = 6)",Namibia,1
+Temperate,summer,"New Zealand
+(n = 12)",New Zealand,1
+Temperate,summer,"Niger
+(n = 6)",Niger,1
+Temperate,summer,"Pakistan
+(n = 16)",Pakistan,1
+Temperate,summer,"Panama
+(n = 19)",Panama,1
+Temperate,summer,"Peru
+(n = 26)",Peru,1
+Temperate,summer,"Philippines
+(n = 26)",Philippines,1
+Temperate,summer,"Portugal
+(n = 3)",Portugal,1
+Temperate,summer,"Slovakia
+(n = 6)",Slovakia,1
+Temperate,summer,"Suriname
+(n = 3)",Suriname,1
+Temperate,summer,"Taiwan
+(n = 10)",Taiwan,1
+Temperate,summer,"Tunisia
+(n = 13)",Tunisia,1
+Temperate,summer,"Ukraine
+(n = 2)",Ukraine,1
+Temperate,summer,"United Kingdom
+(n = 25)",United Kingdom,1
+Temperate,summer,"Zimbabwe
+(n = 12)",Zimbabwe,1
+Temperate,summer-autumn,"China
+(n = 1010)",China,1
+Temperate,summer-autumn,"Poland
+(n = 117)",Poland,1
+Temperate,summer-autumn,"Russia
+(n = 79)",Russia,1
+Temperate,summer-autumn,"Sweden
+(n = 81)",Sweden,1
+Temperate,winter,"Algeria
+(n = 11)",Algeria,1
+Temperate,winter,"Bangladesh
+(n = 14)",Bangladesh,1
+Temperate,winter,"Belgium
+(n = 4)",Belgium,1
+Temperate,winter,"Bolivia
+(n = 35)",Bolivia,1
+Temperate,winter,"Faroe Islands
+(n = 1)",Faroe Islands,1
+Temperate,winter,"France
+(n = 20)",France,1
+Temperate,winter,"Georgia
+(n = 25)",Georgia,1
+Temperate,winter,"Greece
+(n = 26)",Greece,1
+Temperate,winter,"Hungary
+(n = 13)",Hungary,1
+Temperate,winter,"Jersey
+(n = 4)",Jersey,1
+Temperate,winter,"Lithuania
+(n = 5)",Lithuania,1
+Temperate,winter,"Malawi
+(n = 59)",Malawi,1
+Temperate,winter,"Mexico
+(n = 98)",Mexico,1
+Temperate,winter,"Morocco
+(n = 9)",Morocco,1
+Temperate,winter,"Netherlands
+(n = 30)",Netherlands,1
+Temperate,winter,"Portugal
+(n = 3)",Portugal,1
+Temperate,winter,"Samoa
+(n = 1)",Samoa,1
+Temperate,winter,"Switzerland
+(n = 49)",Switzerland,1
+Temperate,winter,"Taiwan
+(n = 10)",Taiwan,1
+Temperate,winter,"Tanzania
+(n = 65)",Tanzania,1
+Temperate,winter,"Thailand
+(n = 12)",Thailand,1
+Temperate,winter,"United Kingdom
+(n = 25)",United Kingdom,1
+Temperate,winter,"Uzbekistan
+(n = 1)",Uzbekistan,1
+Temperate,winter,"Vietnam
+(n = 11)",Vietnam,1
+Temperate,winter-spring,"Brazil
+(n = 194)",Brazil,1
+Temperate,winter-spring,"China
+(n = 1010)",China,1
+Temperate,winter-spring,"Ireland
+(n = 11)",Ireland,1
+Temperate,winter-spring,"Israel
+(n = 17)",Israel,1
+Temperate,winter-spring,"Japan
+(n = 85)",Japan,1
+Temperate,winter-spring,"United States
+(n = 1123)",United States,1
+Temperature,cold,"Algeria
+(n = 11)",Algeria,1
+Temperature,cold,"Chad
+(n = 28)",Chad,1
+Temperature,cold,"Comoros
+(n = 2)",Comoros,1
+Temperature,cold,"Croatia
+(n = 14)",Croatia,1
+Temperature,cold,"Ecuador
+(n = 5)",Ecuador,1
+Temperature,cold,"Estonia
+(n = 14)",Estonia,1
+Temperature,cold,"Greece
+(n = 26)",Greece,1
+Temperature,cold,"Greenland
+(n = 87)",Greenland,1
+Temperature,cold,"India
+(n = 187)",India,1
+Temperature,cold,"Kazakhstan
+(n = 8)",Kazakhstan,1
+Temperature,cold,"Kyrgyzstan
+(n = 4)",Kyrgyzstan,1
+Temperature,cold,"Madagascar
+(n = 19)",Madagascar,1
+Temperature,cold,"Morocco
+(n = 9)",Morocco,1
+Temperature,cold,"Namibia
+(n = 6)",Namibia,1
+Temperature,cold,"Panama
+(n = 19)",Panama,1
+Temperature,cold,"Poland
+(n = 117)",Poland,1
+Temperature,cold,"Spain
+(n = 43)",Spain,1
+Temperature,cold,"Sweden
+(n = 81)",Sweden,1
+Temperature,cold,"Tanzania
+(n = 65)",Tanzania,1
+Temperature,colder,"American Samoa
+(n = 1)",American Samoa,1
+Temperature,colder,"Brazil
+(n = 194)",Brazil,1
+Temperature,colder,"Croatia
+(n = 14)",Croatia,1
+Temperature,colder,"India
+(n = 187)",India,1
+Temperature,colder,"Spain
+(n = 43)",Spain,1
+Temperature,colder,"United States
+(n = 1123)",United States,1
+Temperature,cool,"Georgia
+(n = 25)",Georgia,1
+Temperature,cool,"Hungary
+(n = 13)",Hungary,1
+Temperature,cool,"Japan
+(n = 85)",Japan,1
+Temperature,cool,"Madagascar
+(n = 19)",Madagascar,1
+Temperature,cool,"Malawi
+(n = 59)",Malawi,1
+Temperature,cool,"Mexico
+(n = 98)",Mexico,1
+Temperature,cool,"Senegal
+(n = 13)",Senegal,1
+Temperature,cool,"Sweden
+(n = 81)",Sweden,1
+Temperature,cool,"Taiwan
+(n = 10)",Taiwan,1
+Temperature,heating,"Bosnia and Herzegovina
+(n = 3)",Bosnia and Herzegovina,1
+Temperature,heating,"Norway
+(n = 89)",Norway,1
+Temperature,heating,"Switzerland
+(n = 49)",Switzerland,1
+Temperature,hot,"Greece
+(n = 26)",Greece,1
+Temperature,hot,"Madagascar
+(n = 19)",Madagascar,1
+Temperature,hot,"Nigeria
+(n = 34)",Nigeria,1
+Temperature,hot,"Panama
+(n = 19)",Panama,1
+Temperature,hot,"Poland
+(n = 117)",Poland,1
+Temperature,hot,"Turkey
+(n = 97)",Turkey,1
+Temperature,hot,"Zimbabwe
+(n = 12)",Zimbabwe,1
+Temperature,warm,"Algeria
+(n = 11)",Algeria,1
+Temperature,warm,"Antarctica
+(n = 30)",Antarctica,1
+Temperature,warm,"Armenia
+(n = 8)",Armenia,1
+Temperature,warm,"Azerbaijan
+(n = 1)",Azerbaijan,1
+Temperature,warm,"Belarus
+(n = 2)",Belarus,1
+Temperature,warm,"Comoros
+(n = 2)",Comoros,1
+Temperature,warm,"Croatia
+(n = 14)",Croatia,1
+Temperature,warm,"Greece
+(n = 26)",Greece,1
+Temperature,warm,"Israel
+(n = 17)",Israel,1
+Temperature,warm,"Kazakhstan
+(n = 8)",Kazakhstan,1
+Temperature,warm,"Kyrgyzstan
+(n = 4)",Kyrgyzstan,1
+Temperature,warm,"Liechtenstein
+(n = 4)",Liechtenstein,1
+Temperature,warm,"Mongolia
+(n = 17)",Mongolia,1
+Temperature,warm,"Namibia
+(n = 6)",Namibia,1
+Temperature,warm,"Nepal
+(n = 30)",Nepal,1
+Temperature,warm,"Senegal
+(n = 13)",Senegal,1
+Temperature,warm,"South Korea
+(n = 16)",South Korea,1
+Temperature,warm,"Sweden
+(n = 81)",Sweden,1
+Temperature,warm,"Tanzania
+(n = 65)",Tanzania,1
+Temperature,warm,"Tunisia
+(n = 13)",Tunisia,1
+Temperature,warm,"United Kingdom
+(n = 25)",United Kingdom,1
+Temperature,warmer,"Argentina
+(n = 45)",Argentina,1
+Temperature,warmer,"Brazil
+(n = 194)",Brazil,1
+Temperature,warmer,"Chile
+(n = 35)",Chile,1
+Temperature,warmer,"Croatia
+(n = 14)",Croatia,1
+Temperature,warmer,"Denmark
+(n = 14)",Denmark,1
+Temperature,warmer,"Hungary
+(n = 13)",Hungary,1
+Temperature,warmer,"India
+(n = 187)",India,1
+Temperature,warmer,"Oman
+(n = 1)",Oman,1
+Temperature,warmer,"Poland
+(n = 117)",Poland,1
+Temperature,warmer,"Sweden
+(n = 81)",Sweden,1

@@ -1,0 +1,332 @@
+---
+title: "Lit review"
+author: "Abby Lewis"
+date: "2025-10-24"
+output: html_document
+---
+
+Setup: load data and functions
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+
+#For circle plots
+compute_angle = function(perc){
+  angle = -1
+  
+  if(perc < 0.5) # 1st half [90, -90]
+    angle = (180 - (perc/0.5) * 180) - 90
+  else # 2nd half [90, -90]
+    angle = (90 - ((perc - 0.5)/0.5) * 180)
+
+  return(angle)
+}
+
+#Standardized colors throughout
+colors <- c(
+  Hydrology      = "#64c7cc",
+  Flora          = "#11592b",
+  Fauna          = "#8f6501",
+  `Ice/Snow`     = "#8AB4E3",
+  Temperature    = "#993355",
+  Research       = "#66450c",
+  Economic       = "#ddbb66",
+  Agriculture    = "#79ad24",
+  Stratification = "#F6A2A2",
+  Other          = "grey20",
+  Temperate      = "grey",
+  winter         = colorspace::darken("grey90", 0.2), #From Fig. 3, but more contrast
+  spring         = colorspace::darken("grey77", 0.35), 
+  summer         = colorspace::darken("grey64", 0.5), 
+  autumn         = colorspace::darken("grey51", 1) 
+)
+```
+
+Plot the prevalence of season and seasonality over time
+
+```{r}
+#Identified prevalence of season and seasonality
+all_seas <- read_csv("../05_Lit_review/season_summaries/all_seas.csv")
+#Separate WoS search for just "lake" in title, abstract, and keywords
+lake <- read_delim("../01a_Raw_data/WoS_lake_08Dec25.txt", delim = "\t", 
+                   col_names = c("Year", "Count", "Percent"), skip = 1)
+
+all_season_plot <- all_seas %>%
+  pivot_longer(c(season, seasonality)) %>%
+  mutate(name = paste0('"',name,'"')) %>%
+  left_join(lake, by = c("PY" = "Year")) %>%
+  filter(PY >=1980, PY <= 2024) %>%
+  ggplot(aes(x = PY, y = value/Count*100))+
+  geom_point(alpha = 0.3)+
+  ylab('Papers that mention "seasons" or\n"seasonality" (% of all lake papers in each year)')+
+  geom_smooth(method = "gam", color = "black", linewidth = 0.5)+
+  egg::theme_article()+
+  theme(axis.title.x = element_blank())+
+  facet_wrap(~name, scales = "free_y", ncol = 1)
+```
+
+Plot the use of different seasons over time
+
+```{r}
+sums <- read_csv("../05_Lit_review/season_summaries/sums.csv")
+
+#Set up labels 
+# need to predict pct in 2025 using gams, to align with the geom_smooth() output
+label_data_pct <- sums %>%
+  ungroup() %>%
+  group_by(AllSeasons) %>%
+  mutate(pct_of_all_by_year = predict(
+           mgcv::gam(pct_of_all_by_year ~ s(PY, bs = "tp")))
+  ) %>%
+  arrange(desc(AllSeasons)) %>%
+  filter(PY == 2024) %>%
+  ungroup()
+
+#Make plot
+timeline <- sums %>%
+  ggplot(aes(x = PY, y = pct_of_all_by_year, color = Type))+
+  geom_smooth(aes(group = AllSeasons), linewidth = 0.5, se = F, method = "gam")+
+  scale_color_manual(values = colors)+
+  egg::theme_article()+
+  ylab("Papers that mention this season\n(% of all lake papers in each year)")+
+  xlab("Publication year")+
+  coord_cartesian(xlim = c(1980,2024),clip = "off", expand = c(0,0))+
+  geom_hline(yintercept = 0, alpha = .1)+
+  ggrepel::geom_text_repel(aes(x = 2025, label = AllSeasons), 
+                           direction = "y",
+                           hjust = 0,
+                           vjust = 0.5,
+                           size = 3,
+                           data = label_data_pct,
+                           max.time = 5,
+                           max.iter = 1000000,
+                           box.padding= 0,
+                           max.overlaps = 13,
+                           force_pull = 2,
+                           show.legend = F,
+                           xlim = c(1980,2040),
+                           min.segment.length = .1,
+                           seed = 47
+                           )+
+  guides(color = guide_legend(ncol = 3))+
+  facet_wrap(~class, scales = "free_y", ncol = 1)+
+  theme(legend.position = "bottom",
+        legend.title = element_blank(),
+        plot.margin = unit(c(5.5, 40, 5.5, 5.5), units ="pt"))
+
+#Combine and save
+png("../03a_Figures/Total_prevalence_comb.png", res = 300, width = 5.5, 
+    height = 3.5, units = "in")
+ggpubr::ggarrange(all_season_plot, 
+                  timeline+
+                    theme(legend.position = "none",
+                          axis.title.x = element_blank())+
+                    ylab("Papers that mention each season\n(% of all lake papers in each year)"), 
+                  nrow = 1, widths = c(.9, 1), labels = c("a)", "b)"),
+                  hjust = -0.1)
+dev.off()
+```
+
+Circle plot of all identified seasons (not spring/summer/autumn/winter)
+
+```{r}
+season_word_counts_plot <- read_csv("../05_Lit_review/season_summaries/season_word_counts_plot.csv")
+
+sum_seas <- sum(season_word_counts_plot$n, na.rm = T)
+
+seasons_by_cat <- season_word_counts_plot %>%
+  group_by(Type) %>%
+  summarize(total_by_type = sum(n)) %>% 
+  arrange(desc(total_by_type)) %>%
+  mutate(Type = paste0(Type, "\n(n = ", total_by_type, ")"))
+
+#What percentage are hydrologic?
+seasons_by_cat$total_by_type[grepl("Hydrology", seasons_by_cat$Type)]/sum_seas*100
+
+secondLevel = seasons_by_cat %>%
+  arrange(desc(total_by_type)) %>%
+  mutate(running = cumsum(total_by_type), 
+         pos=running - total_by_type/2) %>% 
+  rowwise() %>% 
+  mutate(angle = compute_angle(pos / sum_seas))
+
+thirdLevel = season_word_counts_plot %>%
+  mutate(total_overall = sum(n)) %>%
+  group_by(Type) %>%
+  mutate(total_by_type = sum(n)) %>% 
+  ungroup() %>%
+  arrange(desc(total_by_type),
+          desc(n)) %>%
+  mutate(running = cumsum(n), 
+         pos=running - n/2,
+         Type = paste0(Type, "\n(n = ", total_by_type, ")")) %>% 
+  rowwise() %>% 
+  mutate(angle = compute_angle(pos / sum_seas),
+         hjust = ifelse(pos/sum_seas > 0.5, 1, 0),
+         label = SeasonWords, #paste0(SeasonWords, " (", comma(n), ")"),
+         label = ifelse(n/total_overall < 0.01, "", label))
+
+secondLevel$Type <- factor(secondLevel$Type, 
+                           levels = rev(seasons_by_cat$Type))
+
+thirdLevel$Type <- factor(thirdLevel$Type, 
+                          levels = rev(seasons_by_cat$Type))
+
+og <- ggplot() +
+  geom_bar(data=thirdLevel,
+           aes(x=5, y=n, fill = Type),
+           color = "white",linewidth = 0.2,
+           position='stack', stat='identity', 
+           alpha = 0.5, width = 2) +
+  geom_bar(data=secondLevel,
+           aes(x=3, y=total_by_type, fill=Type),
+           width = 2,color = "white",linewidth = 0.2,
+           position='stack', stat='identity')+
+  geom_text(data=thirdLevel, 
+            aes(label=label, x=6.2, y=pos, angle=angle, 
+                hjust = hjust, color = Type), show.legend = F
+            ) +
+  xlim(c(0,8))+
+  coord_polar('y')+
+  scale_color_manual(values= unname(colors), breaks = seasons_by_cat$Type) + 
+  scale_fill_manual(values = unname(colors), breaks = seasons_by_cat$Type) + 
+  theme_void()+
+  ggtitle('Words that precede "season"')+
+  guides(fill = guide_legend(title = NULL, nrow = 4)) + 
+  theme(
+    plot.title = element_text(hjust = 0.5, vjust = 0, size = 14),
+    legend.position = "bottom",
+    legend.box.margin = margin(t = -10),
+    legend.margin = margin(t = -5),
+    legend.spacing.y = unit(0, "pt"),
+    plot.margin = margin(10, 0, 0, 0)
+  )
+```
+
+By country
+
+```{r}
+season_word_counts_spat <- read_csv("../05_Lit_review/season_summaries/counts_spatial.csv")
+season_word_counts_plot_spat <- season_word_counts_spat %>%
+  mutate(n_papers = as.numeric(str_extract(Country, "\\d+"))) %>%
+  filter(n_papers >= 100)
+
+country_levels <- c("Finland","Canada", "Poland", "United States", 
+                    "China", "India", "Ethiopia", "Brazil")
+
+country_names <- season_word_counts_plot_spat %>%
+  select(Country_no_num, Country) %>%
+  distinct() %>%
+  filter(Country_no_num %in% country_levels) %>%
+  mutate(
+    Country_no_num = factor(Country_no_num, levels = country_levels)
+  ) %>%
+  arrange(Country_no_num) %>%
+  pull(Country)
+
+seasons_by_cat_i <- season_word_counts_plot_spat %>%
+  group_by(Type, Country) %>%
+  summarize(total_by_type = sum(n)) %>% 
+  arrange(desc(total_by_type)) %>%
+  filter(!Type == "Temperate")
+
+secondLevel = seasons_by_cat_i %>%
+  group_by(Country) %>%
+  arrange(desc(total_by_type)) %>%
+  mutate(running = cumsum(total_by_type), 
+         pos=running - total_by_type/2,
+         sum_seas = sum(total_by_type)) %>% 
+  rowwise() %>% 
+  mutate(angle = compute_angle(pos / sum_seas),
+         Country = factor(Country, levels = country_names))
+
+thirdLevel = season_word_counts_plot_spat %>%
+  group_by(Type, Country) %>%
+  mutate(total_by_type = sum(n)) %>% 
+  group_by(Country) %>%
+  arrange(desc(total_by_type),
+          desc(n)) %>%
+  mutate(running = cumsum(n), 
+         pos=running - n/2,
+         sum_seas = sum(total_by_type)) %>% 
+  rowwise() %>% 
+  mutate(angle = compute_angle(pos / sum_seas),
+         hjust = ifelse(pos/sum_seas > 0.5, 1, 0),
+         label = SeasonWords, #paste0(SeasonWords, " (", comma(n), ")"),
+         label = ifelse(n < 30, "", label),
+         Country = factor(Country, levels = country_names))
+
+secondLevel$Type <- factor(secondLevel$Type, 
+                           levels = rev(sub("\n\\(.+\\)","",seasons_by_cat$Type)))
+
+thirdLevel$Type <- factor(thirdLevel$Type, 
+                          levels = rev(sub("\n\\(.+\\)","",seasons_by_cat$Type)))
+
+counts <- ggplot() +
+  geom_bar(data=secondLevel,
+           aes(x=3, y=total_by_type, fill=Type),
+           width = 2,color = "white",linewidth = 0.2,
+           position='stack', stat='identity')+
+  xlim(c(0,4))+
+  coord_polar('y')+
+  scale_color_manual(values = colors, breaks = sub(" \\(.+\\)","",seasons_by_cat$Type)) + 
+  scale_fill_manual(values = colors, breaks = sub(" \\(.+\\)","",seasons_by_cat$Type)) + 
+  theme_void()+
+  guides(fill = guide_legend(title = NULL, ncol = 2)) + 
+  theme(
+    plot.title = element_text(hjust = 0.5, vjust = -6, size = 14),
+    legend.position = "bottom",
+    legend.box.margin = margin(t = -10),
+    legend.margin = margin(t = -5),
+    legend.spacing.y = unit(0, "pt"),
+    plot.margin = margin(0, 0, 0, 0)
+  )+
+  facet_wrap(~Country, scales = "free_y")
+
+jpeg("../03a_Figures/Sunburst_by_country_comb_no_temperate.jpg", res = 300, width = 7, height = 6, units = "in")
+ggpubr::ggarrange(og+
+                    guides(fill = guide_legend(title = NULL, ncol = 3))+ 
+                    theme(
+                      plot.title = element_text(hjust = 0.5, vjust = 1, size = 16),
+                      legend.position = "bottom",
+                      legend.box.margin = margin(t = -5),
+                      legend.margin = margin(t = 0),
+                      legend.spacing.y = unit(0, "pt"),
+                      plot.margin = margin(0, 0, 0, 0)
+                    ), 
+                  counts +
+                    facet_wrap(~Country, scales = "free_y", ncol = 2)+ 
+                    theme(legend.position = "none"), 
+                  widths = c(1,.7))
+dev.off()
+```
+
+Plot of papers per country over time
+
+```{r}
+for_country_timeline <- read_csv("../05_Lit_review/season_summaries/for_country_timeline.csv")
+
+pct <- for_country_timeline %>%
+  ggplot(aes(x = PY, y = pct_papers))+
+  geom_line()+
+  theme_bw()+
+  ylab("Percent of all papers")+
+  xlab("Year")+
+  scale_x_continuous(n.breaks = 4)+
+  facet_wrap(~Country, ncol = 2)
+
+n <- for_country_timeline %>%
+  ggplot(aes(x = PY, y = n_papers))+
+  geom_line()+
+  theme_bw()+
+  ylab("Number of papers")+
+  xlab("Year")+
+  scale_x_continuous(n.breaks = 4)+
+  facet_wrap(~Country, ncol = 2)
+
+jpeg("../03a_Figures/Timeline_by_country.jpg", res = 300, width = 6, height = 4.5, units = "in")
+ggpubr::ggarrange(n, pct)
+dev.off()
+```
+
