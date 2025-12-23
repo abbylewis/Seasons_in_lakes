@@ -5,7 +5,7 @@ date: "2025-10-24"
 output: html_document
 ---
 
-Setup: load data and functions
+Setup
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -41,6 +41,9 @@ colors <- c(
   summer         = colorspace::darken("grey64", 0.5), 
   autumn         = colorspace::darken("grey51", 1) 
 )
+
+country_levels <- c("Finland","Canada", "Poland", "United States", 
+                    "China", "India", "Ethiopia", "Brazil")
 ```
 
 Plot the prevalence of season and seasonality over time
@@ -204,16 +207,13 @@ og <- ggplot() +
   )
 ```
 
-By country
+Same as above, but faceted by country
 
 ```{r}
 season_word_counts_spat <- read_csv("../05_Lit_review/season_summaries/counts_spatial.csv")
 season_word_counts_plot_spat <- season_word_counts_spat %>%
   mutate(n_papers = as.numeric(str_extract(Country, "\\d+"))) %>%
   filter(n_papers >= 100)
-
-country_levels <- c("Finland","Canada", "Poland", "United States", 
-                    "China", "India", "Ethiopia", "Brazil")
 
 country_names <- season_word_counts_plot_spat %>%
   select(Country_no_num, Country) %>%
