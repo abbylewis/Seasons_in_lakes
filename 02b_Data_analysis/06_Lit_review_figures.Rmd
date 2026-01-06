@@ -72,7 +72,8 @@ all_season_plot <- all_seas %>%
 Plot the use of different seasons over time
 
 ```{r}
-sums <- read_csv("../05_Lit_review/season_summaries/sums.csv")
+sums <- read_csv("../05_Lit_review/season_summaries/sums.csv") %>%
+  mutate(class = factor(class, levels = c("Temperate", "Other")))
 
 #Set up labels 
 # need to predict pct in 2025 using gams, to align with the geom_smooth() output
@@ -84,7 +85,12 @@ label_data_pct <- sums %>%
   ) %>%
   arrange(desc(AllSeasons)) %>%
   filter(PY == 2024) %>%
-  ungroup()
+  ungroup() %>%
+  filter(AllSeasons %in% c("spring", "summer", "autumn", "winter", "wet",
+                           "rainy", "dry", "warm", "growing", "breeding")) %>%
+  mutate(pct_of_all_by_year = case_when(AllSeasons == "autumn"~pct_of_all_by_year+0.3,
+                                        AllSeasons == "growing"~pct_of_all_by_year+0.05,
+                                        .default = pct_of_all_by_year))
 
 #Make plot
 timeline <- sums %>%
@@ -96,22 +102,12 @@ timeline <- sums %>%
   xlab("Publication year")+
   coord_cartesian(xlim = c(1980,2024),clip = "off", expand = c(0,0))+
   geom_hline(yintercept = 0, alpha = .1)+
-  ggrepel::geom_text_repel(aes(x = 2025, label = AllSeasons), 
-                           direction = "y",
-                           hjust = 0,
-                           vjust = 0.5,
-                           size = 3,
-                           data = label_data_pct,
-                           max.time = 5,
-                           max.iter = 1000000,
-                           box.padding= 0,
-                           max.overlaps = 13,
-                           force_pull = 2,
-                           show.legend = F,
-                           xlim = c(1980,2040),
-                           min.segment.length = .1,
-                           seed = 47
-                           )+
+  geom_text(aes(x = 2025, label = AllSeasons),
+            hjust = 0,
+            vjust = 0.2,
+            size = 3,
+            data = label_data_pct,
+            show.legend = F)+
   guides(color = guide_legend(ncol = 3))+
   facet_wrap(~class, scales = "free_y", ncol = 1)+
   theme(legend.position = "bottom",
@@ -121,9 +117,11 @@ timeline <- sums %>%
 #Combine and save
 png("../03a_Figures/Total_prevalence_comb.png", res = 300, width = 5.5, 
     height = 3.5, units = "in")
-ggpubr::ggarrange(all_season_plot, 
+ggpubr::ggarrange(all_season_plot +
+                    theme(panel.border = element_rect(linewidth = 0.3)), 
                   timeline+
                     theme(legend.position = "none",
+                          panel.border = element_rect(linewidth = 0.2),
                           axis.title.x = element_blank())+
                     ylab("Papers that mention each season\n(% of all lake papers in each year)"), 
                   nrow = 1, widths = c(.9, 1), labels = c("a)", "b)"),

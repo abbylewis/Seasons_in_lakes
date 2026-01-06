@@ -78,7 +78,7 @@ lake_relabel <- function(lakes){
     "Mohonk Lake (2017)" = "bold('f)')~`Mohonk Lake (2017); Z`[max]~`= 18 m`",
     "Beaverdam Reservoir (2021)" = "bold('g)')~`Beaverdam Reservoir (2021); Z`[max]~`= 11 m`",
     "Lake Tanganyika (2012-2013)" = "bold('h)')~`Lake Tanganyika (2012-2013); Z`[max]~`= 1470 m`",
-    "Lake Batur (2022-2023)" = "bold('i)')~`Lake Batur (2022-2023); Z`[max]~`= 88 m`",
+    "Lake Batur (2023-2024)" = "bold('i)')~`Lake Batur (2023-2024); Z`[max]~`= 88 m`",
     "Lake Rerewhakaaitu (2022-2023)" = "bold('j)')~`Lake Rerewhakaaitu (2022-2023); Z`[max]~`= 15 m`",
     "West Lake Bonney (2023-2024)" = "bold('k)')~`West Lake Bonney (2023-2024); Z`[max]~`= 40 m`"
   )

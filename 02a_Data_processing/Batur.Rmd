@@ -23,19 +23,19 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(rLakeAnalyzer)
 
-solstice <- as.Date("2022-06-21")
-offset = as.Date("2023-01-01") - solstice
-LAKE = "Lake Batur (2022-2023)" 
+solstice <- as.Date("2023-06-21")
+offset = as.Date("2024-01-01") - solstice
+LAKE = "Lake Batur (2023-2024)" 
 ```
 
 In-lake data (temperature, chlorophyll-a, stratification)
 
 ```{r}
 # Load data
-in_lake_data <- read_csv("../01a_Raw_data/temperature_profile_batur.csv") %>%
+in_lake_data <- read_csv("../01a_Raw_data/Batur_water_2022-2024.csv") %>%
   mutate(day = as.Date(datetime) + offset,
          yday = yday(day)) %>%
-  filter(year(day) == 2023,
+  filter(year(day) == 2024,
          !is.na(yday)) 
 
 # Format continuous data
@@ -100,7 +100,7 @@ Meteorological data
 
 ```{r}
 # Load data
-met <- read_csv("../01a_Raw_data/meteorological_data_batur.csv")
+met <- read_csv("../01a_Raw_data/Batur_met_2022-2024.csv")
 
 # Format continuous data
 met_formatted <- met %>%
@@ -108,8 +108,8 @@ met_formatted <- met %>%
          doy = yday(Date)) %>%
   group_by(Date) %>%
   summarize(airT = mean(airT, na.rm = T),
-            Solar = mean(Solar, na.rm = T)) %>%
-  filter(year(Date) == 2023) %>%
+            Solar = mean(sw, na.rm = T)) %>%
+  filter(year(Date) == 2024) %>%
   rename(AirTemp_C_Average = airT,
          Shortwave = Solar) %>%
   select(Shortwave, AirTemp_C_Average, Date) %>%

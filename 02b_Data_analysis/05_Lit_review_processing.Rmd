@@ -44,6 +44,30 @@ all <- lapply(files, read_excel, col_types = "text") %>%
 demonyms <- read_csv("../01a_Raw_data/Demonyms.csv")
 ```
 
+```{r}
+stratif <- all %>%
+  mutate(full_text = tolower(paste(TI, AB))) %>%
+  select(-AB) %>%
+  mutate(
+    SeasonWords = str_extract_all(
+      full_text,
+      regex("\\bstratif(?:ied|ication)[[:space:]-]+([\\w-]+)", ignore_case = TRUE)
+    )
+  ) %>%
+  mutate(
+    SeasonWords = lapply(SeasonWords, function(x) {
+      str_replace(x, "^.*?[[:space:]-]+", "")
+    })
+  )
+         
+stratif %>%
+  select(SeasonWords) %>%
+  unnest(SeasonWords) %>%
+  count(SeasonWords) %>%
+  arrange(-n)
+#Note that numbers don't quite align with below because this also includes "non-stratified", "well-stratified", etc
+```
+
 Identify seasons in title/abstract
 
 ```{r}

@@ -25,7 +25,7 @@ select <- reference %>%
              "Midway Pond (2023)", #44.931
              "Beaverdam Reservoir (2021)", #37.3164
              "Lake Tanganyika (2012-2013)", #-6.24346
-             "Lake Batur (2022-2023)", #-8.259
+             "Lake Batur (2023-2024)", #-8.259
              "Lake Rerewhakaaitu (2022-2023)", #-38.2936
              "West Lake Bonney (2023-2024)" #-77.720
            )) %>%
@@ -85,7 +85,7 @@ lake_relabel <- function(lakes){
     "Midway Pond (2023)" = "bold('b)')~`Midway Pond (2023); Z`[max]~`= 9 m`", 
     "Beaverdam Reservoir (2021)" = "bold('c)')~`Beaverdam Reservoir (2021); Z`[max]~`= 11 m`",
     "Lake Tanganyika (2012-2013)" = "bold('d)')~`Lake Tanganyika (2012-2013); Z`[max]~`= 1470 m`",
-    "Lake Batur (2022-2023)" = "bold('e)')~`Lake Batur (2022-2023); Z`[max]~`= 88 m`",
+    "Lake Batur (2023-2024)" = "bold('e)')~`Lake Batur (2023-2024); Z`[max]~`= 88 m`",
     "Lake Rerewhakaaitu (2022-2023)" = "bold('f)')~`Lake Rerewhakaaitu (2022-2023); Z`[max]~`= 15 m`",
     "West Lake Bonney (2023-2024)" = "bold('g)')~`West Lake Bonney (2023-2024); Z`[max]~`= 40 m`"
   )
