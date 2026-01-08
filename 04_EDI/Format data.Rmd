@@ -30,7 +30,7 @@ in_lake_data_do <- read.csv("../01a_Raw_data/Midway_DO_all.csv") %>%
   summarize(across(everything(), \(x) mean(x, na.rm = TRUE)))
 
 # Format continuous data
-in_lake_formatted_mid <- in_lake_data_surf %>%
+in_lake_formatted_midway <- in_lake_data_surf %>%
   full_join(in_lake_data_do) %>%
   filter(!is.na(Date)) %>%
   select(Date, surfT_C, CHL_ppb, surfDO_mgL, benthDO_mgL, benthT_C) %>%
@@ -52,7 +52,7 @@ in_lake_formatted_mid <- in_lake_data_surf %>%
 # Add met data
 met <- read.csv("../01a_Raw_data/Midway_AirTemp.csv")
 
-met_formatted_mid <- met %>%
+met_formatted_midway <- met %>%
   mutate(Date = as.Date(DATE, format = "%m/%d/%y"),
          Lake = LAKE) %>%
   rename(AirTemp_C = TOBS_C) %>%
@@ -82,7 +82,7 @@ in_lake_raw <- read.csv("../01a_Raw_data/Rerewhakaaitu_buoy_wq.csv") %>%
   mutate(Date = as.Date(day))
 
 # Format continuous data
-in_lake_formatted_rere <- in_lake_raw %>%
+in_lake_formatted_rerewhakaaitu <- in_lake_raw %>%
   rename(Value = avg_value,
          Variable = variable,
          Depth_m = depth_rnd) %>%
@@ -100,7 +100,7 @@ in_lake_formatted_rere <- in_lake_raw %>%
 met <- read.csv("../01a_Raw_data/Rerewhakaaitu_meteorology.csv")
 
 # Format continuous data
-met_formatted_rere <- met %>%
+met_formatted_rerewhakaaitu <- met %>%
   mutate(Date = as.Date(DateTime))%>%
   mutate(variable = ifelse(variable == "TmpAir", "AirTemp_C", variable),
          variable = ifelse(variable == "RadClr", "ShortwaveRadiationClear_Wm2", variable)) %>%
@@ -112,7 +112,7 @@ met_formatted_rere <- met %>%
 
 #No ice
 solstice <- as.Date("2022-06-21")
-ice_re <- data.frame(Lake = LAKE,
+ice_rerewhakaaitu <- data.frame(Lake = LAKE,
                   Season = "Open water",
                   Method = "Ice",
                   start = 0,
@@ -131,14 +131,14 @@ all_data <- read.csv("../01a_Raw_data/Mohonk2017-Seasons-PhysicalData.csv") %>%
   summarize(across(where(is.numeric), ~mean(., na.rm = T)))
 
 # Format continuous data
-in_lake_formatted_mo <- all_data %>%
+in_lake_formatted_mohonk <- all_data %>%
   select(-c(AirTemp_2m_degC, solar_insolation_avg_Wpm2, Ice)) %>%
   pivot_longer(cols = contains("Temp_"), values_to = "WaterTemperature_C") %>%
   mutate(Depth_m = as.numeric(str_extract(name, "[0-9]+"))) %>%
   select(-name) %>%
   mutate(Lake = LAKE)
 
-met_formatted_mo <- all_data %>%
+met_formatted_mohonk <- all_data %>%
   select(c(AirTemp_2m_degC, solar_insolation_avg_Wpm2, Date)) %>%
   rename(AirTemp_C = AirTemp_2m_degC,
          ShortwaveRadiation_Wm2 = solar_insolation_avg_Wpm2) %>%
@@ -146,7 +146,7 @@ met_formatted_mo <- all_data %>%
 
 #Ice
 solstice <- as.Date("2016-12-21")
-ice_mo <- data.frame(Lake = c(LAKE, LAKE),
+ice_mohonk <- data.frame(Lake = c(LAKE, LAKE),
                   Season = c("Ice","Open water"),
                   Method = c("Ice","Ice"),
                   start = c(0, 109),
@@ -196,7 +196,7 @@ chla_format <- chla %>%
   group_by(Date, Depth_m) %>%
   summarise(Chla_ugL = mean(Chla_ugL, na.rm = T)) 
   
-in_lake_formatted_erk <- temp_format %>%
+in_lake_formatted_erken <- temp_format %>%
   full_join(do_format) %>%
   full_join(chla_format) %>%
   mutate(Lake = LAKE)
@@ -205,7 +205,7 @@ in_lake_formatted_erk <- temp_format %>%
 met <- read.csv("../01a_Raw_data/ErkenMalmaIslanMetData_2015-2018.csv", skip = 3)
 
 # Format continuous data
-met_formatted_erk <- met %>%
+met_formatted_erken <- met %>%
   mutate(Date = as.Date(TMSTAMP)) %>%
   group_by(Date) %>%
   summarize(AirTemp_C = mean(Air_Temp_AS_Avg, na.rm = T),
@@ -224,7 +224,7 @@ inspect <- ice %>%
          end = yday(TIME_ICE_OFF)) %>%
   filter(TIMESTAMP %in% c(2018))
 
-ice_er <- data.frame(start = c(0, inspect$start, inspect$end),
+ice_erken <- data.frame(start = c(0, inspect$start, inspect$end),
                            end = c(inspect$start, inspect$end, 365),
                            Season = c("Open water", "Ice", "Open water")) %>%
   mutate(Lake = LAKE,
@@ -246,7 +246,7 @@ in_lake_data_temp <- read.csv("../01a_Raw_data/Arendsee_Profiler_T.csv") %>%
   mutate(var = "Temp_C")
 
 # Format continuous data
-in_lake_formatted_ar <- in_lake_data_chla %>%
+in_lake_formatted_arendsee <- in_lake_data_chla %>%
   full_join(in_lake_data_do) %>%
   full_join(in_lake_data_temp) %>%
   pivot_longer(cols = X1:X47, 
@@ -264,7 +264,7 @@ in_lake_formatted_ar <- in_lake_data_chla %>%
 met <- read.csv("../01a_Raw_data/Arendsee_Met.csv")
 
 # Format continuous data
-met_formatted_ar <- met %>%
+met_formatted_arendsee <- met %>%
   mutate(Date = as.Date(time)) %>%
   group_by(Date) %>%
   summarize(AirTemp_C = mean(AirT...C., na.rm = T),
@@ -273,7 +273,7 @@ met_formatted_ar <- met %>%
 
 #Ice
 solstice <- as.Date("2019-12-21")
-ice_ar <- data.frame(Lake = c(LAKE),
+ice_arendsee <- data.frame(Lake = c(LAKE),
                   Season = c("Open water"),
                   Method = c("Ice"),
                   start = c(0),
@@ -281,15 +281,101 @@ ice_ar <- data.frame(Lake = c(LAKE),
   mutate(Solstice = solstice)
 ```
 
+# Lake Batur
+
+```{r}
+LAKE = "Lake Batur" 
+
+# Load data
+in_lake_data <- read_csv("../01a_Raw_data/Batur_water_2022-2024.csv") %>%
+  mutate(Date = as.Date(datetime)) %>%
+  filter(!is.na(Date))
+
+# Format continuous data
+in_lake_formatted_batur <- in_lake_data %>%
+  pivot_longer(contains("wtr"), names_prefix = "wtr_",
+               names_to = "Depth_m", values_to = "Temp_C") %>%
+  group_by(Date, Depth_m) %>%
+  summarize(WaterTemperature_C = mean(Temp_C, na.rm = T)) %>%
+  mutate(Lake = LAKE,
+         Depth_m = as.numeric(Depth_m)) %>%
+  select(Lake, Date, Depth_m, WaterTemperature_C)
+
+# Load data
+met <- read_csv("../01a_Raw_data/Batur_met_2022-2024.csv")
+
+# Format continuous data
+met_formatted_batur <- met %>%
+  mutate(Date = as.Date(datetime)) %>%
+  group_by(Date) %>%
+  summarize(airT = mean(airT, na.rm = T),
+            Solar = mean(sw, na.rm = T)) %>%
+  rename(AirTemp_C = airT,
+         ShortwaveRadiation_Wm2 = Solar) %>%
+  select(ShortwaveRadiation_Wm2, AirTemp_C, Date) %>%
+  mutate(Lake = LAKE)
+
+#No ice
+solstice <- as.Date("2023-06-21")
+ice_batur <- data.frame(Lake = LAKE,
+                  Season = "Open water",
+                  Method = "Ice",
+                  start = 0,
+                  end = 365) %>%
+  mutate(Solstice = solstice)
+```
+
+# Tanganyika
+
+```{r}
+LAKE = "Lake Tanganyika" 
+
+# Load data
+in_lake_data <- read_csv("../01a_Raw_data/DATA_Casts_forSeasonsMS_v1.csv") %>%
+  mutate(Date = as.Date(Date))
+
+# Format continuous data
+in_lake_formatted_tanganyika <- in_lake_data %>%
+  select(Date, Temp, DO, Chla, Depth) %>%
+  rename(Depth_m = Depth,
+         WaterTemperature_C = Temp,
+         DO_mgL = DO,
+         Chla_ugL = Chla) %>%
+  mutate(Lake = LAKE) %>%
+  select(Lake, Date, Depth_m, WaterTemperature_C, DO_mgL, Chla_ugL)
+
+# Load data
+met <- read_csv("../01a_Raw_data/DATA_Weather_forSeasonsMS_v1.csv")
+
+# Format continuous data
+met_formatted_tanganyika <- met %>%
+  mutate(Date = as.Date(Date)) %>%
+  rename(AirTemp_C = Temp_mean,
+         ShortwaveRadiation_Wm2 = PAR_mean) %>%
+  select(ShortwaveRadiation_Wm2, AirTemp_C, Date) %>%
+  mutate(Lake = LAKE)
+
+#No ice
+solstice <- as.Date("2012-06-21")
+ice_tanganyika <- data.frame(Lake = LAKE,
+                  Season = "Open water",
+                  Method = "Ice",
+                  start = 0,
+                  end = 365) %>%
+  mutate(Solstice = solstice)
+```
+
 # Combine
 
 ```{r}
 #Met
-met_all <- met_formatted_mid %>%
-  bind_rows(met_formatted_rere) %>%
-  bind_rows(met_formatted_mo) %>%
-  bind_rows(met_formatted_erk) %>%
-  bind_rows(met_formatted_ar) %>%
+met_all <- met_formatted_midway %>%
+  bind_rows(met_formatted_rerewhakaaitu) %>%
+  bind_rows(met_formatted_mohonk) %>%
+  bind_rows(met_formatted_erken) %>%
+  bind_rows(met_formatted_arendsee) %>%
+  bind_rows(met_formatted_batur) %>%
+  bind_rows(met_formatted_tanganyika) %>%
   select(Lake, Date, 
          AirTemp_C, ShortwaveRadiation_Wm2, ShortwaveRadiationClear_Wm2) %>%
   mutate(across(-Date, ~ifelse(is.nan(.x), NA, .x)))
@@ -298,10 +384,12 @@ write_excel_csv(met_all, "Met_all.csv")
 
 #Ice
 ice_all <- ice_mi %>%
-  bind_rows(ice_re) %>%
-  bind_rows(ice_mo) %>%
-  bind_rows(ice_er) %>%
-  bind_rows(ice_ar)
+  bind_rows(ice_rerewhakaaitu) %>%
+  bind_rows(ice_mohonk) %>%
+  bind_rows(ice_erken) %>%
+  bind_rows(ice_arendsee) %>%
+  bind_rows(ice_batur) %>%
+  bind_rows(ice_tanganyika)
 
 format_ice <- function(start, end, Season, Lake, solstice){
   out <- data.frame(Date = as.Date(solstice + start):as.Date(solstice + end),
@@ -320,11 +408,13 @@ ice_edi <- ice_all %>%
   summarize(Ice_binary = ifelse(sum(Ice) >= 1, 1, 0))
 
 #In lake
-in_lake_all <- in_lake_formatted_mid %>%
-  bind_rows(in_lake_formatted_rere) %>%
-  bind_rows(in_lake_formatted_mo) %>%
-  bind_rows(in_lake_formatted_erk) %>%
-  bind_rows(in_lake_formatted_ar) %>%
+in_lake_all <- in_lake_formatted_midway %>%
+  bind_rows(in_lake_formatted_rerewhakaaitu) %>%
+  bind_rows(in_lake_formatted_mohonk) %>%
+  bind_rows(in_lake_formatted_erken) %>%
+  bind_rows(in_lake_formatted_arendsee) %>%
+  bind_rows(in_lake_formatted_tanganyika) %>%
+  bind_rows(in_lake_formatted_batur)%>%
   select(Lake, Date, Depth_m, WaterTemperature_C, DO_mgL, Chla_ugL, Chla_RFU) %>%
   full_join(ice_edi) %>%
   mutate(across(-Date, ~ifelse(is.nan(.x), NA, .x)))

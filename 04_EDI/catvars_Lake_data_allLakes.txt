@@ -6,3 +6,5 @@ Lake	Midway Pond	Midway Pond
 Lake	Mohonk Lake	Mohonk Lake
 Ice_binary	1	Ice cover
 Ice_binary	0	Open water
+Lake	Lake Batur	Lake Batur
+Lake	Lake Tanganyika	Lake Tanganyika

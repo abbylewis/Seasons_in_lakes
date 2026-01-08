@@ -4,5 +4,7 @@ Layer	Surface	Measurement from lake surface
 Lake	Arendsee	Arendsee
 Lake	Lake Erken	Lake Erken
 Lake	Lake Rerewhakaaitu	Lake Rerewhakaaitu
+Lake	Lake Batur	Lake Batur
+Lake	Lake Tanganyika	Lake Tanganyika
 Lake	Midway Pond	Midway Pond
 Lake	Mohonk Lake	Mohonk Lake

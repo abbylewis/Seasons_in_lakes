@@ -38,7 +38,7 @@ template_core_metadata(path = ".",
 
 template_table_attributes(path = ".",
                        data.path = ".",
-                       data.table = c("Met.csv", "Lake_data.csv"),
+                       data.table = c("Met_all.csv", "Lake_data_allLakes.csv"),
                        write.file = TRUE)
 
 template_geographic_coverage(path = ".",
@@ -102,8 +102,8 @@ make_eml(
   path = ".",
   data.path = ".",
   eml.path = ".",
-  dataset.title = "Seasonality of in-lake and meteorological data from five lakes, including daily measurements of water temperature, chlorophyll-a, dissolved oxygen, ice cover, air temperature, and solar radiation",
-  temporal.coverage = c("2014-12-20", "2024-06-11"),
+  dataset.title = "Seasonality of in-lake and meteorological data from seven lakes, including daily measurements of water temperature, chlorophyll-a, dissolved oxygen, ice cover, air temperature, and solar radiation",
+  temporal.coverage = c("2012-06-21", "2024-10-16"),
   maintenance.description = 'completed',
   data.table = c("Lake_data_allLakes.csv",
                  "Met_all.csv"),
