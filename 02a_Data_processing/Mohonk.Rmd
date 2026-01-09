@@ -34,7 +34,7 @@ in_lake_formatted <- in_lake_data %>%
                values_to = "Value") %>%
   group_by(name, Date) %>%
   filter(!is.na(Value)) %>%
-  mutate(Layer = case_when(Depth_m == 1~"Surface",
+  mutate(Layer = case_when(Depth_m == 0~"Surface",
                            Depth_m == 9~"Bottom")) %>%
   filter(!is.na(Layer)) %>%
   ungroup() %>%

@@ -125,11 +125,11 @@ Ice data
 (no ice)
 ```{r}
 #Load data
-ice_formatted <- data.frame(Season = "Open water",
+ice_formatted <- data.frame(Lake = LAKE,
+                            Season = "Open water",
+                            Method = "Ice",
                             start = 0, 
-                            end = 365,
-                            Lake = LAKE,
-                            Method = "Ice")
+                            end = 365)
 
 write.csv(ice_formatted, "../01b_Processed_data/Batur_ice.csv", row.names = F)
 ```

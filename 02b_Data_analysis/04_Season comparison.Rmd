@@ -97,7 +97,7 @@ for_plot <- continuous %>%
             label_height = max(Value),
             month_mean = mean(Value[Method == "Months"], na.rm = T),
             astro_mean = mean(Value[Method == "Astronomical"], na.rm = T),
-            dif = month_mean - astro_mean,
+            dif = astro_mean - month_mean,
             pct_dif = dif / abs((month_mean + astro_mean)/2) * 100) %>%
   mutate(label = substr(Lake, 1,2))
 
@@ -105,11 +105,11 @@ jpeg("../03a_Figures/All_vars_color_abs.jpg", width = 6, height = 5, units = "in
 for_plot %>%
   mutate(label = substr(Lake, 1,2)) %>%
   ggplot(aes(x = Season, y = dif)) +
-  ylab("Difference in mean value between\nmonthly and astronomical definitions")+
+  geom_hline(yintercept = 0, color = "grey50")+
+  ylab("Difference in mean value between\nastronomical and monthly definitions")+
   geom_boxplot(color = "grey80", outlier.shape = NA)+
   geom_jitter(aes(fill = abs(lats), shape = sig), width = 0.2, 
               color = "black", stroke = 0.2, size = 1.7) +
-  geom_hline(yintercept = 0)+
   facet_wrap(~Variable, scales = "free_y", ncol = 3)+
   theme_bw(base_size = 9)+
   scale_shape_manual(name = "Significance of difference\nbetween definitions\nat each lake",
@@ -183,10 +183,10 @@ strat <- continuous %>%
             label_height = max(Value),
             strat_mean = mean(Value[Method == "Stratification"], na.rm = T),
             astro_mean = mean(Value[Method == "Astronomical"], na.rm = T),
-            dif = strat_mean - astro_mean,
+            dif = astro_mean - strat_mean,
             pct_dif = dif / abs((strat_mean + astro_mean)/2) * 100) %>%
   mutate(label = substr(Lake, 1,2),
-         Comp = "Stratification~vs.~Astronomical")
+         Comp = "Astronomical~vs.~Stratification")
 
 #Repeat for ice
 ice <- continuous %>%
@@ -224,14 +224,14 @@ ice <- continuous %>%
             label_height = max(Value),
             ice_mean = mean(Value[Method == "Ice"], na.rm = T),
             astro_mean = mean(Value[Method == "Astronomical"], na.rm = T),
-            dif = ice_mean - astro_mean,
+            dif = astro_mean - ice_mean,
             pct_dif = dif / abs((ice_mean + astro_mean)/2) * 100) %>%
   mutate(label = substr(Lake, 1,2),
-         Comp = "Ice~vs.~Astronomical")
+         Comp = "Astronomical~vs.~Ice")
 
 jpeg("../03a_Figures/SI - ice strat comp.jpg", width = 5, height = 7, units = "in", res = 300)
 for_plot %>%
-  mutate(Comp = "Months~vs.~Astronomical",
+  mutate(Comp = "Astronomical~vs.~Months",
          Variable = factor(Variable, 
                            levels = labels,
                            labels = labs_short)) %>%
@@ -240,15 +240,15 @@ for_plot %>%
   bind_rows(strat) %>%
   mutate(label = substr(Lake, 1,2),
          Comp = factor(Comp,
-                       levels = c("Months~vs.~Astronomical", 
-                                  "Stratification~vs.~Astronomical",
-                                  "Ice~vs.~Astronomical"))) %>%
+                       levels = c("Astronomical~vs.~Months", 
+                                  "Astronomical~vs.~Stratification",
+                                  "Astronomical~vs.~Ice"))) %>%
   ggplot(aes(x = Season, y = dif)) +
   ylab("Difference in mean value between\nmonthly and astronomical definitions")+
+  geom_hline(yintercept = 0, color = "grey50")+
   geom_boxplot(color = "grey80", outlier.shape = NA)+
   geom_jitter(aes(fill = abs(lats), shape = sig), width = 0.2, 
               color = "black", stroke = 0.2, size = 1.5) +
-  geom_hline(yintercept = 0)+
   facet_grid(Variable~Comp, scales = "free", labeller = label_parsed)+
   theme_bw(base_size = 9)+
   scale_shape_manual(name = "Significance of difference\nbetween definitions\nat each lake",

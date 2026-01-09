@@ -492,7 +492,7 @@ all_tanganyika<-all_tanganyika%>%
  scale_y_continuous(limits=c(y_limit_lower,y_limit_upper))+
     #text at the top for label####
  geom_text(data=tibble(x=2*2*pi/365,y=y_limit_upper),aes(x=x,y=y),
-           label="b) Tanganyika Lake",
+           label="b) Lake Tanganyika",
            size = 4.2, 
            vjust = 1)+
     

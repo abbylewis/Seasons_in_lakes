@@ -8,9 +8,9 @@
 
 ## 0) Packages ----
 library(data.table)
+library(tidyverse)
 library(lubridate)
 library(sf)
-library(ggplot2)
 library(rnaturalearth)
 library(rnaturalearthdata)
 library(scales)
@@ -192,7 +192,7 @@ make_cyclic_pal <- function(n = 366, c = 60, l = 70) {
 pal_cyclic <- make_cyclic_pal(366, c = 60, l = 70)
 doy_vals   <- 1:366
 
-min(pts_wgs$geometry)
+max(pts_wgs$sd)
 
 ## 10) Build the three maps (faceted vertically), suppress internal legends ----
 p_map <- ggplot() +
@@ -209,7 +209,9 @@ p_map <- ggplot() +
     limits = c(1, 366), guide = "none"
   ) +
   # Map dot size directly to SD (days), reversed so larger SD => smaller dots (less certain)
-  scale_size(range = c(0.2, 3), trans = "reverse",
+  scale_size(range = c(0.0001, 3), 
+             breaks = c(5, 65, 125),
+             trans = "reverse",
              name = "SD of peak DOY\n(days)") +
   facet_wrap(~ var, ncol = 2) +
   theme_map() +
@@ -273,7 +275,7 @@ final_plot <- p_map_final %>%
   ggdraw() +
   draw_plot(leg_size_panel,
             x = .78, 
-            y = .48,
+            y = .455,
             width = 0.2, 
             height = 0.4,
             vjust = 1, hjust = 0) +
