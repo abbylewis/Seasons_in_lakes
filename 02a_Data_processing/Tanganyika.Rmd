@@ -32,30 +32,30 @@ In-lake data (temperature, chlorophyll-a, stratification)
 
 ```{r}
 # Load data
-in_lake_data <- read_csv("../01a_Raw_data/DATA_Casts_forSeasonsMS_v1.csv") %>%
+in_lake_data <- read_csv("https://pasta-s.lternet.edu/package/data/eml/edi/1312/10/f8e0e7b22826772424f156b9565d1498") %>%
+  filter(Lake == "Lake Tanganyika") %>%
   mutate(day = as.Date(Date) + offset,
          yday = yday(day)) %>%
   filter(year(day) == 2013,
-         !is.na(yday)) 
+         !is.na(yday))
 
 # Format continuous data
 in_lake_formatted <- in_lake_data %>%
-  select(day, yday, Temp, DO, Chla, Depth) %>%
-  pivot_longer(c("Temp", "DO", "Chla"),
+  select(-c(Chla_RFU, Ice_binary)) %>%
+  pivot_longer(c("WaterTemperature_C", "DO_mgL", "Chla_ugL"),
                values_to = "Value") %>%
-  group_by(name, day) %>%
-  mutate(Layer = case_when(Depth == 5~"Surface",
-                           Depth == max(Depth)~"Bottom")) %>%
+  group_by(name, Date) %>%
+  mutate(Layer = case_when(Depth_m == 5~"Surface",
+                           Depth_m == max(Depth_m)~"Bottom")) %>%
   filter(!is.na(Layer)) %>%
   ungroup() %>%
   mutate(Variable = paste(Layer, name),
          Variable = case_match(Variable,
-                               "Surface Temp"~"Surface_temperature",
-                               "Bottom Temp"~"Bottom_temperature",
-                               "Surface Chla"~"Surface_chla",
-                               "Surface DO"~"Surface_DO",
-                               "Bottom DO"~"Bottom_DO"
-                               )) %>%
+                               "Surface WaterTemperature_C"~"Surface_temperature",
+                               "Surface DO_mgL"~"Surface_DO",
+                               "Bottom WaterTemperature_C"~"Bottom_temperature",
+                               "Bottom DO_mgL"~"Bottom_DO",
+                               "Surface Chla_ugL"~"Surface_chla")) %>%
   filter(!is.na(Variable)) %>%
   mutate(Lake = LAKE) %>%
   select(Variable, Value, yday, Lake)
@@ -101,16 +101,16 @@ Meteorological data
 
 ```{r}
 # Load data
-met <- read_csv("../01a_Raw_data/DATA_Weather_forSeasonsMS_v1.csv")
+met <- read_csv("https://pasta-s.lternet.edu/package/data/eml/edi/1312/10/e312838eff13f56594021498f35c04cd")
 
 # Format continuous data
 met_formatted <- met %>%
+  filter(Lake == "Lake Tanganyika") %>%
   mutate(Date = as.Date(Date) + offset,
          doy = yday(Date)) %>%
   filter(year(Date) == 2013) %>%
-  rename(AirTemp_C_Average = Temp_mean,
-         Shortwave = PAR_mean) %>%
-  select(Shortwave, AirTemp_C_Average, Date) %>%
+  rename(AirTemp_C_Average = AirTemp_C,
+         Shortwave = ShortwaveRadiation_Wm2) %>%
   pivot_longer(c(AirTemp_C_Average, Shortwave), names_to = "Variable", values_to = "Value") %>%
   mutate(yday = yday(Date)) %>%
   select(Variable, Value, yday) %>%
@@ -123,11 +123,34 @@ Ice data
 (no ice)
 ```{r}
 #Load data
-ice_formatted <- data.frame(Season = "Open water",
-                            start = 0, 
-                            end = 365,
-                            Lake = LAKE,
-                            Method = "Ice")
+ice <- read.csv("https://pasta-s.lternet.edu/package/data/eml/edi/1312/10/f8e0e7b22826772424f156b9565d1498") 
+
+ice_formatted <- ice %>%
+  filter(Lake == "Lake Tanganyika",
+         !is.na(Ice_binary)) %>%
+  group_by(Lake, Date) %>%
+  summarize(Ice_binary = ifelse(sum(Ice_binary) >= 1, 1, 0)) %>%
+  group_by(Lake) %>%
+  arrange(Lake, Date) %>%
+  mutate(start = ifelse(Date == first(Date) |
+                          !Ice_binary == lag(Ice_binary),
+                        Date, NA),
+         ) %>%
+  filter(!is.na(start) | Date == last(Date)) %>%
+  mutate(end = lead(Date),
+         start = as.numeric(difftime(as.Date(start), 
+                                     as.Date(first(Date)), 
+                                     units="days")),
+         end = as.numeric(difftime(as.Date(end), 
+                                   as.Date(first(Date)), 
+                                   units="days")),
+         Season = case_match(Ice_binary,
+                             1~"Ice",
+                             0~"Open water"), 
+         Method = "Ice",
+         Lake = LAKE) %>%
+  filter(!is.na(start)) %>%
+  select(Lake, Season, Method, start, end)
 
 write.csv(ice_formatted, "../01b_Processed_data/Tanganyika_ice.csv", row.names = F)
 ```
