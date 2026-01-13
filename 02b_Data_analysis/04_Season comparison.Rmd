@@ -11,7 +11,6 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(ggpubr)
-library(ggnewscale) # For multiple color scales on the discrete panel
 library(ggtext)
 
 #The ../03a_Figures folder is not pushed to GitHub
