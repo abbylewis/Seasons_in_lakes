@@ -28,7 +28,8 @@ Mohonk Lake
 
 Mohonk Lake (41.766 °N, 74.158 °W; Zmax = 18.5 m; Surface area = 6.9 ha) is an oligo/mesotrophic glacial lake located in the mid Hudson Valley, NY, USA (Oleksy & Richardson, 2024). Mohonk Lake is dimictic and experiences ~30 days of ice cover per year (Oleksy & Richardson, 2024). From November 2016 to May 2018, high‐frequency (15‐minute) temperature data were collected using NexSens T‐Node temperature loggers at 1‐m intervals from the surface to 9 m deep. We matched those data with data from a high‐frequency (1‐hr) meteorology station <5 km from Mohonk Lake (Brotzge et al., 2020). Meteorological data were linearly interpolated to 15‐minute intervals to match the lake thermal data. Both meteorological and in-lake data collection methods are described in the published data product (Mohonk Preserve et al., 2020).
 
-References
+REFERENCES
+
 Bärenbold, F., Plüss, M., Runnalls, J., Herold, T., Bouffard, D., & Schmid, M. (2025). High-frequency lake monitoring and weather station data from Lake Ägeri, Switzerland, 2022-2024. [Data set]. Retrieved from https://www.datalakes-eawag.ch/datadetail/1077 
 
 Brotzge, J. A., Wang, J., Thorncroft, C. D., Joseph, E., Bain, N., Bassill, N., et al. (2020). A Technical Overview of the New York State Mesonet Standard Network. https://doi.org/10.1175/JTECH-D-19-0220.1 
