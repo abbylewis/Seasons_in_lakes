@@ -18,6 +18,8 @@ Lake Rerewhakaaitu (38.29 °S, 176.5 °E, Zmax = 15.8 m; Surface Area = 580 ha) 
 
 Lake Tanganyika
 
+Lake Tanganyika (3.3 °N–8.8 °S, 29.0–31.2 °E; Zmax ≈ 1470 m; Surface area ≈ 3,290,000 ha) is a large rift lake in East Africa. Between May and October, southeast trade winds and along-lake gradients in evaporative cooling drive basin-scale circulation and generate internal waves with periods of roughly 25–30 days. These waves weaken but persist through the wet season. Measurements for this study were collected at an offshore site near Kigoma, Tanzania (4.903766 °S, 29.590183°E), approximately 1.5 km from shore, using a YSI 6600 sonde. Local water depth at this location is ~140 m, and the thermocline typically occurs between 40 and 70 m. Weather data come from a nearby land-based U30-NRC Hobo weather station (4.885983 °S, 29.620867 °E).
+
 Midway Pond
 
 Midway Pond (44.931 °N, 70.541 °W; Zmax = 9 m; Surface area = 3.35 ha) is an oligotrophic, dimictic, glacially-formed lake with no inlets or outlets, located in the northern Appalachian Mountains, Maine, USA (Nelson et al., 2021). Since November 2022, in situ sensors have been deployed on a subsurface buoy line located at the deepest point in the lake. Temperature was recorded every 15 minutes at each 1 meter depth increment, from 0.5 m above the benthos to 1 m below the surface (HOBO Tidbit temperature loggers; Onset Computer Corporation, Bourne, MA). Dissolved oxygen was measured every 30 minutes at two locations: 0.5 m above the benthos and 1 m below the surface (MiniDOT dissolved oxygen meter; Precision Measurement Engineering, Vista, CA). Chlorophyll was measured at 30-minute intervals, located 1 m below the surface (Cyclops-7F CHL sensor, Turner Designs, San Jose, CA). Mean daily air temperature was sourced at the nearest National Weather Service station (Rangely airport), located 10 km from Midway Pond.
@@ -26,22 +28,47 @@ Mohonk Lake
 
 Mohonk Lake (41.766 °N, 74.158 °W; Zmax = 18.5 m; Surface area = 6.9 ha) is an oligo/mesotrophic glacial lake located in the mid Hudson Valley, NY, USA (Oleksy & Richardson, 2024). Mohonk Lake is dimictic and experiences ~30 days of ice cover per year (Oleksy & Richardson, 2024). From November 2016 to May 2018, high‐frequency (15‐minute) temperature data were collected using NexSens T‐Node temperature loggers at 1‐m intervals from the surface to 9 m deep. We matched those data with data from a high‐frequency (1‐hr) meteorology station <5 km from Mohonk Lake (Brotzge et al., 2020). Meteorological data were linearly interpolated to 15‐minute intervals to match the lake thermal data. Both meteorological and in-lake data collection methods are described in the published data product (Mohonk Preserve et al., 2020).
 
-REFERENCES
+References
+Bärenbold, F., Plüss, M., Runnalls, J., Herold, T., Bouffard, D., & Schmid, M. (2025). High-frequency lake monitoring and weather station data from Lake Ägeri, Switzerland, 2022-2024. [Data set]. Retrieved from https://www.datalakes-eawag.ch/datadetail/1077 
 
-Brotzge, J. A., Wang, J., Thorncroft, C. D., Joseph, E., Bain, N., Bassill, N., et al. (2020). A Technical Overview of the New York State Mesonet Standard Network. https://doi.org/10.1175/JTECH-D-19-0220.1
+Brotzge, J. A., Wang, J., Thorncroft, C. D., Joseph, E., Bain, N., Bassill, N., et al. (2020). A Technical Overview of the New York State Mesonet Standard Network. https://doi.org/10.1175/JTECH-D-19-0220.1 
 
-Jakobsson, E., Langenheder, S., Eklöv, P., & Weyhenmeyer, G. A. (2025). Effects of Changing Snow and Ice Cover Conditions on Phytoplankton Chlorophyll-a and Community Composition in a Mesotrophic Lake. Freshwater Biology, 70(3), e70012. https://doi.org/10.1111/fwb.70012
+Bruesewitz, D. A., Carey, C. C., Richardson, D. C., & Weathers, K. C. (2015). Under-ice thermal stratification dynamics of a large, deep lake revealed by high-frequency data. Limnology and Oceanography, 60(2), 347–359. https://doi.org/10.1002/lno.10014 
 
-Jordan, S., & Hupfer, M. (2018). Arendsee profiles multiparameter probe [Data set]. https://fred.igb-berlin.de/data/package/168.
+Carey, C. C., & Breef-Pilz, A. (2023). Time series of high-frequency meteorological data at Falling Creek Reservoir, Virginia, USA 2015-2022 [Data set]. Environmental Data Initiative. https://doi.org/10.6073/PASTA/F3F97C7FDD287C29084BF52FC759A801 
 
-Jordan, S., & Hupfer, M. (2020). Automatic measuring station at lake the deepest point of Lake Arendsee [Data set]. Freshwater Research and Environmental Database. Retrieved from https://fred.igb-berlin.de/data/package/37
+Carey, C. C., & Breef-Pilz, A. (2024). Ice cover data for Falling Creek Reservoir and Beaverdam Reservoir, Vinton, Virginia, USA for December 2013-December 2022 [Data set]. Environmental Data Initiative. https://doi.org/10.6073/PASTA/7D6BB61D52555A4B91024AD132B479F9 
 
-Jordan, S., & Hupfer, M. (2025). AR temperature-oxygen chain [Data set]. https://fred.igb-berlin.de/data/package/628: Freshwater Research and Environmental Database.
+Carey, C. C., Breef-Pilz, A., Bookout, B. J., McClure, R. P., & Wynne, J. H. (2023). Time series of high-frequency sensor data measuring water temperature, dissolved oxygen, conductivity, specific conductance, total dissolved solids, chlorophyll a, phycocyanin, fluorescent dissolved organic matter, and turbidity at discrete depths in Beaverdam Reservoir, Virginia, USA in 2016-2022 [Data set]. Environmental Data Initiative. https://doi.org/10.6073/PASTA/4182DE376FDE52E15D493FDD9F26D0C7 
 
-Mohonk Preserve, Belardo, C., Feldsine, N., Huth, P., Long, E. C., Napoli, M., et al. (2020). Weekly and high frequency temperature profile data and Secchi depth, Mohonk Lake, NY, USA, 1985 to 2017 [Data set]. Environmental Data Initiative. https://doi.org/10.6073/PASTA/7B67399344129AFC63CD57E99E778160
+Dugan, H. A., & Doran, P. T. (2025). High-frequency, hourly, and daily measurements from the West Lake Bonney “Blue Box” (WLBBB), McMurdo Dry Valleys, Antarctica (1996-2024, ongoing) [Data set]. Environmental Data Initiative. https://doi.org/10.6073/PASTA/5EDE066E97B9EE23AE7ABD2E9533A92B 
 
-Nelson, S. J., Hovel, R. A., Daly, J., Gavin, A., Dykema, S., & McDowell, W. H. (2021). Northeastern mountain ponds as sentinels of change: Current and emerging research and monitoring in the context of shifting chemistry and climate interactions. Atmospheric Environment, 264, 118694. https://doi.org/10.1016/j.atmosenv.2021.118694
+Dugan, H. A., Doran, P. T., & Fountain, A. G. (2025). High-frequency, hourly, and daily measurements from Lake Bonney Meteorological Station (BOYM), McMurdo Dry Valleys, Antarctica (1993-2025, ongoing) [Data set]. Environmental Data Initiative. https://doi.org/10.6073/PASTA/3E680FF4A17518B1F391A599552362CF 
 
-Oleksy, I. A., & Richardson, D. C. (2024). Shorter Ice Duration and Changing Phenology Influence Under‐Ice Lake Temperature Dynamics. Journal of Geophysical Research. Biogeosciences, 129(11), e2024JG008382. https://doi.org/10.1029/2024JG008382
+Hamre, K. D., Lofton, M. E., McClure, R. P., Munger, Z. W., Doubek, J. P., Gerling, A. B., et al. (2018). In situ fluorometry reveals a persistent, perennial hypolimnetic cyanobacterial bloom in a seasonally anoxic reservoir. Freshwater Science, 37(3), 483–495. https://doi.org/10.1086/699327 
 
-Pierson, D. C., Weyhenmeyer, G. A., Arvola, L., Benson, B., Blenckner, T., Kratz, T., et al. (2011). An automated method to monitor lake ice phenology. Limnology and Oceanography: Methods, 9(2), 74–83. https://doi.org/10.4319/lom.2010.9.0074
+Jakobsson, E., Langenheder, S., Eklöv, P., & Weyhenmeyer, G. A. (2025). Effects of Changing Snow and Ice Cover Conditions on Phytoplankton Chlorophyll-a and Community Composition in a Mesotrophic Lake. Freshwater Biology, 70(3), e70012. https://doi.org/10.1111/fwb.70012 
+
+Jordan, S., & Hupfer, M. (2018). Arendsee profiles multiparameter probe [Data set]. https://fred.igb-berlin.de/data/package/168. 
+
+Jordan, S., & Hupfer, M. (2020). Automatic measuring station at lake the deepest point of Lake Arendsee [Data set]. Freshwater Research and Environmental Database. Retrieved from https://fred.igb-berlin.de/data/package/37 
+
+Jordan, S., & Hupfer, M. (2025). AR temperature-oxygen chain [Data set]. https://fred.igb-berlin.de/data/package/628: Freshwater Research and Environmental Database. 
+
+LSPA, Steele, B. G., & Weathers, K. C. (2022). High-Frequency Weather Data at Lake Sunapee, New Hampshire, USA, 2007-2020 [Data set]. Environmental Data Initiative. https://doi.org/10.6073/PASTA/F45E2D423B7C4B5EA52C801FE24D47D3 
+
+LSPA, Steele, B. G., & Weathers, K. C. (2023). Lake Sunapee Instrumented Buoy: High Frequency Water Quality Data - 2007-2022 [Data set]. Environmental Data Initiative. https://doi.org/10.6073/PASTA/ADF295AC76F3EF9BBF0DAC45EAF7FD2D 
+
+Mohonk Preserve, Belardo, C., Feldsine, N., Huth, P., Long, E. C., Napoli, M., et al. (2020). Weekly and high frequency temperature profile data and Secchi depth, Mohonk Lake, NY, USA, 1985 to 2017 [Data set]. Environmental Data Initiative. https://doi.org/10.6073/PASTA/7B67399344129AFC63CD57E99E778160 
+
+Nelson, S. J., Hovel, R. A., Daly, J., Gavin, A., Dykema, S., & McDowell, W. H. (2021). Northeastern mountain ponds as sentinels of change: Current and emerging research and monitoring in the context of shifting chemistry and climate interactions. Atmospheric Environment, 264, 118694. https://doi.org/10.1016/j.atmosenv.2021.118694 
+
+Oleksy, I. A., & Richardson, D. C. (2024). Shorter Ice Duration and Changing Phenology Influence Under‐Ice Lake Temperature Dynamics. Journal of Geophysical Research. Biogeosciences, 129(11), e2024JG008382. https://doi.org/10.1029/2024JG008382 
+
+Pierson, D. C., Weyhenmeyer, G. A., Arvola, L., Benson, B., Blenckner, T., Kratz, T., et al. (2011). An automated method to monitor lake ice phenology. Limnology and Oceanography: Methods, 9(2), 74–83. https://doi.org/10.4319/lom.2010.9.0074 
+
+Roberts, E. C., Priscu, J. C., Wolf, C., Lyons, W. B., & Laybourn-Parry, J. (2004). The distribution of microplankton in the McMurdo Dry Valley Lakes, Antarctica: response to ecosystem legacy or present-day climatic controls? Polar Biology, 27(4), 238–249. https://doi.org/10.1007/s00300-003-0582-0 
+
+Santoso, A. B., Hamilton, D. P., Nomosatryo, S., Sunaryani, A., Rustini, H. A., Rahmadya, A., et al. (2025). Stratification and mixing dynamics in tropical polymictic Lake Batur, Indonesia. Inland Waters. Retrieved from https://www.tandfonline.com/doi/abs/10.1080/20442041.2025.2598457 
+
+Woelmer, W. M., Thomas, R. Q., Olsson, F., Steele, B. G., Weathers, K. C., & Carey, C. C. (2024). Process-based forecasts of lake water temperature and dissolved oxygen outperform null models, with variability over time and depth. Ecological Informatics, 83, 102825. https://doi.org/10.1016/j.ecoinf.2024.102825 
