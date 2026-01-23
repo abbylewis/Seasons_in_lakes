@@ -32,7 +32,7 @@ In-lake data (temperature, chlorophyll-a, stratification)
 
 ```{r}
 # Load data
-in_lake_data <- read_csv("https://pasta-s.lternet.edu/package/data/eml/edi/1312/9/f8e0e7b22826772424f156b9565d1498") %>%
+in_lake_data <- read_csv("https://pasta.lternet.edu/package/data/eml/edi/2253/1/f8e0e7b22826772424f156b9565d1498") %>%
   filter(Lake == "Lake Rerewhakaaitu") %>%
   mutate(day = as.Date(Date) + offset,
          yday = yday(day)) %>%
@@ -101,7 +101,7 @@ Meteorological data
 
 ```{r}
 # Load data
-met <- read_csv("https://pasta-s.lternet.edu/package/data/eml/edi/1312/9/e312838eff13f56594021498f35c04cd")
+met <- read_csv("https://pasta.lternet.edu/package/data/eml/edi/2253/1/e312838eff13f56594021498f35c04cd")
 
 # Format continuous data
 met_formatted <- met %>%
@@ -123,7 +123,7 @@ Ice data
 (no ice)
 ```{r}
 #Load data
-ice <- read.csv("https://pasta-s.lternet.edu/package/data/eml/edi/1312/9/f8e0e7b22826772424f156b9565d1498") 
+ice <- read.csv("https://pasta.lternet.edu/package/data/eml/edi/2253/1/f8e0e7b22826772424f156b9565d1498") 
 
 ice_formatted <- ice %>%
   filter(Lake == "Lake Rerewhakaaitu",

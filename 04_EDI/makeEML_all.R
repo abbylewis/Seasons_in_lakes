@@ -113,7 +113,7 @@ make_eml(
                              "Meterological data"),
   user.id = 'alewis',
   user.domain = 'EDI',
-  package.id = 'edi.1312.10')
+  package.id = 'edi.2253.1')
 
 ## Step 8: Check your data product! ####
 # Return to the EDI staging environment (https://portal-s.edirepository.org/nis/home.jsp),
