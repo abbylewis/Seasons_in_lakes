@@ -14,28 +14,29 @@ library(sf)
 library(rnaturalearth)
 library(rnaturalearthdata)
 library(scales)
-library(patchwork)     # layout and wrap_elements()
-library(cowplot)       # get_legend()
+library(patchwork) # layout and wrap_elements()
+library(cowplot) # get_legend()
 
-#For circle plots
-compute_angle = function(perc){
-  angle = -1
-  
-  if(perc < 0.5) # 1st half [90, -90]
-    angle = (180 - (perc/0.5) * 180) - 90
-  else # 2nd half [90, -90]
-    angle = (90 - ((perc - 0.5)/0.5) * 180)
-  
+# For circle plots
+compute_angle <- function(perc) {
+  angle <- -1
+
+  if (perc < 0.5) { # 1st half [90, -90]
+    angle <- (180 - (perc / 0.5) * 180) - 90
+  } else { # 2nd half [90, -90]
+    angle <- (90 - ((perc - 0.5) / 0.5) * 180)
+  }
+
   return(angle)
 }
 
 ## 1) Inputs (edit paths as needed) ----
-path_dt   <- "01a_Raw_data/DATA_dailymean_chlatemplevel_v2.csv"
-path_pts  <- "01a_Raw_data/HydroLAKES_points_v10.dbf"
+path_dt <- "01a_Raw_data/DATA_dailymean_chlatemplevel_v2.csv"
+path_pts <- "01a_Raw_data/HydroLAKES_points_v10.dbf"
 # (You can also point to the .shp of HydroLAKES_points_v10; the .dbf works because it shares the basename.)
 
 ## 2) Load data ----
-dt <- fread(path_dt)    # expects columns: Hylak_id, date, lat, lon, temp, chla, level
+dt <- fread(path_dt) # expects columns: Hylak_id, date, lat, lon, temp, chla, level
 # Quick peek (optional)
 # head(dt); summary(dt)
 
@@ -91,7 +92,7 @@ cat("Remaining NA lakes (lon): ", dt[is.na(lon), uniqueN(Hylak_id)], "\n")
 dt[, `:=`(
   doy = yday(date),
   year = year(date),
-  diy  = ifelse(leap_year(date), 366L, 365L)
+  diy = ifelse(leap_year(date), 366L, 365L)
 )]
 
 ## 5) Circular statistics helper ----
@@ -103,51 +104,62 @@ circ_summary_days <- function(doy, diy) {
   if (sum(ok) < 1L) {
     return(list(doy_circ = NA_real_, sd_circ_days = NA_real_, n_years = 0L))
   }
-  doy <- as.numeric(doy[ok]); diy <- as.numeric(diy[ok])
-  
+  doy <- as.numeric(doy[ok])
+  diy <- as.numeric(diy[ok])
+
   # Map DOY -> angle on [0, 2π)
   theta <- 2 * pi * (doy - 1) / diy
-  
+
   C <- mean(cos(theta))
   S <- mean(sin(theta))
   Rbar <- sqrt(C^2 + S^2)
-  
+
   # Circular mean angle -> map back to a canonical 365-day DOY
-  mu <- atan2(S, C); if (mu < 0) mu <- mu + 2 * pi
+  mu <- atan2(S, C)
+  if (mu < 0) mu <- mu + 2 * pi
   doy_circ <- 1 + 365 * mu / (2 * pi)
-  
+
   # Circular SD in radians, then convert to days on 365-day circle
   sd_rad <- sqrt(pmax(0, -2 * log(pmax(Rbar, .Machine$double.eps))))
   sd_circ_days <- sd_rad * 365 / (2 * pi)
-  
-  list(doy_circ = as.numeric(doy_circ),
-       sd_circ_days = as.numeric(sd_circ_days),
-       n_years = length(theta))
+
+  list(
+    doy_circ = as.numeric(doy_circ),
+    sd_circ_days = as.numeric(sd_circ_days),
+    n_years = length(theta)
+  )
 }
 
 ## 6) Extract yearly peak DOY per variable, then summarize circularly per lake ----
 # Ties (multiple equal maxima in a year) are resolved by taking the first (earliest).
 peak_doy_circular <- function(DT, var) {
   yr_peaks <- DT[!is.na(get(var)),
-                 .SD[which.max(get(var)), .(doy, diy)],
-                 by = .(Hylak_id, year)]
+    .SD[which.max(get(var)), .(doy, diy)],
+    by = .(Hylak_id, year)
+  ]
   res <- yr_peaks[, as.list(circ_summary_days(doy, diy)), by = Hylak_id]
-  setnames(res,
-           c("doy_circ", "sd_circ_days", "n_years"),
-           c(paste0("doy_peak_", var),
-             paste0("sd_days_", var),
-             paste0("n_years_", var)))
+  setnames(
+    res,
+    c("doy_circ", "sd_circ_days", "n_years"),
+    c(
+      paste0("doy_peak_", var),
+      paste0("sd_days_", var),
+      paste0("n_years_", var)
+    )
+  )
   res
 }
 
-res_chla  <- peak_doy_circular(dt, "chla")
-res_temp  <- peak_doy_circular(dt, "temp")
+res_chla <- peak_doy_circular(dt, "chla")
+res_temp <- peak_doy_circular(dt, "temp")
 res_level <- peak_doy_circular(dt, "level")
 
 # Merge and attach one set of coords per lake
 coords_once <- unique(dt[, .(Hylak_id, lat, lon)])
-res <- Reduce(function(x, y) merge(x, y, by = "Hylak_id", all = TRUE),
-              list(res_chla, res_temp, res_level))
+res <- Reduce(
+  function(x, y) merge(x, y, by = "Hylak_id", all = TRUE),
+  list(res_chla, res_temp, res_level)
+)
 res <- coords_once[res, on = "Hylak_id"]
 
 # Quick sanity check (optional)
@@ -158,136 +170,160 @@ res <- coords_once[res, on = "Hylak_id"]
 
 # Keep lakes with complete DOY estimates for all three variables
 res_complete <- res[!is.na(doy_peak_chla) &
-                      !is.na(doy_peak_temp) &
-                      !is.na(doy_peak_level)]
+  !is.na(doy_peak_temp) &
+  !is.na(doy_peak_level)]
 
 ## 7) Prepare mapping table (long format: one row per lake × variable) ----
 long <- rbindlist(list(
-  res_complete[, .(Hylak_id, lat, lon, var = "Chlorophyll-a",
-                   doy = as.numeric(doy_peak_chla),
-                   sd  = as.numeric(sd_days_chla))],
-  res_complete[, .(Hylak_id, lat, lon, var = "Water level",
-                   doy = as.numeric(doy_peak_level),
-                   sd  = as.numeric(sd_days_level))],
-  res_complete[, .(Hylak_id, lat, lon, var = "Temperature",
-                   doy = as.numeric(doy_peak_temp),
-                   sd  = as.numeric(sd_days_temp))]
+  res_complete[, .(Hylak_id, lat, lon,
+    var = "Chlorophyll-a",
+    doy = as.numeric(doy_peak_chla),
+    sd = as.numeric(sd_days_chla)
+  )],
+  res_complete[, .(Hylak_id, lat, lon,
+    var = "Water level",
+    doy = as.numeric(doy_peak_level),
+    sd = as.numeric(sd_days_level)
+  )],
+  res_complete[, .(Hylak_id, lat, lon,
+    var = "Temperature",
+    doy = as.numeric(doy_peak_temp),
+    sd = as.numeric(sd_days_temp)
+  )]
 ), use.names = TRUE)
 
 # Drop rows with missing essentials (paranoia)
 long <- long[!is.na(lat) & !is.na(lon) & !is.na(doy) & !is.na(sd)]
 
 ## 8) Convert points to sf, get land polygons, set Robinson CRS ----
-pts_wgs   <- st_as_sf(long, coords = c("lon", "lat"), crs = 4326)
-land      <- rnaturalearth::ne_countries(scale = "medium", returnclass = "sf")
+pts_wgs <- st_as_sf(long, coords = c("lon", "lat"), crs = 4326)
+land <- rnaturalearth::ne_countries(scale = "medium", returnclass = "sf")
 crs_robin <- "+proj=robin +datum=WGS84 +no_defs"
-n_lakes <- length(unique(long$Hylak_id)) #96
+n_lakes <- length(unique(long$Hylak_id)) # 96
 
 ## 9) Define a truly cyclic color palette for DOY (1 ≡ 366) ----
 # Use base grDevices::hcl to generate a hue wheel; consistent lightness/chroma
 make_cyclic_pal <- function(n = 366, c = 60, l = 70) {
-  h <- seq(0, 360, length.out = n + 1)[1:n]  # wrap hue; drop duplicate endpoint
+  h <- seq(0, 360, length.out = n + 1)[1:n] # wrap hue; drop duplicate endpoint
   grDevices::hcl(h = h, c = c, l = l)
 }
 pal_cyclic <- make_cyclic_pal(366, c = 60, l = 70)
-doy_vals   <- 1:366
+doy_vals <- 1:366
 
 max(pts_wgs$sd)
 
 ## 10) Build the three maps (faceted vertically), suppress internal legends ----
 p_map <- ggplot() +
   geom_sf(data = land, fill = "grey90", color = NA) +
-  geom_sf(data = pts_wgs %>%
-            mutate(var = factor(var, levels = c("Temperature", "Water level", "Chlorophyll-a"))), 
-          aes(color = doy, size = sd), 
-          shape = 21) +
+  geom_sf(
+    data = pts_wgs %>%
+      mutate(var = factor(var, levels = c("Temperature", "Water level", "Chlorophyll-a"))),
+    aes(color = doy, size = sd),
+    shape = 21
+  ) +
   coord_sf(crs = crs_robin) +
   scale_color_gradientn(
-    colors = c("#3E4A89","#31688E","#32A287","#56C667",
-               "#F9C74F","#F8961E","#D1495B","#7E3F8F","#3E4A89"),
+    colors = c(
+      "#3E4A89", "#31688E", "#32A287", "#56C667",
+      "#F9C74F", "#F8961E", "#D1495B", "#7E3F8F", "#3E4A89"
+    ),
     values = rescale(doy_vals, to = c(0, 1), from = c(1, 366)),
     limits = c(1, 366), guide = "none"
   ) +
   # Map dot size directly to SD (days), reversed so larger SD => smaller dots (less certain)
-  scale_size(range = c(0.0001, 3), 
-             breaks = c(5, 65, 125),
-             trans = "reverse",
-             name = "SD of peak DOY\n(days)") +
-  facet_wrap(~ var, ncol = 2) +
+  scale_size(
+    range = c(0.0001, 3),
+    breaks = c(5, 65, 125),
+    trans = "reverse",
+    name = "SD of peak DOY\n(days)"
+  ) +
+  facet_wrap(~var, ncol = 2) +
   theme_map() +
   theme(
     panel.background = element_rect(fill = "white", color = NA),
-    plot.background  = element_rect(fill = "white", color = NA),
+    plot.background = element_rect(fill = "white", color = NA),
     strip.text = element_text(size = 12),
-    legend.title = element_text(hjust = 0, 
-                              size = 11),
+    legend.title = element_text(
+      hjust = 0,
+      size = 11
+    ),
     plot.margin = margin(t = 0, r = 0, b = 0, l = 0)
   )
 
-p_map 
+p_map
 
 ## 11) Build a circular DOY legend (month labels around a color wheel) ----
-first_day_doy <- yday(as.Date(paste0("2022-",1:12,"-01")))
+first_day_doy <- yday(as.Date(paste0("2022-", 1:12, "-01")))
 month_ang <- 2 * pi * (first_day_doy - 1) / 365
-angs <- data.frame(perc = first_day_doy/366) %>%
+angs <- data.frame(perc = first_day_doy / 366) %>%
   rowwise() %>%
   mutate(angs = compute_angle(perc)) %>%
   pull(angs)
 
-n_tiles = 1000
+n_tiles <- 1000
 legend_df <- data.table(
-  doy = seq(0,366,length.out = n_tiles),
+  doy = seq(0, 366, length.out = n_tiles),
   ang = seq(0, 2 * pi, length.out = n_tiles),
-  perc = seq(0,1,length.out = n_tiles),
-  r   = 1
-) 
+  perc = seq(0, 1, length.out = n_tiles),
+  r = 1
+)
 
 p_wheel <- legend_df %>%
   ggplot(aes(x = ang, fill = doy, color = doy)) +
   geom_rect(aes(width = (2 * pi) / n_tiles * 3), ymin = 0.6, ymax = 1) + # ring thickness
   coord_polar(theta = "x") +
   theme_void() +
-  ylim(c(0,2))+
+  ylim(c(0, 2)) +
   scale_fill_gradientn(
-    colors = c("#3E4A89","#31688E","#32A287","#56C667",
-               "#F9C74F","#F8961E","#D1495B","#7E3F8F","#3E4A89")
+    colors = c(
+      "#3E4A89", "#31688E", "#32A287", "#56C667",
+      "#F9C74F", "#F8961E", "#D1495B", "#7E3F8F", "#3E4A89"
+    )
   ) +
   scale_color_gradientn(
-    colors = c("#3E4A89","#31688E","#32A287","#56C667",
-               "#F9C74F","#F8961E","#D1495B","#7E3F8F","#3E4A89")
+    colors = c(
+      "#3E4A89", "#31688E", "#32A287", "#56C667",
+      "#F9C74F", "#F8961E", "#D1495B", "#7E3F8F", "#3E4A89"
+    )
   ) +
-  annotate("text", x = as.numeric(month_ang), y = 1.7, angle = angs,
-           label = month.abb, size = 3) +
+  annotate("text",
+    x = as.numeric(month_ang), y = 1.7, angle = angs,
+    label = month.abb, size = 3
+  ) +
   labs(title = "DOY of max") +
   theme(
-    plot.title = element_text(hjust = 0, 
-                              margin = margin(b = 0, l = 5),
-                              size = 11),
+    plot.title = element_text(
+      hjust = 0,
+      margin = margin(b = 0, l = 5),
+      size = 11
+    ),
     plot.margin = margin(t = 0, r = 0, b = 0, l = 0),
     legend.position = "none"
   )
 
 p_wheel_panel <- p_wheel
 leg_size_panel <- cowplot::plot_grid(cowplot::get_legend(p_map))
-p_map_final <- p_map+theme(legend.position = "none")
+p_map_final <- p_map + theme(legend.position = "none")
 
-final_plot <- p_map_final %>% 
+final_plot <- p_map_final %>%
   ggdraw() +
   draw_plot(leg_size_panel,
-            x = .78, 
-            y = .455,
-            width = 0.2, 
-            height = 0.4,
-            vjust = 1, hjust = 0) +
+    x = .78,
+    y = .455,
+    width = 0.2,
+    height = 0.4,
+    vjust = 1, hjust = 0
+  ) +
   draw_plot(p_wheel_panel,
-            x = .55, 
-            y = .41,
-            width = 0.2, 
-            height = 0.4,
-            vjust = 1, hjust = 0)
+    x = .55,
+    y = .41,
+    width = 0.2,
+    height = 0.4,
+    vjust = 1, hjust = 0
+  )
 
 ## 14) (Optional) Save to file ----
- ggsave("03a_Figures/lake_peak_doy_global_robinson_cycliclegend_right.png",
-        final_plot, width = 6, height = 3.7, dpi = 300)
-
-
+ggsave("03a_Figures/lake_peak_doy_global_robinson_cycliclegend_right.png",
+  final_plot,
+  width = 6, height = 3.7, dpi = 300
+)

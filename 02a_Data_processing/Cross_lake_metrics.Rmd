@@ -17,12 +17,14 @@ Months and solstice/equinox for both hemispheres
 
 ```{r}
 temperate <- read.csv("../01a_Raw_data/Temperate_seasons.csv") %>%
-  mutate(start = as.Date(start),
-         end = as.Date(end),
-         start = ifelse(Hemisphere == "Northern", yday(start + nh_offset), yday(start + sh_offset)),
-         end = ifelse(Hemisphere == "Northern", yday(end + nh_offset), yday(end + sh_offset)))
+  mutate(
+    start = as.Date(start),
+    end = as.Date(end),
+    start = ifelse(Hemisphere == "Northern", yday(start + nh_offset), yday(start + sh_offset)),
+    end = ifelse(Hemisphere == "Northern", yday(end + nh_offset), yday(end + sh_offset))
+  )
 
-temperate_format = temperate %>%
+temperate_format <- temperate %>%
   filter(start > end) %>%
   mutate(end = 365) %>%
   full_join(temperate) %>%
@@ -30,7 +32,8 @@ temperate_format = temperate %>%
   filter(!end == 1)
 
 write.csv(temperate_format,
-          "../01b_Processed_data/Temperate_seasons.csv", 
-          row.names = FALSE)
+  "../01b_Processed_data/Temperate_seasons.csv",
+  row.names = FALSE
+)
 ```
 

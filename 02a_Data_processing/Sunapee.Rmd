@@ -14,10 +14,10 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(rLakeAnalyzer)
 
-#Offset so all yday values are from the winter solstice
+# Offset so all yday values are from the winter solstice
 solstice <- as.Date("2007-12-21")
-offset = as.Date("2008-01-01") - solstice
-LAKE = "Lake Sunapee (2008)"
+offset <- as.Date("2008-01-01") - solstice
+LAKE <- "Lake Sunapee (2008)"
 ```
 
 In-lake data (temperature, chlorophyll-a, stratification)
@@ -33,42 +33,56 @@ in_lake_data <- DO_2007 %>%
   full_join(DO_2008) %>%
   full_join(temp_2007) %>%
   full_join(temp_2008) %>%
-  mutate(Date = as.Date(datetime) + offset,
-         yday = yday(Date)) %>%
+  mutate(
+    Date = as.Date(datetime) + offset,
+    yday = yday(Date)
+  ) %>%
   filter(year(Date) == 2008) %>%
   group_by(yday) %>%
-  summarize(across(where(is.numeric), ~mean(., na.rm = T)))
+  summarize(across(where(is.numeric), ~ mean(., na.rm = T)))
 
 # Format continuous data
 in_lake_formatted <- in_lake_data %>%
-  rename(Surface_DO = oxygenDissolvedPercentOfSaturation_pct_1p5m,
-         Surface_temperature = waterTemperature_degC_0p5m) %>%
-  pivot_longer(cols = c(Surface_temperature, Surface_DO), 
-               names_to = "Variable", values_to = "Value") %>%
+  rename(
+    Surface_DO = oxygenDissolvedPercentOfSaturation_pct_1p5m,
+    Surface_temperature = waterTemperature_degC_0p5m
+  ) %>%
+  pivot_longer(
+    cols = c(Surface_temperature, Surface_DO),
+    names_to = "Variable", values_to = "Value"
+  ) %>%
   select(yday, Variable, Value) %>%
   mutate(Lake = LAKE)
-         
+
 write.csv(in_lake_formatted, "../01b_Processed_data/Sunapee_continuous.csv", row.names = F)
 
 # Stratification metric calcs (both discrete and continuous)
 strat_sum <- in_lake_data %>%
   group_by(yday) %>%
-  summarize(Diff_Dens_surf_bot = water.density(waterTemperature_degC_13p5m) - 
-              water.density(waterTemperature_degC_0p5m),
-            Diff_Dens_surf_bot = ifelse(is.na(Diff_Dens_surf_bot),
-                                        water.density(waterTemperature_degC_11p5m) - 
-                                          water.density(waterTemperature_degC_0p5m),
-                                        Diff_Dens_surf_bot),
-            Inverse = ifelse(waterTemperature_degC_13p5m > waterTemperature_degC_0p5m,
-                             T, F),
-            Inverse = ifelse(is.na(Diff_Dens_surf_bot),
-                             ifelse(waterTemperature_degC_13p5m > waterTemperature_degC_0p5m,
-                             T, F),
-                             Inverse))
+  summarize(
+    Diff_Dens_surf_bot = water.density(waterTemperature_degC_13p5m) -
+      water.density(waterTemperature_degC_0p5m),
+    Diff_Dens_surf_bot = ifelse(is.na(Diff_Dens_surf_bot),
+      water.density(waterTemperature_degC_11p5m) -
+        water.density(waterTemperature_degC_0p5m),
+      Diff_Dens_surf_bot
+    ),
+    Inverse = ifelse(waterTemperature_degC_13p5m > waterTemperature_degC_0p5m,
+      T, F
+    ),
+    Inverse = ifelse(is.na(Diff_Dens_surf_bot),
+      ifelse(waterTemperature_degC_13p5m > waterTemperature_degC_0p5m,
+        T, F
+      ),
+      Inverse
+    )
+  )
 
 strat_export_discrete <- strat_sum %>%
-  mutate(Strat = ifelse(Diff_Dens_surf_bot > 0.1, "Stratified", "Mixed"),
-         Strat = ifelse(Inverse & Strat == "Stratified", "Inversely\nstratified", Strat)) %>%
+  mutate(
+    Strat = ifelse(Diff_Dens_surf_bot > 0.1, "Stratified", "Mixed"),
+    Strat = ifelse(Inverse & Strat == "Stratified", "Inversely\nstratified", Strat)
+  ) %>%
   filter(!is.na(Strat)) %>%
   ungroup() %>%
   filter(Strat != lag(Strat)) %>%
@@ -84,12 +98,14 @@ strat_export_cont <- strat_sum %>%
   pivot_longer(Diff_Dens_surf_bot, names_to = "Variable", values_to = "Value") %>%
   mutate(Lake = LAKE)
 
-write.csv(strat_export_discrete, 
-          "../01b_Processed_data/Sunapee_stratification_discrete.csv", 
-          row.names = F)
-write.csv(strat_export_cont, 
-          "../01b_Processed_data/Sunapee_stratification_continuous.csv", 
-          row.names = F)
+write.csv(strat_export_discrete,
+  "../01b_Processed_data/Sunapee_stratification_discrete.csv",
+  row.names = F
+)
+write.csv(strat_export_cont,
+  "../01b_Processed_data/Sunapee_stratification_continuous.csv",
+  row.names = F
+)
 ```
 
 Meteorological data
@@ -102,13 +118,19 @@ met_2008 <- read.csv("https://pasta.lternet.edu/package/data/eml/edi/234/5/1ce6b
 # Format continuous data
 met_formatted <- met_2007 %>%
   full_join(met_2008) %>%
-  mutate(Date = as.Date(datetime) + offset,
-         yday = yday(Date)) %>%
+  mutate(
+    Date = as.Date(datetime) + offset,
+    yday = yday(Date)
+  ) %>%
   filter(year(Date) == 2008) %>%
-  rename(AirTemp_C_Average = airTemperature_degC,
-         Shortwave = radiationIncomingPAR_umolm2s) %>%
-  pivot_longer(cols = c(AirTemp_C_Average, Shortwave), 
-               names_to = "Variable", values_to = "Value") %>%
+  rename(
+    AirTemp_C_Average = airTemperature_degC,
+    Shortwave = radiationIncomingPAR_umolm2s
+  ) %>%
+  pivot_longer(
+    cols = c(AirTemp_C_Average, Shortwave),
+    names_to = "Variable", values_to = "Value"
+  ) %>%
   group_by(yday, Variable) %>%
   summarize(Value = mean(Value, na.rm = T), .groups = "drop") %>%
   mutate(Lake = LAKE)
@@ -121,11 +143,13 @@ Ice data
 https://aslopubs.onlinelibrary.wiley.com/doi/10.1002/lno.10014
 
 ```{r}
-ice <- data.frame(Lake = c(LAKE, LAKE),
-                  Season = c("Ice","Open water"),
-                  Method = c("Ice","Ice"),
-                  start = c(0, yday(as.Date("2008-04-24") + offset)),
-                  end = c(yday(as.Date("2008-04-24") + offset), 365)) %>%
+ice <- data.frame(
+  Lake = c(LAKE, LAKE),
+  Season = c("Ice", "Open water"),
+  Method = c("Ice", "Ice"),
+  start = c(0, yday(as.Date("2008-04-24") + offset)),
+  end = c(yday(as.Date("2008-04-24") + offset), 365)
+) %>%
   mutate(Solstice = solstice)
 
 write.csv(ice, "../01b_Processed_data/Sunapee_ice.csv", row.names = F)

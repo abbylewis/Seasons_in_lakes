@@ -15,95 +15,116 @@ source("lit_review_helper_scripts/country_detection.R")
 library(stringi)
 library(data.table)
 
-#https://simplemaps.com/data/world-cities
+# https://simplemaps.com/data/world-cities
 places <- fread("../01a_Raw_data/worldcities.csv") %>%
   mutate(country = case_match(country,
-                              "Korea, South"~"South Korea",
-                              "Korea, North"~"North Korea",
-                              "Burma"~"Myanmar",
-                              "Czechia"~"Czech Republic",
-                              "Virgin Islands, British"~"British Virgin Islands",
-                              "Micronesia, Federated States of"~"Federated States of Micronesia",
-                              "Bahamas, The"~"The Bahamas",
-                              "Gambia, The"~"The Gambia",
-                              .default = country))
+    "Korea, South" ~ "South Korea",
+    "Korea, North" ~ "North Korea",
+    "Burma" ~ "Myanmar",
+    "Czechia" ~ "Czech Republic",
+    "Virgin Islands, British" ~ "British Virgin Islands",
+    "Micronesia, Federated States of" ~ "Federated States of Micronesia",
+    "Bahamas, The" ~ "The Bahamas",
+    "Gambia, The" ~ "The Gambia",
+    .default = country
+  ))
 
-#Load files
+# Load files
 files <- list.files("../05_Lit_review", full.names = T, pattern = ".xls")
 library(readxl)
 all <- lapply(files, read_excel, col_types = "text") %>%
   bind_rows() %>%
-  rename(TI = `Article Title`,
-         AB = Abstract,
-         PY = `Publication Year`) %>%
+  rename(
+    TI = `Article Title`,
+    AB = Abstract,
+    PY = `Publication Year`
+  ) %>%
   select(TI, AB, PY) %>%
   mutate(PY = as.numeric(PY)) %>%
   distinct()
 
-#Country demonyms
+# Country demonyms
 demonyms <- read_csv("../01a_Raw_data/Demonyms.csv")
 ```
 
 Identify seasons in title/abstract
 
 ```{r}
-#Identify spring/summer/autumn/winter
+# Identify spring/summer/autumn/winter
 all_classified <- all %>%
   mutate(full_text = tolower(paste(TI, AB))) %>%
-  select(-AB) %>% #decrease df size 
-  mutate(Spring = grepl("spring", full_text, ignore.case = T),
-         Summer = grepl("summer", full_text, ignore.case = T),
-         Autumn = grepl("autumn|fall", full_text, ignore.case = T),
-         Winter = grepl("winter", full_text, ignore.case = T))
+  select(-AB) %>% # decrease df size
+  mutate(
+    Spring = grepl("spring", full_text, ignore.case = T),
+    Summer = grepl("summer", full_text, ignore.case = T),
+    Autumn = grepl("autumn|fall", full_text, ignore.case = T),
+    Winter = grepl("winter", full_text, ignore.case = T)
+  )
 
-#Identify season words
+# Identify season words
 processed <- all_classified %>%
   mutate(
     # Normalize "low water", "warm water" etc. before extraction
-    full_text = str_replace_all(full_text,
-                         regex("\\b([a-z]+)[-\\s]?water\\b", 
-                               ignore_case = TRUE),
-                         "\\1-water"),
-    
+    full_text = str_replace_all(
+      full_text,
+      regex("\\b([a-z]+)[-\\s]?water\\b",
+        ignore_case = TRUE
+      ),
+      "\\1-water"
+    ),
+
     # Normalize "low flow", "high flow" etc. before extraction
-    full_text = str_replace_all(full_text,
-                         regex("\\b([a-z]+)[-\\s]?flow\\b", 
-                               ignore_case = TRUE),
-                         "\\1-flow"),
-    
+    full_text = str_replace_all(
+      full_text,
+      regex("\\b([a-z]+)[-\\s]?flow\\b",
+        ignore_case = TRUE
+      ),
+      "\\1-flow"
+    ),
+
     # Normalize rain/rainy before extraction
-    full_text = str_replace_all(full_text, regex("\\brain[[:space:]]+season\\b", 
-                                   ignore_case = TRUE), "rainy season"),
-    
+    full_text = str_replace_all(full_text, regex("\\brain[[:space:]]+season\\b",
+      ignore_case = TRUE
+    ), "rainy season"),
+
     # Normalize "non", post, and pre before extraction
     full_text = str_replace_all(full_text, regex("\\bnon(?!-)", ignore_case = TRUE), "non-"),
     full_text = str_replace_all(full_text, regex("\\bpost(?!-)", ignore_case = TRUE), "post-"),
     full_text = str_replace_all(full_text, regex("\\bpre[[:space:]]", ignore_case = TRUE), "pre-"),
-    
+
     # Normalize ice free before extraction
-    full_text = str_replace_all(full_text, regex("\\bice[[:space:]]+free[[:space:]]+season\\b", 
-                                   ignore_case = TRUE), "ice-free season"),
-    
+    full_text = str_replace_all(full_text, regex("\\bice[[:space:]]+free[[:space:]]+season\\b",
+      ignore_case = TRUE
+    ), "ice-free season"),
+
     # Normalize ice cover before extraction
-    full_text = str_replace_all(full_text, regex("\\bice[[:space:]-]+cover(?:ed)?[[:space:]]+season\\b", 
-                                   ignore_case = TRUE), "ice-cover season"),
-    
-    #Extract
-    SeasonWords = lapply(str_extract_all(full_text, 
-                                         regex("\\b[\\w-]+(?=[[:space:]-]+seasons?\\b)", 
-                                               ignore_case = TRUE)),
-                         function(x) unique(x))
+    full_text = str_replace_all(full_text, regex("\\bice[[:space:]-]+cover(?:ed)?[[:space:]]+season\\b",
+      ignore_case = TRUE
+    ), "ice-cover season"),
+
+    # Extract
+    SeasonWords = lapply(
+      str_extract_all(
+        full_text,
+        regex("\\b[\\w-]+(?=[[:space:]-]+seasons?\\b)",
+          ignore_case = TRUE
+        )
+      ),
+      function(x) unique(x)
+    )
   )
 
-#Add categories
+# Add categories
 season_word_counts <- processed %>%
   select(SeasonWords) %>%
   unnest(SeasonWords) %>%
   mutate(SeasonWords = gsub("[[:space:]-]$", "", SeasonWords)) %>%
-  filter(!SeasonWords %in% filler_words,  # remove words that aren't seasons
-         !SeasonWords %in% temporal_phases,
-         !is.na(SeasonWords)) %>%  
-  mutate( #Classify season "type"
+  filter(
+    !SeasonWords %in% filler_words, # remove words that aren't seasons
+    !SeasonWords %in% temporal_phases,
+    !is.na(SeasonWords)
+  ) %>%
+  mutate( # Classify season "type"
     Type = case_when(
       SeasonWords %in% temperate ~ "Temperate",
       SeasonWords %in% flora ~ "Flora",
@@ -125,20 +146,22 @@ season_word_counts_plot <- season_word_counts %>%
   filter(!Type == "Temperate")
 write_csv(season_word_counts_plot, "../05_Lit_review/season_summaries/season_word_counts_plot.csv")
 
-#Make a text string for the SI
+# Make a text string for the SI
 seasons_for_si <- season_word_counts %>%
   filter(n >= 10) %>%
   mutate(SeasonWords = paste0(SeasonWords, " (n = ", n, ")")) %>%
   pull(SeasonWords) %>%
   paste0(collapse = ", ")
-sum(season_word_counts$n >= 10) #Count total
+sum(season_word_counts$n >= 10) # Count total
 
-#Summarize just "seasons" and "seasonality"
+# Summarize just "seasons" and "seasonality"
 all_seas <- all %>%
   mutate(full_text = tolower(paste(TI, AB))) %>%
   group_by(PY) %>%
-  summarize(season = sum(grepl("\\bseasons?\\b", full_text)),
-            seasonality = sum(grepl("\\bseasonality\\b", full_text)))
+  summarize(
+    season = sum(grepl("\\bseasons?\\b", full_text)),
+    seasonality = sum(grepl("\\bseasonality\\b", full_text))
+  )
 
 write_csv(all_seas, "../05_Lit_review/season_summaries/all_seas.csv")
 ```
@@ -146,7 +169,7 @@ write_csv(all_seas, "../05_Lit_review/season_summaries/all_seas.csv")
 Remake a version of "season word counts" but with spring/summer/autumn/winter
 
 ```{r}
-#Add temperate seasons
+# Add temperate seasons
 with_temperate <- processed %>%
   select(SeasonWords, Spring, Summer, Autumn, Winter, PY) %>%
   mutate(
@@ -162,7 +185,7 @@ with_temperate <- processed %>%
         seasons
       }
     ),
-    
+
     # combine with existing SeasonWords
     AllSeasons = map2(SeasonWords, TemperateSeasons, ~ unique(c(.x, .y)))
   ) %>%
@@ -170,9 +193,11 @@ with_temperate <- processed %>%
   select(AllSeasons) %>%
   unnest(AllSeasons) %>%
   mutate(AllSeasons = gsub("[[:space:]-]$", "", AllSeasons)) %>%
-  filter(!AllSeasons %in% filler_words,
-         !AllSeasons %in% temporal_phases,
-         !is.na(AllSeasons)) %>%   # remove filler words
+  filter(
+    !AllSeasons %in% filler_words,
+    !AllSeasons %in% temporal_phases,
+    !is.na(AllSeasons)
+  ) %>% # remove filler words
   mutate(
     Type = case_when(
       AllSeasons %in% temperate ~ "Temperate",
@@ -190,9 +215,10 @@ with_temperate <- processed %>%
   )
 
 with_temperate2 <- with_temperate %>%
-  mutate(Meta = ifelse(AllSeasons %in% c("spring", "summer", "autumn","winter"),
-                             "Temperate",
-                             "Other")) %>%
+  mutate(Meta = ifelse(AllSeasons %in% c("spring", "summer", "autumn", "winter"),
+    "Temperate",
+    "Other"
+  )) %>%
   group_by(Type, Meta, PY) %>%
   count(AllSeasons, sort = TRUE) %>%
   group_by(AllSeasons) %>%
@@ -208,7 +234,7 @@ sums <- with_temperate2 %>%
   group_by(PY) %>%
   mutate(
     total_by_year = sum(n),
-    pct_by_year   = n / total_by_year * 100,
+    pct_by_year = n / total_by_year * 100,
     pct_of_all_by_year = n / Count * 100
   ) %>%
   group_by(Type, Meta) %>%
@@ -217,10 +243,14 @@ sums <- with_temperate2 %>%
   mutate(total_by_name = sum(n)) %>%
   ungroup() %>%
   arrange(desc(total_by_type), desc(total_by_name)) %>%
-  filter(PY >= 1980, 
-         PY <= 2024) %>%
-  mutate(class = factor(Meta, levels = c("Temperate", "Other")),
-         Type = ifelse(Type == "Temperate", as.character(AllSeasons), Type))
+  filter(
+    PY >= 1980,
+    PY <= 2024
+  ) %>%
+  mutate(
+    class = factor(Meta, levels = c("Temperate", "Other")),
+    Type = ifelse(Type == "Temperate", as.character(AllSeasons), Type)
+  )
 
 write_csv(sums, "../05_Lit_review/season_summaries/sums.csv")
 ```
@@ -237,31 +267,31 @@ countries[, `:=`(
   iso3_lower = tolower(iso3)
 )]
 
-#Set dt
+# Set dt
 papers <- setDT(processed %>%
-                  select(full_text, SeasonWords) %>%
-                  #Deal with new mexico so this doesn't get listed as the country mexico
-                  #state name is addressed in detect_state() function
-                  mutate(full_text = gsub("new mexico", "newmexico", full_text)))
+  select(full_text, SeasonWords) %>%
+  # Deal with new mexico so this doesn't get listed as the country mexico
+  # state name is addressed in detect_state() function
+  mutate(full_text = gsub("new mexico", "newmexico", full_text)))
 places <- setDT(places)
 
-#for iso3
+# for iso3
 countries_iso3 <- countries[!countries$iso3_lower %in%
-                              c("and", "can", "ago", "are", "per")]
+  c("and", "can", "ago", "are", "per")]
 
 # Identify countries using functions sourced at the top of this script
-#Warning: this will take a while!
+# Warning: this will take a while!
 papers[, Country := vapply(
   full_text,
   function(t) {
     # 1. Try full country / ISO3 detection
     ctry <- detect_country(t)
-    
+
     # 2. Try states
     if (length(ctry) == 0 || is.na(ctry)) {
       ctry <- detect_state(t)
     }
-    
+
     # 3. Try demonyms
     if (is.na(ctry)) {
       match_idx <- which(stri_detect_regex(t, tolower(paste0("\\b", demonyms$Demonym, "\\b"))))
@@ -273,7 +303,7 @@ papers[, Country := vapply(
         ctry <- NA_character_
       }
     }
-    
+
     return(ctry)
   },
   FUN.VALUE = character(1)
@@ -281,19 +311,23 @@ papers[, Country := vapply(
 
 spat2 <- papers %>%
   as.data.frame()
-sum(!is.na(spat2$Country))/nrow(spat2) #Currently matching ~73% of abstracts
+sum(!is.na(spat2$Country)) / nrow(spat2) # Currently matching ~73% of abstracts
 spat_missing <- spat2 %>%
   filter(is.na(Country))
 
 season_word_counts_spat <- spat2 %>%
-  filter(!is.na(Country),
-         !Country == "Multi") %>%
+  filter(
+    !is.na(Country),
+    !Country == "Multi"
+  ) %>%
   select(SeasonWords, Country, full_text) %>%
   unnest(SeasonWords) %>%
   mutate(SeasonWords = gsub("[[:space:]-]$", "", SeasonWords)) %>%
-  filter(!SeasonWords %in% filler_words,
-         !SeasonWords %in% temporal_phases,
-         !is.na(SeasonWords)) %>% 
+  filter(
+    !SeasonWords %in% filler_words,
+    !SeasonWords %in% temporal_phases,
+    !is.na(SeasonWords)
+  ) %>%
   mutate(
     Type = case_when(
       SeasonWords %in% temperate ~ "Temperate",
@@ -311,9 +345,11 @@ season_word_counts_spat <- spat2 %>%
   ) %>%
   filter(!Type == "Other") %>%
   group_by(Country) %>%
-  mutate(n_papers = length(unique(full_text)),
-         Country_no_num = Country,
-         Country = paste0(Country, "\n(n = ", n_papers,")")) %>%
+  mutate(
+    n_papers = length(unique(full_text)),
+    Country_no_num = Country,
+    Country = paste0(Country, "\n(n = ", n_papers, ")")
+  ) %>%
   ungroup() %>%
   count(Type, SeasonWords, Country, Country_no_num, sort = TRUE)
 
@@ -326,16 +362,22 @@ for_country_timeline <- processed %>%
   filter(!duplicated(full_text)) %>%
   select(full_text, PY) %>%
   left_join(spat2 %>%
-              filter(!duplicated(full_text))) %>%
-  filter(!is.na(Country),
-         !Country == "Multi") %>%
+    filter(!duplicated(full_text))) %>%
+  filter(
+    !is.na(Country),
+    !Country == "Multi"
+  ) %>%
   group_by(Country, PY) %>%
   summarize(n_papers = length(unique(full_text))) %>%
-  filter(Country %in% country_levels,
-         PY >=1980, PY <= 2024) %>%
+  filter(
+    Country %in% country_levels,
+    PY >= 1980, PY <= 2024
+  ) %>%
   left_join(lake, by = c("PY" = "Year")) %>%
-  mutate(pct_papers = n_papers/Count * 100,
-         Country = factor(Country, levels= country_levels)) 
+  mutate(
+    pct_papers = n_papers / Count * 100,
+    Country = factor(Country, levels = country_levels)
+  )
 
 write_csv(for_country_timeline, "../05_Lit_review/season_summaries/for_country_timeline.csv")
 ```

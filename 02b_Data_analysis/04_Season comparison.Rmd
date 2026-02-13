@@ -13,10 +13,12 @@ library(tidyverse)
 library(ggpubr)
 library(ggtext)
 
-#The ../03a_Figures folder is not pushed to GitHub
-if(!file.exists("../03a_Figures")){dir.create("../03a_Figures")}
+# The ../03a_Figures folder is not pushed to GitHub
+if (!file.exists("../03a_Figures")) {
+  dir.create("../03a_Figures")
+}
 
-#Load data
+# Load data
 discrete <- read_csv("../01b_Processed_data/Discrete_seasons.csv")
 continuous <- read_csv("../01b_Processed_data/Continuous_data.csv")
 reference <- read_csv("../01b_Processed_data/Lake_reference.csv")
@@ -25,33 +27,37 @@ LAKES <- gsub(" ", "\n", reference$Lake_data)
 lats <- reference$Latitude_DD
 ref <- data.frame(LAKES, lats)
 
-vars <- c("Surface temperature", 
-          "Air temperature",
-          "Surface chlorophyll-a",
-          "Surface DO",
-          "Bottom-water DO",
-          "Solar radiation",
-          "Surf-bot dens. difference")
-labels <- c("Surface temperature (ºC)", 
-            "Air temperature (ºC)",
-            "Surface chlorophyll-<i>a</i> (µg/L)",
-            "Surface dissolved oxygen (mg/L)",
-            "Bottom-water dissolved oxygen (mg/L)",
-            "Shortwave radiation (W/m<sup>2</sup>)",
-            "Surf-bot density difference (kg/m<sup>3</sup>)")
+vars <- c(
+  "Surface temperature",
+  "Air temperature",
+  "Surface chlorophyll-a",
+  "Surface DO",
+  "Bottom-water DO",
+  "Solar radiation",
+  "Surf-bot dens. difference"
+)
+labels <- c(
+  "Surface temperature (ºC)",
+  "Air temperature (ºC)",
+  "Surface chlorophyll-<i>a</i> (µg/L)",
+  "Surface dissolved oxygen (mg/L)",
+  "Bottom-water dissolved oxygen (mg/L)",
+  "Shortwave radiation (W/m<sup>2</sup>)",
+  "Surf-bot density difference (kg/m<sup>3</sup>)"
+)
 ```
 
 # Continuous
 
 ```{r}
-#Different units for solar radiation across lakes:
-#BVR is ShortwaveRadiationDown_Average_W_m2
-#Arendsee is Solar..W.m2
-#Erken is SW_Rad_Avg
-#Ageri is "solar"
-#Mohonk is solar_insolation_avg_Wpm2
-#Rere is RadClr
-#Sunapee is radiationIncomingPAR_umolm2s
+# Different units for solar radiation across lakes:
+# BVR is ShortwaveRadiationDown_Average_W_m2
+# Arendsee is Solar..W.m2
+# Erken is SW_Rad_Avg
+# Ageri is "solar"
+# Mohonk is solar_insolation_avg_Wpm2
+# Rere is RadClr
+# Sunapee is radiationIncomingPAR_umolm2s
 
 continuous %>%
   filter(Variable %in% c("Solar radiation")) %>%
@@ -63,206 +69,269 @@ continuous %>%
   theme(legend.position = "bottom")
 
 for_plot <- continuous %>%
-  mutate(Value = ifelse(Lake == "Lake\nSunapee\n(2008)" & Variable == "Solar radiation", 
-                        NA, # different units
-                        Value),
-         Value = ifelse(Lake == "Lake\nRerewhakaaitu\n(2022-2023)" & Variable == "Surface chlorophyll-a", 
-                        NA, # different units
-                        Value)) %>%
+  mutate(
+    Value = ifelse(Lake == "Lake\nSunapee\n(2008)" & Variable == "Solar radiation",
+      NA, # different units
+      Value
+    ),
+    Value = ifelse(Lake == "Lake\nRerewhakaaitu\n(2022-2023)" & Variable == "Surface chlorophyll-a",
+      NA, # different units
+      Value
+    )
+  ) %>%
   left_join(discrete %>% select(-x), relationship = "many-to-many") %>%
-  mutate(Lake = gsub(" ", "\n", sub(" \\(", "\n(", Lake)),
-         Lake = factor(Lake, levels = LAKES),
-         Season = factor(Season, levels = c("Spring", "Summer", "Autumn", "Winter"))) %>%
+  mutate(
+    Lake = gsub(" ", "\n", sub(" \\(", "\n(", Lake)),
+    Lake = factor(Lake, levels = LAKES),
+    Season = factor(Season, levels = c("Spring", "Summer", "Autumn", "Winter"))
+  ) %>%
   left_join(ref, by = c("Lake" = "LAKES")) %>%
-  filter(yday >= start, 
-         yday <= end,
-         Method %in% c("Astronomical", "Months"),
-         !Variable == "Surface turbidity",
-         !is.na(Value)) %>%
-  #mutate(Value = ifelse(grepl("temperature", Variable), 
+  filter(
+    yday >= start,
+    yday <= end,
+    Method %in% c("Astronomical", "Months"),
+    !Variable == "Surface turbidity",
+    !is.na(Value)
+  ) %>%
+  # mutate(Value = ifelse(grepl("temperature", Variable),
   #                      Value + 273.15, # Convert to K
   #                      Value)) %>%
-  mutate(Variable = factor(Variable, 
-                           levels = vars,
-                           labels = labels)) %>%
+  mutate(Variable = factor(Variable,
+    levels = vars,
+    labels = labels
+  )) %>%
   group_by(Lake, Season, Variable, lats) %>%
   filter(length(unique(Method)) == 2) %>%
-  summarize(p = wilcox.test(Value ~ Method)$p.value,
-            p = case_when(p >= 0.05 ~"n.s.",
-                          p < 0.05 & p >= 0.01 ~ "*",
-                          p < 0.01 & p >= 0.001 ~ "**",
-                          p < 0.001 ~ "***"),
-            sig = ifelse(p != "n.s.", "p < 0.05", "p ≥ 0.05"),
-            label_height = max(Value),
-            month_mean = mean(Value[Method == "Months"], na.rm = T),
-            astro_mean = mean(Value[Method == "Astronomical"], na.rm = T),
-            dif = astro_mean - month_mean,
-            pct_dif = dif / abs((month_mean + astro_mean)/2) * 100) %>%
-  mutate(label = substr(Lake, 1,2))
+  summarize(
+    p = wilcox.test(Value ~ Method)$p.value,
+    p = case_when(
+      p >= 0.05 ~ "n.s.",
+      p < 0.05 & p >= 0.01 ~ "*",
+      p < 0.01 & p >= 0.001 ~ "**",
+      p < 0.001 ~ "***"
+    ),
+    sig = ifelse(p != "n.s.", "p < 0.05", "p ≥ 0.05"),
+    label_height = max(Value),
+    month_mean = mean(Value[Method == "Months"], na.rm = T),
+    astro_mean = mean(Value[Method == "Astronomical"], na.rm = T),
+    dif = astro_mean - month_mean,
+    pct_dif = dif / abs((month_mean + astro_mean) / 2) * 100
+  ) %>%
+  mutate(label = substr(Lake, 1, 2))
 
 jpeg("../03a_Figures/All_vars_color_abs.jpg", width = 6, height = 5, units = "in", res = 300)
 for_plot %>%
-  mutate(label = substr(Lake, 1,2)) %>%
+  mutate(label = substr(Lake, 1, 2)) %>%
   ggplot(aes(x = Season, y = dif)) +
-  geom_hline(yintercept = 0, color = "grey50")+
-  ylab("Difference in mean value between\nastronomical and monthly definitions")+
-  geom_boxplot(color = "grey80", outlier.shape = NA)+
-  geom_jitter(aes(fill = abs(lats), shape = sig), width = 0.2, 
-              color = "black", stroke = 0.2, size = 1.7) +
-  facet_wrap(~Variable, scales = "free_y", ncol = 3)+
-  theme_bw(base_size = 9)+
-  scale_shape_manual(name = "Significance of difference\nbetween definitions\nat each lake",
-                     values = c(21,24))+
-  scale_fill_distiller(palette = "Spectral", name = "Absolute latitude", direction = 1)+
-  egg::theme_article()+
-  theme(axis.text.x = element_text(angle = 30, hjust = 1, size = 8),
-        panel.grid.major.x = element_blank(),
-        legend.title.position = "top",
-        legend.position = c(.67,.08),
-        legend.spacing.y = unit(0.1, "cm"),
-        legend.direction = "horizontal",
-        legend.box = "horizontal",
-        legend.title = element_text(hjust = 0.5),
-        axis.title.x = element_blank(),
-        panel.grid.minor.y = element_line(color = "grey90"),
-        strip.text = element_textbox_simple(
-          size = 8,
-          halign = 0.5, 
-          valign = 0.5,
-          padding = ggplot2::margin(5, 5, 3, 5), 
-          margin = ggplot2::margin(5, 5, 3, 5) 
-        ))
+  geom_hline(yintercept = 0, color = "grey50") +
+  ylab("Difference in mean value between\nastronomical and monthly definitions") +
+  geom_boxplot(color = "grey80", outlier.shape = NA) +
+  geom_jitter(aes(fill = abs(lats), shape = sig),
+    width = 0.2,
+    color = "black", stroke = 0.2, size = 1.7
+  ) +
+  facet_wrap(~Variable, scales = "free_y", ncol = 3) +
+  theme_bw(base_size = 9) +
+  scale_shape_manual(
+    name = "Significance of difference\nbetween definitions\nat each lake",
+    values = c(21, 24)
+  ) +
+  scale_fill_distiller(palette = "Spectral", name = "Absolute latitude", direction = 1) +
+  egg::theme_article() +
+  theme(
+    axis.text.x = element_text(angle = 30, hjust = 1, size = 8),
+    panel.grid.major.x = element_blank(),
+    legend.title.position = "top",
+    legend.position = c(.67, .08),
+    legend.spacing.y = unit(0.1, "cm"),
+    legend.direction = "horizontal",
+    legend.box = "horizontal",
+    legend.title = element_text(hjust = 0.5),
+    axis.title.x = element_blank(),
+    panel.grid.minor.y = element_line(color = "grey90"),
+    strip.text = element_textbox_simple(
+      size = 8,
+      halign = 0.5,
+      valign = 0.5,
+      padding = ggplot2::margin(5, 5, 3, 5),
+      margin = ggplot2::margin(5, 5, 3, 5)
+    )
+  )
 dev.off()
 ```
 
 SI stratification and ice
 
 ```{r}
-labs_short <- c("Surf.~temp.", 
-                "Air~temp.",
-                "Surf.~chl-a",
-                "Surf.~DO",
-                "Bot.~DO",
-                "Solar~rad.",
-                "Dens.~dif.")
+labs_short <- c(
+  "Surf.~temp.",
+  "Air~temp.",
+  "Surf.~chl-a",
+  "Surf.~DO",
+  "Bot.~DO",
+  "Solar~rad.",
+  "Dens.~dif."
+)
 
-#Stratification vs astronomy
+# Stratification vs astronomy
 strat <- continuous %>%
-  mutate(Value = ifelse(Lake == "Lake\nSunapee\n(2008)" & Variable == "Solar radiation", 
-                        NA, # different units
-                        Value)) %>%
+  mutate(Value = ifelse(Lake == "Lake\nSunapee\n(2008)" & Variable == "Solar radiation",
+    NA, # different units
+    Value
+  )) %>%
   left_join(discrete %>% select(-x), relationship = "many-to-many") %>%
-  mutate(Lake = sub(" ", "\n", sub(" \\(", "\n(", Lake)),
-         Lake = factor(Lake, levels = LAKES),
-         Season = case_match(Season,
-                             "Stratified"~"Summer",
-                             "Inversely\nstratified"~"Winter",
-                             .default = Season),
-         Season = factor(Season, 
-                         levels = c("Summer", "Winter"),
-                         labels = c("Summer/stratified", "Winter/inversely stratified"))) %>%
+  mutate(
+    Lake = sub(" ", "\n", sub(" \\(", "\n(", Lake)),
+    Lake = factor(Lake, levels = LAKES),
+    Season = case_match(Season,
+      "Stratified" ~ "Summer",
+      "Inversely\nstratified" ~ "Winter",
+      .default = Season
+    ),
+    Season = factor(Season,
+      levels = c("Summer", "Winter"),
+      labels = c("Summer/stratified", "Winter/inversely stratified")
+    )
+  ) %>%
   left_join(ref, by = c("Lake" = "LAKES")) %>%
-  filter(yday >= start, 
-         yday <= end,
-         Method %in% c("Astronomical", "Stratification"),
-         !Variable == "Surface turbidity",
-         !is.na(Value),
-         !is.na(Season)) %>%
-  mutate(Variable = factor(Variable, 
-                           levels = vars,
-                           labels = labs_short)) %>%
+  filter(
+    yday >= start,
+    yday <= end,
+    Method %in% c("Astronomical", "Stratification"),
+    !Variable == "Surface turbidity",
+    !is.na(Value),
+    !is.na(Season)
+  ) %>%
+  mutate(Variable = factor(Variable,
+    levels = vars,
+    labels = labs_short
+  )) %>%
   group_by(Lake, Season, Variable, lats) %>%
   filter(length(unique(Method)) == 2) %>%
-  summarize(p = wilcox.test(Value ~ Method)$p.value,
-            p = case_when(p >= 0.05 ~"n.s.",
-                          p < 0.05 & p >= 0.01 ~ "*",
-                          p < 0.01 & p >= 0.001 ~ "**",
-                          p < 0.001 ~ "***"),
-            sig = ifelse(p != "n.s.", "p < 0.05", "p ≥ 0.05"),
-            label_height = max(Value),
-            strat_mean = mean(Value[Method == "Stratification"], na.rm = T),
-            astro_mean = mean(Value[Method == "Astronomical"], na.rm = T),
-            dif = astro_mean - strat_mean,
-            pct_dif = dif / abs((strat_mean + astro_mean)/2) * 100) %>%
-  mutate(label = substr(Lake, 1,2),
-         Comp = "Astronomical~vs.~Stratification")
+  summarize(
+    p = wilcox.test(Value ~ Method)$p.value,
+    p = case_when(
+      p >= 0.05 ~ "n.s.",
+      p < 0.05 & p >= 0.01 ~ "*",
+      p < 0.01 & p >= 0.001 ~ "**",
+      p < 0.001 ~ "***"
+    ),
+    sig = ifelse(p != "n.s.", "p < 0.05", "p ≥ 0.05"),
+    label_height = max(Value),
+    strat_mean = mean(Value[Method == "Stratification"], na.rm = T),
+    astro_mean = mean(Value[Method == "Astronomical"], na.rm = T),
+    dif = astro_mean - strat_mean,
+    pct_dif = dif / abs((strat_mean + astro_mean) / 2) * 100
+  ) %>%
+  mutate(
+    label = substr(Lake, 1, 2),
+    Comp = "Astronomical~vs.~Stratification"
+  )
 
-#Repeat for ice
+# Repeat for ice
 ice <- continuous %>%
-  mutate(Value = ifelse(Lake == "Lake\nSunapee\n(2008)" & Variable == "Solar radiation", 
-                        NA, # different units
-                        Value)) %>%
+  mutate(Value = ifelse(Lake == "Lake\nSunapee\n(2008)" & Variable == "Solar radiation",
+    NA, # different units
+    Value
+  )) %>%
   left_join(discrete %>% select(-x), relationship = "many-to-many") %>%
-  mutate(Lake = sub(" ", "\n", sub(" \\(", "\n(", Lake)),
-         Lake = factor(Lake, levels = LAKES),
-         Season = case_match(Season,
-                             "Open water"~"Summer",
-                             "Ice"~"Winter",
-                             .default = Season),
-         Season = factor(Season, 
-                         levels = c("Summer", "Winter"),
-                         labels = c("Summer/open water", "Winter/ice"))) %>%
+  mutate(
+    Lake = sub(" ", "\n", sub(" \\(", "\n(", Lake)),
+    Lake = factor(Lake, levels = LAKES),
+    Season = case_match(Season,
+      "Open water" ~ "Summer",
+      "Ice" ~ "Winter",
+      .default = Season
+    ),
+    Season = factor(Season,
+      levels = c("Summer", "Winter"),
+      labels = c("Summer/open water", "Winter/ice")
+    )
+  ) %>%
   left_join(ref, by = c("Lake" = "LAKES")) %>%
-  filter(yday >= start, 
-         yday <= end,
-         Method %in% c("Astronomical", "Ice"),
-         !Variable == "Surface turbidity",
-         !is.na(Value),
-         !is.na(Season)) %>%
-  mutate(Variable = factor(Variable, 
-                           levels = vars,
-                           labels = labs_short)) %>%
+  filter(
+    yday >= start,
+    yday <= end,
+    Method %in% c("Astronomical", "Ice"),
+    !Variable == "Surface turbidity",
+    !is.na(Value),
+    !is.na(Season)
+  ) %>%
+  mutate(Variable = factor(Variable,
+    levels = vars,
+    labels = labs_short
+  )) %>%
   group_by(Lake, Season, Variable, lats) %>%
   filter(length(unique(Method)) == 2) %>%
-  summarize(p = wilcox.test(Value ~ Method)$p.value,
-            p = case_when(p >= 0.05 ~"n.s.",
-                          p < 0.05 & p >= 0.01 ~ "*",
-                          p < 0.01 & p >= 0.001 ~ "**",
-                          p < 0.001 ~ "***"),
-            sig = ifelse(p != "n.s.", "p < 0.05", "p ≥ 0.05"),
-            label_height = max(Value),
-            ice_mean = mean(Value[Method == "Ice"], na.rm = T),
-            astro_mean = mean(Value[Method == "Astronomical"], na.rm = T),
-            dif = astro_mean - ice_mean,
-            pct_dif = dif / abs((ice_mean + astro_mean)/2) * 100) %>%
-  mutate(label = substr(Lake, 1,2),
-         Comp = "Astronomical~vs.~Ice")
+  summarize(
+    p = wilcox.test(Value ~ Method)$p.value,
+    p = case_when(
+      p >= 0.05 ~ "n.s.",
+      p < 0.05 & p >= 0.01 ~ "*",
+      p < 0.01 & p >= 0.001 ~ "**",
+      p < 0.001 ~ "***"
+    ),
+    sig = ifelse(p != "n.s.", "p < 0.05", "p ≥ 0.05"),
+    label_height = max(Value),
+    ice_mean = mean(Value[Method == "Ice"], na.rm = T),
+    astro_mean = mean(Value[Method == "Astronomical"], na.rm = T),
+    dif = astro_mean - ice_mean,
+    pct_dif = dif / abs((ice_mean + astro_mean) / 2) * 100
+  ) %>%
+  mutate(
+    label = substr(Lake, 1, 2),
+    Comp = "Astronomical~vs.~Ice"
+  )
 
 jpeg("../03a_Figures/SI - ice strat comp.jpg", width = 5, height = 7, units = "in", res = 300)
 for_plot %>%
-  mutate(Comp = "Astronomical~vs.~Months",
-         Variable = factor(Variable, 
-                           levels = labels,
-                           labels = labs_short)) %>%
+  mutate(
+    Comp = "Astronomical~vs.~Months",
+    Variable = factor(Variable,
+      levels = labels,
+      labels = labs_short
+    )
+  ) %>%
   filter(Season %in% c("Summer", "Winter")) %>%
   bind_rows(ice) %>%
   bind_rows(strat) %>%
-  mutate(label = substr(Lake, 1,2),
-         Comp = factor(Comp,
-                       levels = c("Astronomical~vs.~Months", 
-                                  "Astronomical~vs.~Stratification",
-                                  "Astronomical~vs.~Ice"))) %>%
+  mutate(
+    label = substr(Lake, 1, 2),
+    Comp = factor(Comp,
+      levels = c(
+        "Astronomical~vs.~Months",
+        "Astronomical~vs.~Stratification",
+        "Astronomical~vs.~Ice"
+      )
+    )
+  ) %>%
   ggplot(aes(x = Season, y = dif)) +
-  ylab("Difference in mean value between\nmonthly and astronomical definitions")+
-  geom_hline(yintercept = 0, color = "grey50")+
-  geom_boxplot(color = "grey80", outlier.shape = NA)+
-  geom_jitter(aes(fill = abs(lats), shape = sig), width = 0.2, 
-              color = "black", stroke = 0.2, size = 1.5) +
-  facet_grid(Variable~Comp, scales = "free", labeller = label_parsed)+
-  theme_bw(base_size = 9)+
-  scale_shape_manual(name = "Significance of difference\nbetween definitions\nat each lake",
-                     values = c(21,24))+
-  scale_fill_distiller(palette = "Spectral", name = "Absolute latitude", direction = 1)+
-  theme(axis.text.x = element_text(angle = 20, hjust = 1),
-        panel.grid.major.x = element_blank(),
-        strip.text = element_text(size = 7),
-        legend.title.position = "top",
-        legend.position = "bottom",
-        legend.spacing.y = unit(0.1, "cm"),
-        legend.direction = "horizontal",
-        legend.box = "horizontal",
-        legend.title = element_text(hjust = 0.5),
-        axis.title.x = element_blank())
+  ylab("Difference in mean value between\nmonthly and astronomical definitions") +
+  geom_hline(yintercept = 0, color = "grey50") +
+  geom_boxplot(color = "grey80", outlier.shape = NA) +
+  geom_jitter(aes(fill = abs(lats), shape = sig),
+    width = 0.2,
+    color = "black", stroke = 0.2, size = 1.5
+  ) +
+  facet_grid(Variable ~ Comp, scales = "free", labeller = label_parsed) +
+  theme_bw(base_size = 9) +
+  scale_shape_manual(
+    name = "Significance of difference\nbetween definitions\nat each lake",
+    values = c(21, 24)
+  ) +
+  scale_fill_distiller(palette = "Spectral", name = "Absolute latitude", direction = 1) +
+  theme(
+    axis.text.x = element_text(angle = 20, hjust = 1),
+    panel.grid.major.x = element_blank(),
+    strip.text = element_text(size = 7),
+    legend.title.position = "top",
+    legend.position = "bottom",
+    legend.spacing.y = unit(0.1, "cm"),
+    legend.direction = "horizontal",
+    legend.box = "horizontal",
+    legend.title = element_text(hjust = 0.5),
+    axis.title.x = element_blank()
+  )
 dev.off()
 ```
 
