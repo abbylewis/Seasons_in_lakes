@@ -72,6 +72,27 @@ all_season_plot <- all_seas %>%
   egg::theme_article() +
   theme(axis.title.x = element_blank()) +
   facet_wrap(~name, scales = "free_y", ncol = 1)
+
+season_plot_pres <- all_seas %>%
+  select(-seasonality) %>%
+  pivot_longer(c(season)) %>%
+  mutate(name = paste0('"', name, '"')) %>%
+  left_join(lake, by = c("PY" = "Year")) %>%
+  filter(PY >= 1980, PY <= 2024) %>%
+  ggplot(aes(x = PY, y = value / Count * 100)) +
+  geom_point(alpha = 0.3) +
+  ylab('% of all lake papers') +
+  geom_smooth(method = "gam", color = "black", linewidth = 0.5) +
+  egg::theme_presentation() +
+  theme(axis.title.x = element_blank()) +
+  facet_wrap(~name, scales = "free_y", ncol = 1)
+
+png("../03a_Figures/Total_prevalence_pres.png",
+  res = 300, width = 7,
+  height =6, units = "in"
+)
+season_plot_pres
+dev.off()
 ```
 
 Plot the use of different seasons over time

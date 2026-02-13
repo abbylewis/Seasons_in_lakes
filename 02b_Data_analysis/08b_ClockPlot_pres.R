@@ -167,7 +167,7 @@ continuous_data2 %>%
   dplyr::select(Lake) %>%
   distinct()
 
-##### MOHONK LAKE DATA#####
+##### MOHONK LAKE DATA #####
 
 # Get out Mohonk Lake data####
 mohk_cont <- continuous_data2 %>% filter(Lake == "Mohonk Lake (2017)")
@@ -424,21 +424,29 @@ daylight_limits <- c(0, 24)
 
   # Ice
   geom_point(
-    data = all_mohk %>% filter(Ice == "ice"), aes(x = yday * 2 * pi / 365, y = (3 + 4) / 2),
+    data = all_mohk %>% filter(Ice == "ice"), 
+    aes(x = yday * 2 * pi / 365, y = (3 + 4) / 2),
     shape = 21, color = "black", fill = "black", size = 1.7
   ) + # put blue dots for ice days in the outer ring
   geom_point(
-    data = all_mohk %>% filter(Ice == "ice"), aes(x = yday * 2 * pi / 365, y = (3 + 4) / 2),
+    data = all_mohk %>% filter(Ice == "ice"), 
+    aes(x = yday * 2 * pi / 365, y = (3 + 4) / 2),
     shape = 21, color = "white", fill = "white", size = 1.5
   ) + # put blue dots for ice days in the outer ring
 
   # Geometric segments for the months spindles coming out from the middle####
-  geom_segment(data = tibble(x = (c(1, 32, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335)) * 2 * pi / 365, y = 4) %>% mutate(xend = x, y = y_limit_lower, yend = 4), aes(x = x, xend = xend, y = y, yend = yend), color = "white", alpha = 0.3) +
+  geom_segment(data = tibble(x = (c(1, 32, 60, 91, 121, 152, 182, 213, 244, 274, 
+                                    305, 335)) * 2 * pi / 365, y = 4) %>% 
+                 mutate(xend = x, y = y_limit_lower, yend = 4), 
+               aes(x = x, xend = xend, y = y, yend = yend), 
+               color = "white", alpha = 0.3) +
   # Option to emphasize season months
   # geom_segment(data=tibble(x=(c(60,152,244,335))*2*pi/365,y=4)%>%mutate(xend=x,y=y_limit_lower,yend=4),aes(x=x,xend=xend,y=y,yend=yend),color="white", alpha = 1)+
 
   # Month labels
-  geom_text(data = tibble(x = (c(1, 32, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335)) * 2 * pi / 365, label = month.abb), aes(x = x, y = 4.7, label = label), color = "black", size = 2.8) +
+  geom_text(data = tibble(x = (c(1, 32, 60, 91, 121, 152, 182, 213, 244, 274, 
+                                 305, 335)) * 2 * pi / 365, label = month.abb), 
+            aes(x = x, y = 4.7, label = label), color = "black", size = 2.8) +
 
   # arrows for labels####
   # Ice arrow
@@ -513,6 +521,503 @@ daylight_limits <- c(0, 24)
     panel.background = element_rect(fill = "transparent", colour = NA),
     plot.background = element_rect(fill = "transparent", colour = NA)
   )
+) # end of the clock plot
+
+# plot the seasons as a clock####
+(gg.clock.mohonk.stratlight <- ggplot(data = all_mohk) +
+   # Put the polar coordinates on with breaks at each of the month starts####
+ coord_polar(start = 0 * 2 * pi / 365, clip = "off") +
+   scale_x_continuous(
+     breaks = (c(1, 32, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335)) *
+       2 * pi / 365,
+     limits = c(0, 2 * pi),
+     oob = scales::oob_keep
+   ) + # the limits and oob indicates to connect the circle
+   
+   # Weird points to establish the legend for the colors of the seasons#
+   geom_point(
+     data = tibble(
+       x = c(1:4) * 2 * pi / 365,
+       y = y_limit_lower,
+       color = c(
+         winter_color, spring_color,
+         summer_color, autumn_color
+       )
+     ),
+     aes(x = x, y = y, fill = color), shape = 22, color = "black"
+   ) +
+   scale_fill_manual(
+     name = "Astronomical seasons",
+     values = c(
+       winter_color, spring_color,
+       summer_color, autumn_color
+     ),
+     labels = c("Winter", "Spring", "Summer", "Autumn")
+   ) +
+   guides(fill = guide_legend(
+     title.position = "top",
+     title.hjust = 0.5, ncol = 2,
+     override.aes = list(shape = 22, color = "black", size = 3)
+   )) +
+   
+   # Seasons colors for each 1/4####
+ geom_ribbon(
+   data = tibble(rad = c(-1:80) * 2 * pi / 365),
+   aes(x = rad, ymin = 1, ymax = 2),
+   color = "black", fill = winter_color
+ ) + # winter
+   geom_ribbon(
+     data = tibble(rad = c(355:366) * 2 * pi / 365),
+     aes(x = rad, ymin = 1, ymax = 2),
+     color = "black", fill = winter_color
+   ) + # winter2
+   geom_ribbon(
+     data = all_mohk %>% filter(yday >= 80 & yday <= 172),
+     aes(x = yday * 2 * pi / 365, ymin = 1, ymax = 2),
+     color = "black", fill = spring_color
+   ) + # spring
+   geom_ribbon(
+     data = all_mohk %>% filter(yday >= 172 & yday <= 264),
+     aes(x = yday * 2 * pi / 365, ymin = 1, ymax = 2),
+     color = "black", fill = summer_color
+   ) + # summer
+   geom_ribbon(
+     data = all_mohk %>% filter(yday >= 264 & yday <= 355),
+     aes(x = yday * 2 * pi / 365, ymin = 1, ymax = 2),
+     color = "black", fill = autumn_color
+   ) + # fall
+   geom_segment(
+     data = tibble(x = (c(355, 80, 172, 264)) * 2 * pi / 365, y = 4) %>%
+       mutate(xend = x, y = y_limit_lower, yend = 4),
+     aes(x = x, xend = xend, y = y, yend = yend),
+     color = "black"
+   ) +
+   
+   # Rectangles for the center####
+ geom_rect(
+   data = tibble(
+     xmin = 0 * 2 * pi / 365, xmax = 365 * 2 * pi / 365,
+     ymin = 0, ymax = 2
+   ),
+   aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),
+   fill = "white", color = "white"
+ ) +
+   
+   # Rectangle for the daylength as the inner circle####
+ ggnewscale::new_scale_color() +
+   ggnewscale::new_scale_fill() +
+   geom_rect(
+     aes(
+       xmin = (yday - 1) * 2 * pi / 365, xmax = yday * 2 * pi / 365,
+       ymin = 2, ymax = 3,
+       fill = day_length, color = day_length
+     ),
+     show.legend = FALSE
+   ) +
+   scale_fill_gradientn(
+     limits = c(0, 24), colors = daylight_colors,
+     breaks = daylight_breaks, labels = daylight_breaks, name = "Day\nlength (h)",
+     guide = "none"
+   ) +
+   scale_color_gradientn(
+     limits = daylight_limits, colors = daylight_colors,
+     breaks = daylight_breaks, labels = daylight_breaks, name = "Day\nlength (h)",
+     guide = "none"
+   ) +
+   # inner and outer lines
+   geom_line(aes(x = yday * 2 * pi / 365, y = 1), color = "black", size = 0.2) +
+   geom_line(aes(x = yday * 2 * pi / 365, y = 2), color = "black", size = 0.2) +
+   
+   # Set up ribbon for ice data
+   geom_ribbon(aes(x = yday * 2 * pi / 365, ymin = y2, ymax = y2 * 1.08),
+               color = "black", fill = "black"
+   ) +
+   ggnewscale::new_scale_fill() +
+   ggnewscale::new_scale_color() +
+   
+   # Rectangles for the stratification####
+ geom_rect(aes(
+   xmin = (yday - 1) * 2 * pi / 365, xmax = yday * 2 * pi / 365,
+   ymin = 3, ymax = 4,
+   fill = delta_density, color = delta_density
+ )) +
+   scale_fill_gradientn(
+     limits = c(0, 3.4),
+     colors = c("#DB8080", "#DB8080", "white", "#7CA2CB"),
+     values = scales::rescale(c(3.4, 1, strat_thresh, 0)),
+     breaks = c(strat_thresh, 3.1), labels = c("Mixed", "Strat."),
+     guide = "none",
+     name = "Stratification",
+   ) +
+   scale_color_gradientn(
+     limits = c(0, 3.4), colors = c("#DB8080", "#DB8080", "white", "#7CA2CB"),
+     values = scales::rescale(c(3.4, 1, strat_thresh, 0)),
+     breaks = c(strat_thresh, 3.1), labels = c("Mixed", "Strat."),
+     name = "Stratification",
+     guide = "none"
+   ) +
+   # guides(fill = guide_colorbar(title.position="top", title.hjust = 0.5))+
+   # Inner white circle####
+ geom_ribbon(aes(x = yday * 2 * pi / 365, ymin = 0, ymax = 2),
+             color = "white", fill = "white"
+ ) + # Set up inner circle
+   
+   # circles overtop
+   geom_segment(
+     data = tibble(
+       x = 0 * 2 * pi / 365, xend = 366 * 2 * pi / 365,
+       y = 2, yend = 2
+     ),
+     aes(x = x, xend = xend, y = y, yend = yend),
+     color = "black", size = 1
+   ) +
+   geom_segment(
+     data = tibble(
+       x = 0 * 2 * pi / 365, xend = 366 * 2 * pi / 365,
+       y = 3, yend = 3
+     ),
+     aes(x = x, xend = xend, y = y, yend = yend),
+     color = "black", size = 1
+   ) +
+   geom_segment(
+     data = tibble(
+       x = 0 * 2 * pi / 365, xend = 366 * 2 * pi / 365,
+       y = 4, yend = 4
+     ),
+     aes(x = x, xend = xend, y = y, yend = yend),
+     color = "black", size = 1
+   ) +
+   
+   # Ice
+   geom_point(
+     data = all_mohk %>% filter(Ice == "ice"), 
+     aes(x = yday * 2 * pi / 365, y = (3 + 4) / 2),
+     shape = 21, color = "black", fill = "black", size = 1.7
+   ) + # put blue dots for ice days in the outer ring
+   geom_point(
+     data = all_mohk %>% filter(Ice == "ice"), 
+     aes(x = yday * 2 * pi / 365, y = (3 + 4) / 2),
+     shape = 21, color = "white", fill = "white", size = 1.5
+   ) + # put blue dots for ice days in the outer ring
+   
+   # Geometric segments for the months spindles coming out from the middle####
+ geom_segment(data = tibble(x = (c(1, 32, 60, 91, 121, 152, 182, 213, 244, 274, 
+                                   305, 335)) * 2 * pi / 365, y = 4) %>% 
+                mutate(xend = x, y = y_limit_lower, yend = 4), 
+              aes(x = x, xend = xend, y = y, yend = yend), 
+              color = "white", alpha = 0.3) +
+   # Option to emphasize season months
+   # geom_segment(data=tibble(x=(c(60,152,244,335))*2*pi/365,y=4)%>%mutate(xend=x,y=y_limit_lower,yend=4),aes(x=x,xend=xend,y=y,yend=yend),color="white", alpha = 1)+
+   
+   # Month labels
+   geom_text(data = tibble(x = (c(1, 32, 60, 91, 121, 152, 182, 213, 244, 274, 
+                                  305, 335)) * 2 * pi / 365, label = month.abb), 
+             aes(x = x, y = 4.7, label = label), color = "black", size = 2.8) +
+   
+   # arrows for labels####
+ # Ice arrow
+ geom_segment(
+   data = tibble(x = (c(45)) * 2 * pi / 365, y = 3.5) %>%
+     mutate(xend = x, yend = y_limit_upper * .8),
+   aes(x = x, xend = xend, y = y, yend = yend), color = "black"
+ ) +
+   
+   # Ice label
+   geom_label(
+     data = tibble(x = (c(45)) * 2 * pi / 365, y = y_limit_upper * .8),
+     aes(x = x, y = y), label = "Ice", size = 9 * (5 / 14),
+     hjust = 0, vjust = 0.2
+   ) + # The size= in element_text is 14/5 of the size= in geom_text
+   
+   # Mixed arrow
+   geom_segment(
+     data = tibble(x = (c(347)) * 2 * pi / 365, y = 3.5) %>%
+       mutate(xend = x, yend = y_limit_upper * 0.8),
+     aes(x = x, xend = xend, y = y, yend = yend), color = "black"
+   ) +
+   
+   # Mixed label
+   geom_label(
+     data = tibble(x = (c(347)) * 2 * pi / 365, y = y_limit_upper * .8),
+     aes(x = x, y = y), label = "Mixed", size = 9 * (5 / 14),
+     hjust = 0.8, vjust = 0
+   ) + # The size= in element_text is 14/5 of the size= in geom_text
+   
+   # Strat arrow
+   geom_segment(
+     data = tibble(x = (c(197)) * 2 * pi / 365, y = 3.5) %>%
+       mutate(xend = x, yend = y_limit_upper * 0.9),
+     aes(x = x, xend = xend, y = y, yend = yend), color = "black"
+   ) +
+   
+   # Strat label
+   geom_label(
+     data = tibble(x = (c(197)) * 2 * pi / 365, y = y_limit_upper * .9),
+     aes(x = x, y = y), label = "Stratified", size = 9 * (5 / 14),
+     hjust = .9
+   ) + # The size= in element_text is 14/5 of the size= in geom_text
+   
+   # text at the top for label####
+ geom_text(
+   data = tibble(x = 2 * 2 * pi / 365, y = y_limit_upper), aes(x = x, y = y),
+   label = "a) Mohonk Lake", size = 4.2,
+   vjust = 0
+ ) +
+   
+   # Letter label in middle
+   # geom_text(data=tibble(x=(c(1))*2*pi/365,label="A."),aes(x=x,y=0,label=label), color = "black", size = 2.8)+
+   
+   scale_y_continuous(limits = c(y_limit_lower, y_limit_upper)) +
+   theme_bw() +
+   theme(
+     panel.grid.major = element_blank(),
+     panel.grid.minor = element_blank(),
+     axis.text.x = element_blank(),
+     axis.text.y = element_blank(),
+     axis.title.x = element_blank(),
+     axis.title.y = element_blank(),
+     axis.ticks.y = element_blank(),
+     # legend.position="none", #get rid of legends
+     legend.title = element_text(size = 10, color = "grey30"), # change the legend title size
+     legend.text = element_text(size = 9, color = "grey50"), # change the legend text size
+     legend.background = element_rect(color = NA, fill = NA), # make the background of the legend box blank
+     legend.key.size = unit(1, "line"), # increase the size of the legend points
+     panel.border = element_blank(), # get rid of line around plot
+     plot.margin = unit(c(-0.6, -0.7, -0.6, -0.7), "cm"), # spread out the plot a bit to minimize the white space
+     panel.background = element_rect(fill = "transparent", colour = NA),
+     plot.background = element_rect(fill = "transparent", colour = NA)
+   )
+) # end of the clock plot
+
+# plot the seasons as a clock####
+(gg.clock.mohonk.stratonly <- ggplot(data = all_mohk) +
+   # Put the polar coordinates on with breaks at each of the month starts####
+ coord_polar(start = 0 * 2 * pi / 365, clip = "off") +
+   scale_x_continuous(
+     breaks = (c(1, 32, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335)) *
+       2 * pi / 365,
+     limits = c(0, 2 * pi),
+     oob = scales::oob_keep
+   ) + # the limits and oob indicates to connect the circle
+   
+   # Inner white circle####
+ geom_ribbon(aes(x = yday * 2 * pi / 365, ymin = 0, ymax = 1),
+             color = "white", fill = "white"
+ ) + # Set up inner circle
+   
+   # Weird points to establish the legend for the colors of the seasons#
+   geom_point(
+     data = tibble(
+       x = c(1:4) * 2 * pi / 365,
+       y = y_limit_lower,
+       color = c(
+         winter_color, spring_color,
+         summer_color, autumn_color
+       )
+     ),
+     aes(x = x, y = y, fill = color), shape = 22, color = "black"
+   ) +
+   scale_fill_manual(
+     name = "Astronomical seasons",
+     values = c(
+       winter_color, spring_color,
+       summer_color, autumn_color
+     ),
+     labels = c("Winter", "Spring", "Summer", "Autumn")
+   ) +
+   guides(fill = guide_legend(
+     title.position = "top",
+     title.hjust = 0.5, ncol = 2,
+     override.aes = list(shape = 22, color = "black", size = 3)
+   )) +
+   
+   # Seasons colors for each 1/4####
+ geom_ribbon(
+   data = tibble(rad = c(-1:80) * 2 * pi / 365),
+   aes(x = rad, ymin = 1, ymax = 2),
+   color = "black", fill = winter_color
+ ) + # winter
+   geom_ribbon(
+     data = tibble(rad = c(355:366) * 2 * pi / 365),
+     aes(x = rad, ymin = 1, ymax = 2),
+     color = "black", fill = winter_color
+   ) + # winter2
+   geom_ribbon(
+     data = all_mohk %>% filter(yday >= 80 & yday <= 172),
+     aes(x = yday * 2 * pi / 365, ymin = 1, ymax = 2),
+     color = "black", fill = spring_color
+   ) + # spring
+   geom_ribbon(
+     data = all_mohk %>% filter(yday >= 172 & yday <= 264),
+     aes(x = yday * 2 * pi / 365, ymin = 1, ymax = 2),
+     color = "black", fill = summer_color
+   ) + # summer
+   geom_ribbon(
+     data = all_mohk %>% filter(yday >= 264 & yday <= 355),
+     aes(x = yday * 2 * pi / 365, ymin = 1, ymax = 2),
+     color = "black", fill = autumn_color
+   ) + # fall
+   geom_segment(
+     data = tibble(x = (c(355, 80, 172, 264)) * 2 * pi / 365, y = 4) %>%
+       mutate(xend = x, y = y_limit_lower, yend = 4),
+     aes(x = x, xend = xend, y = y, yend = yend),
+     color = "black"
+   ) +
+   
+   # Rectangles for the center####
+ geom_rect(
+   data = tibble(
+     xmin = 0 * 2 * pi / 365, xmax = 365 * 2 * pi / 365,
+     ymin = y_limit_lower, ymax = 3
+   ),
+   aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),
+   fill = "white", color = "white"
+ ) +
+   
+   # Rectangle for the daylength as the inner circle####
+ ggnewscale::new_scale_color() +
+   ggnewscale::new_scale_fill() +
+   
+   # Rectangles for the stratification####
+ geom_rect(aes(
+   xmin = (yday - 1) * 2 * pi / 365, xmax = yday * 2 * pi / 365,
+   ymin = 3, ymax = 4,
+   fill = delta_density, color = delta_density
+ )) +
+   scale_fill_gradientn(
+     limits = c(0, 3.4),
+     colors = c("#DB8080", "#DB8080", "white", "#7CA2CB"),
+     values = scales::rescale(c(3.4, 1, strat_thresh, 0)),
+     breaks = c(strat_thresh, 3.1), labels = c("Mixed", "Strat."),
+     guide = "none",
+     name = "Stratification",
+   ) +
+   scale_color_gradientn(
+     limits = c(0, 3.4), colors = c("#DB8080", "#DB8080", "white", "#7CA2CB"),
+     values = scales::rescale(c(3.4, 1, strat_thresh, 0)),
+     breaks = c(strat_thresh, 3.1), labels = c("Mixed", "Strat."),
+     name = "Stratification",
+     guide = "none"
+   ) +
+   # guides(fill = guide_colorbar(title.position="top", title.hjust = 0.5))+
+   
+   # circles overtop
+   geom_segment(
+     data = tibble(
+       x = 0 * 2 * pi / 365, xend = 366 * 2 * pi / 365,
+       y = 3, yend = 3
+     ),
+     aes(x = x, xend = xend, y = y, yend = yend),
+     color = "black", size = 1
+   ) +
+   geom_segment(
+     data = tibble(
+       x = 0 * 2 * pi / 365, xend = 366 * 2 * pi / 365,
+       y = 4, yend = 4
+     ),
+     aes(x = x, xend = xend, y = y, yend = yend),
+     color = "black", size = 1
+   ) +
+   
+   # Ice
+   geom_point(
+     data = all_mohk %>% filter(Ice == "ice"), 
+     aes(x = yday * 2 * pi / 365, y = (3 + 4) / 2),
+     shape = 21, color = "black", fill = "black", size = 1.7
+   ) + # put blue dots for ice days in the outer ring
+   geom_point(
+     data = all_mohk %>% filter(Ice == "ice"), 
+     aes(x = yday * 2 * pi / 365, y = (3 + 4) / 2),
+     shape = 21, color = "white", fill = "white", size = 1.5
+   ) + # put blue dots for ice days in the outer ring
+   
+   # Geometric segments for the months spindles coming out from the middle####
+ geom_segment(data = tibble(x = (c(1, 32, 60, 91, 121, 152, 182, 213, 244, 274, 
+                                   305, 335)) * 2 * pi / 365, y = 4) %>% 
+                mutate(xend = x, y = y_limit_lower, yend = 4), 
+              aes(x = x, xend = xend, y = y, yend = yend), 
+              color = "white", alpha = 0.3) +
+   # Option to emphasize season months
+   # geom_segment(data=tibble(x=(c(60,152,244,335))*2*pi/365,y=4)%>%mutate(xend=x,y=y_limit_lower,yend=4),aes(x=x,xend=xend,y=y,yend=yend),color="white", alpha = 1)+
+   
+   # Month labels
+   geom_text(data = tibble(x = (c(1, 32, 60, 91, 121, 152, 182, 213, 244, 274, 
+                                  305, 335)) * 2 * pi / 365, label = month.abb), 
+             aes(x = x, y = 4.7, label = label), color = "black", size = 2.8) +
+   
+   # arrows for labels####
+ # Ice arrow
+ geom_segment(
+   data = tibble(x = (c(45)) * 2 * pi / 365, y = 3.5) %>%
+     mutate(xend = x, yend = y_limit_upper * .8),
+   aes(x = x, xend = xend, y = y, yend = yend), color = "black"
+ ) +
+   
+   # Ice label
+   geom_label(
+     data = tibble(x = (c(45)) * 2 * pi / 365, y = y_limit_upper * .8),
+     aes(x = x, y = y), label = "Ice", size = 9 * (5 / 14),
+     hjust = 0, vjust = 0.2
+   ) + # The size= in element_text is 14/5 of the size= in geom_text
+   
+   # Mixed arrow
+   geom_segment(
+     data = tibble(x = (c(347)) * 2 * pi / 365, y = 3.5) %>%
+       mutate(xend = x, yend = y_limit_upper * 0.8),
+     aes(x = x, xend = xend, y = y, yend = yend), color = "black"
+   ) +
+   
+   # Mixed label
+   geom_label(
+     data = tibble(x = (c(347)) * 2 * pi / 365, y = y_limit_upper * .8),
+     aes(x = x, y = y), label = "Mixed", size = 9 * (5 / 14),
+     hjust = 0.8, vjust = 0
+   ) + # The size= in element_text is 14/5 of the size= in geom_text
+   
+   # Strat arrow
+   geom_segment(
+     data = tibble(x = (c(197)) * 2 * pi / 365, y = 3.5) %>%
+       mutate(xend = x, yend = y_limit_upper * 0.9),
+     aes(x = x, xend = xend, y = y, yend = yend), color = "black"
+   ) +
+   
+   # Strat label
+   geom_label(
+     data = tibble(x = (c(197)) * 2 * pi / 365, y = y_limit_upper * .9),
+     aes(x = x, y = y), label = "Stratified", size = 9 * (5 / 14),
+     hjust = .9
+   ) + # The size= in element_text is 14/5 of the size= in geom_text
+   
+   # text at the top for label####
+ geom_text(
+   data = tibble(x = 2 * 2 * pi / 365, y = y_limit_upper), aes(x = x, y = y),
+   label = "a) Mohonk Lake", size = 4.2,
+   vjust = 0
+ ) +
+   
+   # Letter label in middle
+   # geom_text(data=tibble(x=(c(1))*2*pi/365,label="A."),aes(x=x,y=0,label=label), color = "black", size = 2.8)+
+   
+   scale_y_continuous(limits = c(y_limit_lower, y_limit_upper)) +
+   theme_bw() +
+   theme(
+     panel.grid.major = element_blank(),
+     panel.grid.minor = element_blank(),
+     axis.text.x = element_blank(),
+     axis.text.y = element_blank(),
+     axis.title.x = element_blank(),
+     axis.title.y = element_blank(),
+     axis.ticks.y = element_blank(),
+     # legend.position="none", #get rid of legends
+     legend.title = element_text(size = 10, color = "grey30"), # change the legend title size
+     legend.text = element_text(size = 9, color = "grey50"), # change the legend text size
+     legend.background = element_rect(color = NA, fill = NA), # make the background of the legend box blank
+     legend.key.size = unit(1, "line"), # increase the size of the legend points
+     panel.border = element_blank(), # get rid of line around plot
+     plot.margin = unit(c(-0.6, -0.7, -0.6, -0.7), "cm"), # spread out the plot a bit to minimize the white space
+     panel.background = element_rect(fill = "transparent", colour = NA),
+     plot.background = element_rect(fill = "transparent", colour = NA)
+   )
 ) # end of the clock plot
 
 ##### tanganyika LAKE DATA#####
@@ -725,10 +1230,6 @@ unique(wlb_cont$Variable)
 # Get in wlb raw data####
 wlb_dates <- tibble(day = seq(as.Date("2023-06-21"), as.Date("2024-06-20"), by = 1)) %>%
   mutate(day2 = day + 194)
-
-
-head(wlb_dates)
-tail(wlb_dates)
 
 
 # Recreate stratification for WLB####
@@ -953,7 +1454,7 @@ library(rnaturalearth)
       Label = c("c", "a", "b")
     ),
     aes(x = Longitude, y = Latitude, label = Label),
-    color = "grey50", hjust = 0.5, vjust = 0.5, size = 2.9
+    color = "grey40", hjust = 0.5, vjust = 0.5, size = 2.9
   ) +
   coord_sf(expand = FALSE) +
   theme_void() +
@@ -979,6 +1480,8 @@ legend_grob_Seasons <- ggpubr::get_legend(gg.clock.mohonk)
 legend_grob_Stratification <- ggpubr::get_legend(gg.clock.tanganyika)
 legend_grob_dayLength <- ggpubr::get_legend(gg.clock.wlb)
 mhk <- gg.clock.mohonk + theme(legend.position = "none")
+mhk_strat <- gg.clock.mohonk.stratonly + theme(legend.position = "none")
+mhk_stratlight <- gg.clock.mohonk.stratlight + theme(legend.position = "none")
 wlb <- gg.clock.wlb + theme(legend.position = "none")
 tan <- gg.clock.tanganyika + theme(legend.position = "none")
 map <- gg.worldMap.naturalEarth +
@@ -1032,4 +1535,132 @@ final_plot <- map %>%
     height = 0.2,
     vjust = .5, hjust = .5
   )
-ggsave(filename = "03a_Figures/ClockPlotFull-ASL.jpg", plot = final_plot, width = 6, height = 4.5, units = "in", dpi = 400)
+
+final_plot_map <- map %>%
+  cowplot::ggdraw()
+
+ggsave(filename = "03a_Figures/ClockPlotFull-MAP.jpg", plot = final_plot_map, 
+       width = 6, height = 4.5, units = "in", dpi = 400)
+
+final_plot_mhk_tan <- map %>%
+  cowplot::ggdraw() +
+  cowplot::draw_plot(mhk,
+                     x = .177,
+                     y = .7,
+                     width = 0.55,
+                     height = 0.55,
+                     vjust = .5, hjust = .5
+  ) +
+  cowplot::draw_plot(tan,
+                     x = .502,
+                     y = .475,
+                     width = 0.55,
+                     height = 0.55,
+                     vjust = .5, hjust = .5
+  )  +
+  cowplot::draw_plot(leg1,
+                     x = .14,
+                     y = .1,
+                     width = 0.3,
+                     height = 0.2,
+                     vjust = .5, hjust = .5
+  ) +
+  cowplot::draw_plot(leg2,
+                     x = .14,
+                     y = .26,
+                     width = 0.3,
+                     height = 0.2,
+                     vjust = .5, hjust = .5
+  ) +
+  cowplot::draw_plot(leg3,
+                     x = .39,
+                     y = .1,
+                     width = 0.3,
+                     height = 0.2,
+                     vjust = .5, hjust = .5
+  )
+
+ggsave(filename = "03a_Figures/ClockPlotFull-MHK_TAN.jpg", plot = final_plot_mhk_tan, 
+       width = 6, height = 4.5, units = "in", dpi = 400)
+
+
+final_plot_mhk <- map %>%
+  cowplot::ggdraw() +
+  cowplot::draw_plot(mhk,
+                     x = .177,
+                     y = .7,
+                     width = 0.55,
+                     height = 0.55,
+                     vjust = .5, hjust = .5
+  ) +
+  cowplot::draw_plot(leg1,
+                     x = .14,
+                     y = .1,
+                     width = 0.3,
+                     height = 0.2,
+                     vjust = .5, hjust = .5
+  ) +
+  cowplot::draw_plot(leg2,
+                     x = .14,
+                     y = .26,
+                     width = 0.3,
+                     height = 0.2,
+                     vjust = .5, hjust = .5
+  ) +
+  cowplot::draw_plot(leg3,
+                     x = .39,
+                     y = .1,
+                     width = 0.3,
+                     height = 0.2,
+                     vjust = .5, hjust = .5
+  )
+
+ggsave(filename = "03a_Figures/ClockPlotFull-MHK.jpg", plot = final_plot_mhk, 
+       width = 6, height = 4.5, units = "in", dpi = 400)
+
+final_plot_mhk <- map %>%
+  cowplot::ggdraw() +
+  cowplot::draw_plot(mhk_stratlight,
+                     x = .177,
+                     y = .7,
+                     width = 0.55,
+                     height = 0.55,
+                     vjust = .5, hjust = .5
+  ) +
+  cowplot::draw_plot(leg1,
+                     x = .14,
+                     y = .1,
+                     width = 0.3,
+                     height = 0.2,
+                     vjust = .5, hjust = .5
+  ) +
+  cowplot::draw_plot(leg2,
+                     x = .14,
+                     y = .26,
+                     width = 0.3,
+                     height = 0.2,
+                     vjust = .5, hjust = .5
+  )
+
+ggsave(filename = "03a_Figures/ClockPlotFull-MHK_STRATLIGHT.jpg", plot = final_plot_mhk, 
+       width = 6, height = 4.5, units = "in", dpi = 400)
+
+final_plot_mhk_strat <- map %>%
+  cowplot::ggdraw() +
+  cowplot::draw_plot(mhk_strat,
+                     x = .177,
+                     y = .7,
+                     width = 0.55,
+                     height = 0.55,
+                     vjust = .5, hjust = .5
+  ) +
+  cowplot::draw_plot(leg2,
+                     x = .14,
+                     y = .26,
+                     width = 0.3,
+                     height = 0.2,
+                     vjust = .5, hjust = .5
+  )
+
+ggsave(filename = "03a_Figures/ClockPlotFull-MHK_STRAT.jpg", plot = final_plot_mhk_strat, 
+       width = 6, height = 4.5, units = "in", dpi = 400)
