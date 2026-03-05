@@ -96,7 +96,7 @@ lake_relabel <- function(lakes) {
     "Lake Tanganyika (2012-2013)" = "bold('d)')~`Lake Tanganyika (2012-2013); Z`[max]~`= 1470 m`",
     "Lake Batur (2023-2024)" = "bold('e)')~`Lake Batur (2023-2024); Z`[max]~`= 88 m`",
     "Lake Rerewhakaaitu (2022-2023)" = "bold('f)')~`Lake Rerewhakaaitu (2022-2023); Z`[max]~`= 15 m`",
-    "West Lake Bonney (2023-2024)" = "bold('g)')~`West Lake Bonney (2023-2024); Z`[max]~`= 40 m`"
+    "West Lake Bonney (2023-2024)" = "bold('g)')~`West Lake Bonney (2023-2024); Z`[max]~`= 44 m`"
   )
 
   return(unname(labels[lakes]))
@@ -258,12 +258,12 @@ continuous <- continuous_data %>%
     "#6B7CB3", "#1F363D", "#8DD65C", "lightblue",
     "#FFC233", "#F05D5E"
   )) +
-  geom_line(alpha = 0.2) +
+  #geom_line(alpha = 0.2) +
   geom_smooth(se = F, method = "gam") +
   # geom_vline(xintercept = c(0, 90, 183, 276, 365), color = "black", alpha = 0.2)+
   theme_bw() +
   labs(
-    y = "% of range          ",
+    y = "Value          ",
     title = "Seasonally-varying parameters"
   ) +
   guides(color = guide_legend(ncol = 1)) +
@@ -275,7 +275,13 @@ continuous <- continuous_data %>%
       "Winter\nsolstice"
     )
   ) +
-  facet_wrap(~Lake, ncol = 1, scales = "free_y") +
+  scale_y_continuous(
+    breaks = c(0, 100),
+    labels = c(
+      "Min","Max"
+    )
+  ) +
+  facet_wrap(~Lake, ncol = 1) +
   theme(
     legend.position = "bottom",
     legend.title = element_blank(),

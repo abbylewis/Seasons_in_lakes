@@ -43,7 +43,7 @@ library(maps)
 library(ggspatial) # For the scale bar and compass on the map
 library(grid) # This extracts the legends from the previous plots and fits them on a new blank plot - export has them all overlaid.
 
-# Id latitude of our study lakes####
+# Latitude of our focal lakes####
 LAKES <- c(
   "Mohonk Lake (2017)", # 41.76598
   "Lake Tanganyika (2012-2013)",

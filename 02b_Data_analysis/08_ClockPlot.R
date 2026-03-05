@@ -28,7 +28,7 @@ if (!require(grid)) {
 }
 
 
-library(zoo) # install zoo for na.approx
+library(zoo) # na.approx
 library(tidyverse)
 library(ggpubr)
 library(geosphere) # Gets daylength based on latitude and doy
